@@ -1,11 +1,9 @@
 import * as React from 'react'
 import Head from 'next/head'
 
-// import { useTranslation } from '../i18n'
 import firebase from '../src/firebase/client'
 
 export default function Test2() {
-    // const { t } = useTranslation()
     const [vendors, setVendors] = React.useState([])
 
     React.useEffect(() => {

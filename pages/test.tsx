@@ -1,6 +1,5 @@
 import * as React from 'react'
 import Head from 'next/head'
-// import { useTranslation } from '../i18n'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
 import admin from '../src/firebase/admin'
@@ -8,10 +7,6 @@ import admin from '../src/firebase/admin'
 import SEO from '../src/components/SEO'
 
 export default function Test(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    // const { t, i18n } = useTranslation()
-
-    // React.useEffect(() => { i18n.changeLanguage('fr') }, [])
-
     return (
         <div>
             <SEO title="Listing" description="All the order points" />
@@ -40,7 +35,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         })
 
         return {
-            props: { vendors: docs, namespacesRequired: ['common'] }
+            props: { vendors: docs }
         }
     } catch (err) {
         // either the `token` cookie didn't exist
