@@ -1,9 +1,17 @@
 import type { AppProps /*, AppContext */ } from 'next/app'
+import { ThemeProvider, theme, CSSReset } from '@chakra-ui/react'
 
-import '../styles/globals.css'
+const customTheme = {
+    ...theme
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
-    return <Component {...pageProps} />
+    return (
+        <ThemeProvider theme={customTheme}>
+            <CSSReset />
+            <Component {...pageProps} />
+        </ThemeProvider>
+    )
 }
 
 export default MyApp

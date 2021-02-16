@@ -3,8 +3,9 @@ import useTranslation from 'next-translate/useTranslation'
 import Head from 'next/head'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import admin from '../src/firebase/admin'
+import { Heading } from '@chakra-ui/react'
 
+import admin from '../src/firebase/admin'
 import SEO from '../src/components/SEO'
 
 export default function Test(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -14,7 +15,7 @@ export default function Test(props: InferGetServerSidePropsType<typeof getServer
         <div>
             <SEO title="Listing" description="All the order points" />
 
-            <h1>{t('list-restaurant')}</h1>
+            <Heading as="h2">{t('list-restaurant')}</Heading>
             <div>
                 {props.vendors.map(vendor => <h3 key={vendor.id}>{vendor.name}</h3>)}
             </div>
