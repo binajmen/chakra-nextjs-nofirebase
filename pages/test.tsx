@@ -1,4 +1,5 @@
 import * as React from 'react'
+import useTranslation from 'next-translate/useTranslation'
 import Head from 'next/head'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
@@ -7,11 +8,13 @@ import admin from '../src/firebase/admin'
 import SEO from '../src/components/SEO'
 
 export default function Test(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    const { t } = useTranslation('test')
+
     return (
         <div>
             <SEO title="Listing" description="All the order points" />
 
-            {/* <h1>{t('list-restaurant')}</h1> */}
+            <h1>{t('list-restaurant')}</h1>
             <div>
                 {props.vendors.map(vendor => <h3 key={vendor.id}>{vendor.name}</h3>)}
             </div>
