@@ -14,3 +14,9 @@ if (!admin.apps.length) {
 }
 
 export default admin
+
+/**
+ * .env.local emulator variables
+ * export FIRESTORE_EMULATOR_HOST="localhost:8080"
+ * export FIREBASE_AUTH_EMULATOR_HOST="localhost:9099"
+ */

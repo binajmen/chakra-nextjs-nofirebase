@@ -20,13 +20,13 @@ if (typeof window !== 'undefined' && !firebase.apps.length) {
     if (process.env.NODE_ENV === "development") {
         firebase.firestore().useEmulator('localhost', 8080)
         firebase.functions().useEmulator('localhost', 5001)
-        firebase.auth().useEmulator('localhost:9099')
+        firebase.auth().useEmulator('http://localhost:9099')
     }
 }
 
-const db = firebase.firestore()
-const functions = firebase.functions()
-const auth = firebase.auth()
+// const db = firebase.firestore()
+// const functions = firebase.functions()
+// const auth = firebase.auth()
 
 export default firebase
-export { db, functions, auth }
+// export { db, functions, auth }

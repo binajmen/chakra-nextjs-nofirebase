@@ -17,6 +17,7 @@
 
 # misc
 .DS_Store
+.sandbox
 *.pem
 
 # debug
@@ -37,4 +38,5 @@ yarn-error.log*
 serviceAccount.json
 firebase.json
 .firebaserc
+.emuldata
 *.log

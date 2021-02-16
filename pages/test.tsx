@@ -1,18 +1,24 @@
+import * as React from 'react'
 import Head from 'next/head'
+// import { useTranslation } from '../i18n'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import admin from '../firebase/admin'
+import admin from '../src/firebase/admin'
+
+import SEO from '../src/components/SEO'
 
 export default function Test(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+    // const { t, i18n } = useTranslation()
+
+    // React.useEffect(() => { i18n.changeLanguage('fr') }, [])
+
     return (
         <div>
-            <Head>
-                <title>Myresto.brussels</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
+            <SEO title="Listing" description="All the order points" />
 
+            {/* <h1>{t('list-restaurant')}</h1> */}
             <div>
-                {props.vendors.map(vendor => <h1>{vendor.name}</h1>)}
+                {props.vendors.map(vendor => <h3 key={vendor.id}>{vendor.name}</h3>)}
             </div>
         </div>
     )
@@ -28,10 +34,13 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         }
 
         const docs = []
-        snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }))
+        snapshot.forEach(doc => {
+            const { geopoint, ...rest } = doc.data()
+            docs.push({ id: doc.id, ...rest })
+        })
 
         return {
-            props: { vendors: docs }
+            props: { vendors: docs, namespacesRequired: ['common'] }
         }
     } catch (err) {
         // either the `token` cookie didn't exist
