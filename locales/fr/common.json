@@ -1,3 +1,13 @@
 {
+    "menu-header": "Menu",
+    "about-us": "À propos",
+    "menu-connect": "Se connecter",
+    "menu-categories": "Categories",
+    "menu-favorites": "Favoris",
+    "menu-basket": "Mon panier",
+    "menu-account": "Mon compte",
+    "on-the-spot": "Sur place",
+    "take-away": "À emporter",
+    "delivery": "À livrer",
     "list-restaurant": "Liste des restaurants :"
 }
