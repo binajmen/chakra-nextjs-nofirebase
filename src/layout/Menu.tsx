@@ -11,14 +11,18 @@ import {
     DrawerContent,
     DrawerCloseButton,
     VStack,
-    Text,
+    HStack,
+    StackDivider,
+    Link,
     useDisclosure,
 } from "@chakra-ui/react"
 
-import { FaBars, FaLock, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog } from 'react-icons/fa'
+import { FaBars, FaLock, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaHandsHelping } from 'react-icons/fa'
+
+import Languages from './Languages'
 
 const links = [
-    { label: "menu-connect", icon: <FaLock />, color: 'secondary', variant: "solid" },
+    { label: "menu-connect", icon: <FaLock />, color: 'primary', variant: "solid" },
     // { label: "menu-categories", icon: <FaSitemap />, color: 'primary', variant: "ghost" },
     { label: "menu-favorites", icon: <FaHeart />, color: 'primary', variant: "ghost" },
     { label: "menu-basket", icon: <FaShoppingBasket />, color: 'primary', variant: "ghost" },
@@ -32,7 +36,7 @@ export default function Menu() {
 
     return (
         <>
-            <Button ref={btnRef} leftIcon={<FaBars />} colorScheme="black" variant="outline" onClick={onOpen}>
+            <Button ref={btnRef} leftIcon={<FaBars />} color="white" variant="ghost" onClick={onOpen}>
                 {t('menu-header')}
             </Button>
             <Drawer
@@ -47,7 +51,7 @@ export default function Menu() {
                         <DrawerHeader>{t('menu-header')}</DrawerHeader>
 
                         <DrawerBody>
-                            <VStack align="stretch" spacing={4}>
+                            <VStack w="full" align="stretch" spacing={4}>
                                 {links.map((link, index) =>
                                     <Button key={index} leftIcon={link.icon} colorScheme={link.color} variant={link.variant}>{t(link.label)}</Button>
                                 )}
@@ -55,7 +59,14 @@ export default function Menu() {
                         </DrawerBody>
 
                         <DrawerFooter>
-                            <Text>{t('about-us')}</Text>
+                            <VStack w="full" align="stretch" spacing={4}>
+                                <Button leftIcon={<FaHandsHelping />} colorScheme="primary" variant="ghost">{t('support')}</Button>
+                                <Languages />
+                                <HStack justifyContent="center" divider={<StackDivider borderColor="primary.700" />}>
+                                    <Link color="primary.700">{t('about-us')}</Link>
+                                    <Link color="primary.700">{t('privacy')}</Link>
+                                </HStack>
+                            </VStack>
                         </DrawerFooter>
                     </DrawerContent>
                 </DrawerOverlay>

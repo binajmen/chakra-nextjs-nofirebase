@@ -8,8 +8,8 @@ import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'nex
 
 import admin from '../src/firebase/admin'
 
-import Header from '../src/layout/Header'
-import Vendors from '../src/layout/Vendors'
+import Layout from '../src/layout/Layout'
+import Vendors from '../src/components/Vendors'
 import SearchInput from '../src/components/SearchInput'
 
 export default function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -24,9 +24,10 @@ export default function Index(props: InferGetServerSidePropsType<typeof getServe
                 <title>Myresto.brussels</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-            <Header />
-            <SearchInput />
-            <Vendors vendors={props.vendors} />
+            <Layout>
+                <SearchInput />
+                <Vendors vendors={props.vendors} />
+            </Layout>
         </>
     )
 }

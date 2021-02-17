@@ -1,13 +1,17 @@
 {
     "menu-header": "Menu",
     "about-us": "About us",
+    "privacy": "Privacy",
     "menu-connect": "Sign up",
     "menu-categories": "Categories",
     "menu-favorites": "Favorites",
     "menu-basket": "My basket",
     "menu-account": "My account",
+    "order-type": "Order type:",
     "on-the-spot": "On the spot",
-    "take-away": "Take away",
+    "take-away": "Take-away",
     "delivery": "Delivery",
+    "support": "Support",
+    "your-address": "Your address",
     "list-restaurant": "List of restaurant:"
 }

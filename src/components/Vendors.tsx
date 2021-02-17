@@ -7,9 +7,9 @@ import { MdStar } from "react-icons/md"
 
 export default function Vendors({ vendors }) {
     return (
-        <Box p="5">
+        <Box p={3}>
             <SimpleGrid columns={[1, 2, 3, 4]} spacing={5}>
-                {vendors.map(vendor => <VendorCard vendor={vendor} />)}
+                {vendors.map((vendor, index) => <VendorCard key={index} vendor={vendor} />)}
             </SimpleGrid>
         </Box>
     )
@@ -17,7 +17,7 @@ export default function Vendors({ vendors }) {
 
 function VendorCard({ vendor }) {
     return (
-        <Box borderWidth="1px" borderRadius="lg" borderColor="grey.100" overflow="hidden">
+        <Box boxShadow="lg" borderRadius="lg" overflow="hidden">
             <Image w="100%" src="https://via.placeholder.com/300x200" alt="Image du restaurant" />
 
             <Box p="6">
@@ -54,10 +54,10 @@ function VendorCard({ vendor }) {
                 <Box d="flex" mt="2" alignItems="center">
                     {Array(5)
                         .fill("")
-                        .map((_, i) => (
+                        .map((_, index) => (
                             <MdStar
-                                key={i}
-                                color={i < 3 ? "orange.500" : "gray.300"}
+                                key={index}
+                                color={index < 3 ? "orange.500" : "gray.300"}
                             />
                         ))}
                     <Box as="span" ml="2" color="gray.600" fontSize="sm">
