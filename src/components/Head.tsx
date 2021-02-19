@@ -1,8 +1,8 @@
-import Head from 'next/head'
+import NextHead from 'next/head'
 
-export default function SEO({ description, title, siteTitle = "Order.brussels" }) {
+export default function Head({ description, title, siteTitle = "Order.brussels" }) {
     return (
-        <Head>
+        <NextHead>
             <title>{`${title} | ${siteTitle}`}</title>
             <link rel="icon" href="/favicon.ico" />
             <meta name="description" content={description} />
@@ -14,6 +14,6 @@ export default function SEO({ description, title, siteTitle = "Order.brussels" }
             <meta property="twitter:creator" content={siteTitle} />
             <meta property="twitter:title" content={title} />
             <meta property="twitter:description" content={description} />
-        </Head>
+        </NextHead>
     )
 }

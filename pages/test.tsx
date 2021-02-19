@@ -1,6 +1,5 @@
 import * as React from 'react'
 import useTranslation from 'next-translate/useTranslation'
-import Head from 'next/head'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
 import {
@@ -10,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 
 import admin from '../src/firebase/admin'
-import SEO from '../src/components/SEO'
+import Head from '../src/components/Head'
 
 import { useStoreState, useStoreActions } from '../src/store/hooks'
 
@@ -21,7 +20,7 @@ export default function Test(props: InferGetServerSidePropsType<typeof getServer
 
     return (
         <div>
-            <SEO title="Listing" description="All the order points" />
+            <Head title="Listing" description="All the order points" />
 
             <Heading as="h2">{t('list-restaurant')}</Heading>
 

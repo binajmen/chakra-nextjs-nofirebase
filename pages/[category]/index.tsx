@@ -18,7 +18,3 @@ export default function CategoryIndex() {
         </div>
     )
 }
-
-CategoryIndex.getInitialProps = async () => ({
-    namespacesRequired: ['common'],
-})
