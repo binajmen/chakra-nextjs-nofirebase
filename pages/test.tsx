@@ -3,22 +3,34 @@ import useTranslation from 'next-translate/useTranslation'
 import Head from 'next/head'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import { Heading } from '@chakra-ui/react'
+import {
+    Heading,
+    Button,
+    Text, HStack
+} from '@chakra-ui/react'
 
 import admin from '../src/firebase/admin'
 import SEO from '../src/components/SEO'
 
+import { useStoreState, useStoreActions } from '../src/store/hooks'
+
 export default function Test(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { t } = useTranslation('test')
+    const method = useStoreState(state => state.session.method)
+    const setMethod = useStoreActions(actions => actions.session.setMethod)
 
     return (
         <div>
             <SEO title="Listing" description="All the order points" />
 
             <Heading as="h2">{t('list-restaurant')}</Heading>
-            <div>
-                {props.vendors.map(vendor => <h3 key={vendor.id}>{vendor.name}</h3>)}
-            </div>
+
+            <HStack>
+                <Text>{method}</Text>
+                <Button onClick={() => setMethod('onspot')}>onspot</Button>
+                <Button onClick={() => setMethod('takeaway')}>takeaway</Button>
+                <Button onClick={() => setMethod('delivery')}>delivery</Button>
+            </HStack>
         </div>
     )
 }
