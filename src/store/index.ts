@@ -1,34 +1,31 @@
 import { useMemo } from 'react'
-import {
-    createStore,
-    persist,
-    Action, action,
-} from 'easy-peasy'
+import { createStore, persist, Store } from 'easy-peasy'
 
 import * as session from './session'
 
-let store = undefined
+let store: Store | undefined = undefined
 
-export type State =
-    session.State
-
-const initialState: State = {
-    ...session.state
+export type State = {
+    session: session.State
 }
 
-export type StoreType = {
+const initialState: State = {
+    session: session.state
+}
+
+export type StoreModel = {
     session: session.Model
 }
 
-const model: StoreType = {
+const model: StoreModel = {
     session: session.model,
 }
 
-function initStore(preloadedState: State = initialState) {
-    return createStore(
+function initStore(preloadedState = initialState) {
+    return createStore<StoreModel, State>(
         persist(
             model,
-            { allow: [] }
+            { allow: ['session'] }
         ),
         { initialState: preloadedState }
     )

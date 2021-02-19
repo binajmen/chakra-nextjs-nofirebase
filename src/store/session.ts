@@ -1,15 +1,17 @@
 import { Action, action } from 'easy-peasy'
 
+export type Method = "now" | "takeaway" | "delivery" | null
+
 type State = {
-    method: string
+    method: Method
 }
 
 const state: State = {
-    method: 'freeze'
+    method: null
 }
 
 type Model = State & {
-    setMethod: Action<Model, string>
+    setMethod: Action<Model, Method>
 }
 
 const model: Model = {

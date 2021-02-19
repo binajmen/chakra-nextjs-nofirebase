@@ -20,9 +20,9 @@ import {
 import { FaBars, FaLock, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaHandsHelping } from 'react-icons/fa'
 
 import Languages from './Languages'
+import Login from '../forms/Login'
 
 const links = [
-    { label: "menu-connect", icon: <FaLock />, color: 'primary', variant: "solid" },
     // { label: "menu-categories", icon: <FaSitemap />, color: 'primary', variant: "ghost" },
     { label: "menu-favorites", icon: <FaHeart />, color: 'primary', variant: "ghost" },
     { label: "menu-basket", icon: <FaShoppingBasket />, color: 'primary', variant: "ghost" },
@@ -32,18 +32,19 @@ const links = [
 export default function Menu() {
     const { t } = useTranslation('common')
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const btnRef = React.useRef()
+    const login = useDisclosure()
+    const buttonRef = React.useRef<any>() // TOFIX: use correct type
 
     return (
         <>
-            <Button ref={btnRef} leftIcon={<FaBars />} color="white" variant="ghost" onClick={onOpen}>
+            <Button ref={buttonRef} leftIcon={<FaBars />} color="white" variant="ghost" onClick={onOpen}>
                 {t('menu-header')}
             </Button>
             <Drawer
                 isOpen={isOpen}
                 placement="right"
                 onClose={onClose}
-                finalFocusRef={btnRef}
+                finalFocusRef={buttonRef}
             >
                 <DrawerOverlay>
                     <DrawerContent>
@@ -52,6 +53,8 @@ export default function Menu() {
 
                         <DrawerBody>
                             <VStack w="full" align="stretch" spacing={4}>
+                                <Button leftIcon={<FaLock />} colorScheme="primary" variant="solid" onClick={login.onToggle}>{t('menu-connect')}</Button>
+                                <Login modal={login} />
                                 {links.map((link, index) =>
                                     <Button key={index} leftIcon={link.icon} colorScheme={link.color} variant={link.variant}>{t(link.label)}</Button>
                                 )}

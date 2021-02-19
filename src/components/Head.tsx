@@ -1,6 +1,12 @@
 import NextHead from 'next/head'
 
-export default function Head({ description, title, siteTitle = "Order.brussels" }) {
+export type HeadProps = {
+    description: string
+    title: string
+    siteTitle?: string
+}
+
+export default function Head({ description, title, siteTitle = "Order.brussels" }: HeadProps) {
     return (
         <NextHead>
             <title>{`${title} | ${siteTitle}`}</title>

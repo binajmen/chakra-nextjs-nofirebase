@@ -9,8 +9,8 @@ import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'nex
 import admin from '../src/firebase/admin'
 
 import Layout from '../src/layout/Layout'
-import Vendors from '../src/components/Vendors'
 import SearchInput from '../src/components/SearchInput'
+import Vendors from '../src/components/Vendors'
 
 export default function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { t } = useTranslation('test')
@@ -41,7 +41,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             return { props: { vendors: [] } }
         }
 
-        const docs = []
+        // TOFIX: define correct type
+        const docs: any = []
         snapshot.forEach(doc => {
             const { geopoint, ...rest } = doc.data()
             docs.push({ id: doc.id, ...rest })

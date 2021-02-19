@@ -5,13 +5,15 @@ import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'nex
 import {
     Heading,
     Button,
-    Text, HStack
+    Text,
+    HStack
 } from '@chakra-ui/react'
 
+import { useStoreState, useStoreActions } from '../src/store/hooks'
 import admin from '../src/firebase/admin'
+
 import Head from '../src/components/Head'
 
-import { useStoreState, useStoreActions } from '../src/store/hooks'
 
 export default function Test(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { t } = useTranslation('test')
@@ -26,7 +28,7 @@ export default function Test(props: InferGetServerSidePropsType<typeof getServer
 
             <HStack>
                 <Text>{method}</Text>
-                <Button onClick={() => setMethod('onspot')}>onspot</Button>
+                <Button onClick={() => setMethod('now')}>now</Button>
                 <Button onClick={() => setMethod('takeaway')}>takeaway</Button>
                 <Button onClick={() => setMethod('delivery')}>delivery</Button>
             </HStack>
@@ -43,7 +45,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             return { props: { vendors: [] } }
         }
 
-        const docs = []
+        // TOFIX: define correct type
+        const docs: any = []
         snapshot.forEach(doc => {
             const { geopoint, ...rest } = doc.data()
             docs.push({ id: doc.id, ...rest })
