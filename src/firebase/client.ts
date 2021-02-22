@@ -14,12 +14,12 @@ if (!firebase.apps.length) {
         measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
     })
 
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
+    // firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)
 
     if (process.env.NODE_ENV === "development") {
         firebase.firestore().useEmulator('localhost', 8080)
         firebase.functions().useEmulator('localhost', 5001)
-        firebase.auth().useEmulator('http://localhost:9099')
+        // firebase.auth().useEmulator('http://localhost:9099')
     }
 }
 

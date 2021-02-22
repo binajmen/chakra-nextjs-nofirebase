@@ -1,11 +1,18 @@
 import * as React from "react"
-import NextLink from 'next/link'
-import NextImage from 'next/image'
 
-import { SimpleGrid, GridItem, Flex, Box, Badge, Stack, Text, Link, Image } from '@chakra-ui/react'
+import {
+    SimpleGrid,
+    Box,
+    Badge,
+    Image
+} from '@chakra-ui/react'
 import { MdStar } from "react-icons/md"
 
-export default function Vendors({ vendors }) {
+export type VendorsProps = {
+    vendors: Vendor[]
+}
+
+export default function Vendors({ vendors }: VendorsProps) {
     return (
         <Box p={3}>
             <SimpleGrid columns={[1, 2, 3, 4]} spacing={5}>
@@ -15,9 +22,20 @@ export default function Vendors({ vendors }) {
     )
 }
 
-function VendorCard({ vendor }) {
+export type VendorCardProps = {
+    vendor: Vendor
+}
+
+export type Vendor = {
+    name: string
+    phone: string
+    address: string
+}
+
+function VendorCard({ vendor }: VendorCardProps) {
     return (
         <Box boxShadow="lg" borderRadius="lg" overflow="hidden">
+            {/* TODO: use Next Image for optimization? */}
             <Image w="100%" src="https://via.placeholder.com/300x200" alt="Image du restaurant" />
 
             <Box p="6">

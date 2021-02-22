@@ -3,8 +3,11 @@ import { extendTheme, ChakraProvider, CSSReset } from '@chakra-ui/react'
 
 import type { AppProps /*, AppContext */ } from 'next/app'
 
+import initAuth from '../src/firebase/auth'
 import theme from '../theme'
 import { useStore } from '../src/store'
+
+initAuth()
 
 const customTheme = extendTheme(theme)
 

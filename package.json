@@ -22,6 +22,7 @@
     "next-translate": "^1.0.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",
+    "react-firebaseui": "^4.1.0",
     "react-icons": "^4.2.0",
     "react-redux": "^7.2.2",
     "yup": "^0.32.9"

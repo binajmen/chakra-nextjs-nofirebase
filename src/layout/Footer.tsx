@@ -8,21 +8,18 @@ import {
     Link,
     SimpleGrid,
     Text,
-    VStack,
-    useColorModeValue,
+    VStack
 } from '@chakra-ui/react'
 
-import { FaFacebook, FaInstagram, FaLinkedin } from 'react-icons/fa'
+import { FaFacebook, FaInstagram } from 'react-icons/fa'
 
 import Container from './Container'
 
 export default function Footer() {
-    const bg = useColorModeValue('gray.100', 'gray.800')
-
     return (
         <Box as="footer" mt={16}>
             <Container>
-                <VStack spacing={4} w="full" align="center" px={6} py={4} bg={bg}>
+                <VStack spacing={4} w="full" align="center" px={6} py={4}>
                     <Flex direction={['column', 'column', 'row']}>
                         <VStack spacing={2} align="flex-start" w={{ base: 'full', lg: 2 / 5 }} mr={8}>
                             <Heading size="lg">Brand</Heading>
@@ -30,9 +27,8 @@ export default function Footer() {
                                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis, nisi! Id.
                         </Text>
                             <HStack spacing={1}>
-                                <IconButton aria-label="Facebook" icon={<FaFacebook size={25} />}></IconButton>
-                                <IconButton aria-label="Instagram" icon={<FaInstagram size={25} />}></IconButton>
-                                <IconButton aria-label="LinkedIn" icon={<FaLinkedin size={25} />}></IconButton>
+                                <IconButton aria-label="Facebook" colorScheme="facebook" icon={<FaFacebook size={25} />} />
+                                <IconButton aria-label="Instagram" color="white" icon={<FaInstagram size={25} />} style={{ background: 'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%)'}} />
                             </HStack>
                         </VStack>
                         <SimpleGrid columns={[2, 3, 3, 4]} w="full" gap={6} justifyContent="space-between">
@@ -65,12 +61,12 @@ export default function Footer() {
                                     Contact
                             </Heading>
                                 <Link fontSize="sm">+32 477 19 98 76</Link>
-                                <Link fontSize="sm">info@myresto.brussels</Link>
+                                <Link fontSize="sm">info@Order.brussels</Link>
                             </VStack>
                         </SimpleGrid>
                     </Flex>
                     <Divider borderColor="gray.500" mx="auto" />
-                    <Text fontSize="base">Copyright &copy; {new Date().getFullYear()} Myresto.brussels</Text>
+                    <Text fontSize="base">Copyright &copy; {new Date().getFullYear()} Order.brussels</Text>
                 </VStack>
             </Container>
         </Box>

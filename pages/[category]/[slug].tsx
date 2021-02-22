@@ -5,10 +5,12 @@ export default function CategoryIndex() {
     const router = useRouter()
     const { category, slug } = router.query
 
+    console.log(router.pathname)
+
     return (
         <div>
             <Head>
-                <title>Myresto.brussels</title>
+                <title>Order.brussels</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 

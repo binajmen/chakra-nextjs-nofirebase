@@ -1,18 +1,19 @@
 import * as React from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { withAuthUser } from 'next-firebase-auth'
 
 import useTranslation from 'next-translate/useTranslation'
 
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import admin from '../src/utils/admin'
+import admin from '../src/firebase/admin'
 
 import Layout from '../src/layout/Layout'
 import SearchInput from '../src/components/SearchInput'
 import Vendors from '../src/components/Vendors'
 
-export default function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { t } = useTranslation('test')
     const router = useRouter()
 
@@ -21,7 +22,7 @@ export default function Index(props: InferGetServerSidePropsType<typeof getServe
     return (
         <>
             <Head>
-                <title>Myresto.brussels</title>
+                <title>Order.brussels</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
@@ -31,6 +32,8 @@ export default function Index(props: InferGetServerSidePropsType<typeof getServe
         </>
     )
 }
+
+export default withAuthUser<InferGetServerSidePropsType<typeof getServerSideProps>>()(Index)
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     try {

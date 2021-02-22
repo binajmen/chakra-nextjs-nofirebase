@@ -1,30 +1,34 @@
 export default {
+    fonts: {
+        body: "Montserrat, sans-serif",
+        heading: "Poppins, serif",
+        mono: "Menlo, monospace",
+    },
     colors: {
         // https://coolors.co/00283d-d62828-f77f00-fcbf49-eae2b7
         primary: {
-            50: '#dff7ff',
-            100: '#b3e5ff',
-            200: '#85d3fd',
-            300: '#58c1fb',
-            400: '#36affa',
-            500: '#2797e1',
-            600: '#1b75af',
-            700: '#0e547e',
-            800: '#00324d', //
-            900: '#00121d',
+            50: '#FFFAE4',
+            100: '#FFF4C9',
+            200: '#FFEFAE',
+            300: '#FFE993',
+            400: '#FFE478',
+            500: '#FFDF5D',
+            600: '#FCCA00',
+            700: '#FFD014',
+            800: '#E6B800',
+            900: '#B89300',
         },
-        secondary:
-        {
-            50: '#faf7e6',
-            100: '#eee7c4', //
-            200: '#e2d79f',
-            300: '#d7c779',
-            400: '#cbb753',
-            500: '#b29e3b',
-            600: '#8a7b2d',
-            700: '#635820',
-            800: '#3b3511',
-            900: '#151200',
+        secondary: {
+            50: '#e2ebff',
+            100: '#b1c2ff',
+            200: '#7f99ff',
+            300: '#4d70ff',
+            400: '#1d48fe',
+            500: '#062ee5',
+            600: '#0024b3',
+            700: '#001a81',
+            800: '#000f50',
+            900: '#000520',
         },
         yellow: {
             50: '#fff6dc',

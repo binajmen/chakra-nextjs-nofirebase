@@ -5,8 +5,8 @@ const TWELVE_DAYS = 12 * 60 * 60 * 24 * 1000
 // https://github.com/gladly-team/next-firebase-auth#example-config
 const initAuth = () => {
     init({
-        authPageURL: '/signin',
-        appPageURL: '/user',
+        authPageURL: '/',
+        appPageURL: '/',
         loginAPIEndpoint: '/api/login',
         logoutAPIEndpoint: '/api/logout',
         firebaseAdminInitConfig: {

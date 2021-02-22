@@ -7,7 +7,7 @@ export default function Menu() {
     const router = useRouter()
     const { locale, pathname } = router
 
-    function onSelect(event) {
+    function onSelect(event: React.ChangeEvent<HTMLSelectElement>) {
         router.push(pathname, pathname, { locale: event.target.value })
     }
 
