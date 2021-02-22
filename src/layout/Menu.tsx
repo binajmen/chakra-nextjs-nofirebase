@@ -77,9 +77,9 @@ export default function Menu() {
                                 {isAuthed && <Button leftIcon={<FaSignOutAlt />} colorScheme="red" variant="ghost" onClick={authUser.signOut}>{t('sign-out')}</Button>}
                                 <Button leftIcon={<FaHandsHelping />} colorScheme="gray" variant="ghost">{t('support')}</Button>
                                 <Languages />
-                                <HStack justifyContent="center" divider={<StackDivider borderColor="gray" />}>
-                                    <Link color="gray">{t('about-us')}</Link>
-                                    <Link color="gray">{t('privacy')}</Link>
+                                <HStack justifyContent="center" divider={<StackDivider borderColor="black" />}>
+                                    <Link color="black">{t('about-us')}</Link>
+                                    <Link color="black">{t('privacy')}</Link>
                                 </HStack>
                             </VStack>
                         </DrawerFooter>
