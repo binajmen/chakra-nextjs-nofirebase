@@ -3,16 +3,15 @@ import 'firebase/firestore'
 import 'firebase/functions'
 import 'firebase/auth'
 
-if (typeof window !== 'undefined' && !firebase.apps.length) {
+if (!firebase.apps.length) {
     firebase.initializeApp({
-        // TODO: use process.env.VAR instead?
-        apiKey: "AIzaSyC5FUlFACUZecaqKnSzpEM0CDcSOJmb6eM",
-        authDomain: "orderbru.firebaseapp.com",
-        projectId: "orderbru",
-        storageBucket: "orderbru.appspot.com",
-        messagingSenderId: "223878564751",
-        appId: "1:223878564751:web:5da2c08fba1e680a4819fa",
-        measurementId: "G-ZBYEJQ4N8T"
+        apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+        measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
     })
 
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION)

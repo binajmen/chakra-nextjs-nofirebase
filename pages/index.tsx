@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation'
 
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import admin from '../src/firebase/admin'
+import admin from '../src/utils/admin'
 
 import Layout from '../src/layout/Layout'
 import SearchInput from '../src/components/SearchInput'

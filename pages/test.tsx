@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 
 import { useStoreState, useStoreActions } from '../src/store/hooks'
-import admin from '../src/firebase/admin'
+import admin from '../src/utils/admin'
 
 import Head from '../src/components/Head'
 

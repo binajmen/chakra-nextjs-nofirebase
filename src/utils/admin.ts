@@ -1,15 +1,13 @@
 import admin from 'firebase-admin'
 
-import serviceAccount from './serviceAccount.json'
-
 if (!admin.apps.length) {
     admin.initializeApp({
         credential: admin.credential.cert({
-            privateKey: serviceAccount.private_key,
-            clientEmail: serviceAccount.client_email,
-            projectId: serviceAccount.project_id,
+            projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+            privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
+            clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL
         }),
-        databaseURL: 'https://orderbru.firebaseio.com',
+        databaseURL: process.env.FIREBASE_ADMIN_DATABASE_URL,
     })
 }
 

@@ -3073,11 +3073,6 @@ native-url@0.3.4:
   dependencies:
     querystring "^0.2.0"
 
-next-redux-wrapper@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/next-redux-wrapper/-/next-redux-wrapper-6.0.2.tgz#b8dcd214e7b5cedd7a2a611ddb60422384d24374"
-  integrity sha512-I9CnIYhQwI/qEoNdc9VAPjIyuq4rFFhCTa4rKhoDHWEVHGB1DXZy8TAyGpwvWizESd8IoTI/OKlP6bFpCbXsOw==
-
 next-translate@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/next-translate/-/next-translate-1.0.2.tgz#af93208221d08a09b96545b2e3d853b69a6ddeb5"
