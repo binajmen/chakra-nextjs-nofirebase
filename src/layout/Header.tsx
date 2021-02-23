@@ -32,6 +32,7 @@ import Authentication from '../forms/Authentication'
 
 import type { Method } from '../store/session'
 
+import Geolocation from '../components/Geolocation'
 import MethodMenu from '../components/MethodMenu'
 
 const methods = [
@@ -57,7 +58,7 @@ export default function Header() {
                         <Image boxSize="100px" objectFit="contain" src="/logo.svg" alt="Order.brussels" />
                         <Spacer />
                         <HStack spacing={6}>
-                            <IconButton aria-label="globe" icon={<FaGlobeEurope color="green" />} colorScheme="primary" variant="ghost" />
+                            <Geolocation />
                             {!!method && <MethodMenu />}
                             <NextLink href="/user">
                                 <Button hidden={isMobile || !isAuthed} leftIcon={<FaUserCog />} textColor="black" colorScheme="primary" >
