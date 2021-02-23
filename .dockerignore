@@ -9,3 +9,4 @@ Dockerfile
 .gitignore
 
 .env.development
+.env.local.example
