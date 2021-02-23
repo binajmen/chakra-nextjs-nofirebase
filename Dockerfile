@@ -1,5 +1,5 @@
 # base image
-FROM node:14.15.5-buster
+FROM node:alpine
 
 # working directory
 WORKDIR /app
@@ -10,7 +10,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 # install and cache app dependencies
 COPY package.json /app/
 COPY yarn.lock /app/
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 # copy app files and build
 COPY . /app

@@ -7,7 +7,7 @@ if (!admin.apps.length) {
             privateKey: process.env.FIREBASE_ADMIN_PRIVATE_KEY,
             clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL
         }),
-        databaseURL: process.env.FIREBASE_ADMIN_DATABASE_URL,
+        databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
     })
 }
 

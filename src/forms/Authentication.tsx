@@ -15,25 +15,28 @@ import {
 
 import firebase from '../firebase/client'
 
-const firebaseUIConfig = {
-    signInFlow: 'popup',
-    // signInSuccessUrl: '/',
-    signInOptions: [
-        firebase.auth.EmailAuthProvider.PROVIDER_ID,
-        firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-        firebase.auth.FacebookAuthProvider.PROVIDER_ID
-    ],
-    signInSuccess: () => (true),
-    tosUrl: '/terms-of-service',
-    privacyPolicyUrl: '/privacy-policy'
-}
-
 export type AuthenticationProps = {
     modal: ReturnType<typeof useDisclosure>
 }
 
 export default function Authentication({ modal }: AuthenticationProps) {
     const { t } = useTranslation('common')
+
+    const firebaseUIConfig = {
+        signInFlow: 'popup',
+        signInSuccessUrl: '/',
+        signInOptions: [
+            firebase.auth.EmailAuthProvider.PROVIDER_ID,
+            firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+            firebase.auth.FacebookAuthProvider.PROVIDER_ID
+        ],
+        signInSuccess: () => { 
+            modal.onClose()
+            return false
+        },
+        tosUrl: '/terms-of-service',
+        privacyPolicyUrl: '/privacy-policy'
+    }
 
     return (
         <Modal size="md" isOpen={modal.isOpen} onClose={modal.onClose}>

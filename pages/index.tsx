@@ -44,27 +44,29 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
             return { props: { vendors: [] } }
         }
 
-        // TOFIX: define correct type
-        const docs: any = []
+        const docs: any = [] // TOFIX: define type
         snapshot.forEach(doc => {
             const { geopoint, ...rest } = doc.data()
             docs.push({ id: doc.id, ...rest })
         })
 
         return {
-            props: { vendors: docs }
+            props: {
+                vendors: docs
+            }
         }
-    } catch (err) {
-        // either the `token` cookie didn't exist
-        // or token verification failed
-        // either way: redirect to the login page
-        ctx.res.writeHead(302, { Location: '/login' })
-        ctx.res.end()
 
-        // `as never` prevents inference issues
-        // with InferGetServerSidePropsType.
-        // The props returned here don't matter because we've
-        // already redirected the user.
-        return { props: {} as never }
+        // return {
+        //     props: {
+        //         vendors: [
+        //             { id: "test", name: "Test", address: "test", phone: "test" },
+        //             { id: "test", name: "Test", address: "test", phone: "test" },
+        //             { id: "test", name: "Test", address: "test", phone: "test" },
+        //         ]
+        //     }
+        // }
+    } catch (error) {
+        console.error(error)
+        return { redirect: { destination: '/404', permanent: false } }
     }
 }
