@@ -30,17 +30,18 @@ export type Vendor = {
     name: string
     phone: string
     address: string
+    cover: string
 }
 
 function VendorCard({ vendor }: VendorCardProps) {
     return (
         <Box boxShadow="lg" borderRadius="lg" overflow="hidden">
             {/* TODO: use Next Image for optimization? */}
-            <Image w="100%" src="https://via.placeholder.com/300x200" alt="Image du restaurant" />
+            <Image w="100%" src={vendor.cover} alt="Image du restaurant" />
 
             <Box p="6">
                 <Box d="flex" alignItems="baseline">
-                    <Badge borderRadius="full" px="2" colorScheme="orange">
+                    <Badge borderRadius="full" px="2" colorScheme="primary">
                         New
                     </Badge>
                     <Box

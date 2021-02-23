@@ -16,8 +16,9 @@ import {
     HStack,
     StackDivider,
     Link,
-    useDisclosure,
     IconButton,
+    useDisclosure,
+    useBreakpointValue
 } from "@chakra-ui/react"
 
 import { FaBars, FaSignInAlt, FaSignOutAlt, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaHandsHelping } from 'react-icons/fa'
@@ -35,15 +36,19 @@ export default function Menu() {
     const { t } = useTranslation('common')
     const { isOpen, onOpen, onClose } = useDisclosure()
     const login = useDisclosure()
+    const isMobile = useBreakpointValue({ base: true, md: false })
     const buttonRef = React.useRef<any>() // TOFIX: use correct type
     const authUser = useAuthUser()
     const isAuthed = authUser.id !== null
 
     return (
         <>
-            <Button ref={buttonRef} leftIcon={<FaBars />} textColor="black" colorScheme="primary" variant="ghost" onClick={onOpen}>
-                {t('menu-header')}
-            </Button>
+            {isMobile && <IconButton aria-label="menu" icon={<FaBars />} textColor="black" colorScheme="primary" variant="ghost" onClick={onOpen} />}
+            {!isMobile &&
+                <Button ref={buttonRef} leftIcon={<FaBars />} textColor="black" colorScheme="primary" variant="ghost" onClick={onOpen}>
+                    {t('menu-header')}
+                </Button>
+            }
             <Drawer
                 isOpen={isOpen}
                 placement="right"
