@@ -60,7 +60,7 @@ export default function Menu() {
                 finalFocusRef={buttonRef}
             >
                 <DrawerOverlay>
-                    <DrawerContent>
+                    <DrawerContent heigth="100% !important">
                         <DrawerCloseButton />
                         <DrawerHeader>{t('menu-header')}</DrawerHeader>
 

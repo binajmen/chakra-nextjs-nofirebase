@@ -40,7 +40,7 @@ export default function Geolocation() {
                         <Text>La fonction de géolocalisation de votre appareil est uniquement utilisée afin d'affiner les résultats en fonction de votre position géographique.</Text>
                         <Divider my={3} />
                         <HStack spacing={3}>
-                            <Text>Statut :</Text>
+                            <Text>Statut</Text>
                             {hasError && <Text as="b" color={geoColor}>{error!.message}</Text>}
                             {isLoading && <Text as="b" color={geoColor}>Chargement...</Text>}
                             {isReady && <Text as="b" color={geoColor}>Active</Text>}
