@@ -1,4 +1,7 @@
-import { Action, action } from 'easy-peasy'
+import { Action, action, Computed, computed } from 'easy-peasy'
+import { geohashForLocation } from 'geofire-common'
+
+import type { GeoLocationSensorState } from '../hooks/useGeolocation'
 
 export type Method = "now" | "takeaway" | "delivery" | null
 
@@ -7,7 +10,7 @@ type State = {
 }
 
 const state: State = {
-    method: null
+    method: null,
 }
 
 type Model = State & {
@@ -18,7 +21,7 @@ const model: Model = {
     ...state,
     setMethod: action((state, method) => {
         state.method = method
-    }),
+    })
 }
 
 export type { State, Model }

@@ -30,7 +30,7 @@ export default function MethodMenu() {
 
     return (
         <Menu>
-            <MenuButton as={Button} rightIcon={<FaChevronDown />} color="black" colorScheme="primary">
+            <MenuButton as={Button} rightIcon={<FaChevronDown />} color="gray.900" colorScheme="primary">
                 <Icon as={icons[method as string]} mr={isMobile ? 0 : 3} />
                 {!isMobile && <span>{t(method as string)}</span>}
             </MenuButton>

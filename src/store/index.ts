@@ -2,23 +2,28 @@ import { useMemo } from 'react'
 import { createStore, persist, Store } from 'easy-peasy'
 
 import * as session from './session'
+import * as geolocation from './geolocation'
 
 let store: Store | undefined = undefined
 
 export type State = {
     session: session.State
+    geolocation: geolocation.State
 }
 
 const initialState: State = {
-    session: session.state
+    session: session.state,
+    geolocation: geolocation.state,
 }
 
 export type StoreModel = {
     session: session.Model
+    geolocation: geolocation.Model
 }
 
 const model: StoreModel = {
     session: session.model,
+    geolocation: geolocation.model,
 }
 
 function initStore(preloadedState = initialState) {

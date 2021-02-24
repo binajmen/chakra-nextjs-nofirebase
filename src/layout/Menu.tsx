@@ -21,10 +21,13 @@ import {
     useBreakpointValue
 } from "@chakra-ui/react"
 
-import { FaBars, FaSignInAlt, FaSignOutAlt, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaHandsHelping } from 'react-icons/fa'
+import { FaBars, FaSignInAlt, FaSignOutAlt, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaLocationArrow, FaHandsHelping } from 'react-icons/fa'
+
+import { useStoreState } from '../store/hooks'
 
 import Languages from './Languages'
 import Authentication from '../forms/Authentication'
+import Geolocation from '../components/Geolocation'
 
 const links = [
     // { label: "menu-categories", icon: <FaSitemap />, color: 'primary', variant: "ghost" },
@@ -36,6 +39,7 @@ export default function Menu() {
     const { t } = useTranslation('common')
     const { isOpen, onOpen, onClose } = useDisclosure()
     const login = useDisclosure()
+    const geoColor = useStoreState(state => state.geolocation.color)
     const isMobile = useBreakpointValue({ base: true, md: false })
     const buttonRef = React.useRef<any>() // TOFIX: use correct type
     const authUser = useAuthUser()
@@ -43,9 +47,9 @@ export default function Menu() {
 
     return (
         <>
-            {isMobile && <IconButton aria-label="menu" icon={<FaBars />} textColor="black" colorScheme="primary" variant="ghost" onClick={onOpen} />}
+            {isMobile && <IconButton aria-label="menu" icon={<FaBars />} textColor="gray.900" colorScheme="primary" variant="ghost" onClick={onOpen} />}
             {!isMobile &&
-                <Button ref={buttonRef} leftIcon={<FaBars />} textColor="black" colorScheme="primary" variant="ghost" onClick={onOpen}>
+                <Button ref={buttonRef} leftIcon={<FaBars />} textColor="gray.900" colorScheme="primary" variant="ghost" onClick={onOpen}>
                     {t('menu-header')}
                 </Button>
             }
@@ -63,12 +67,12 @@ export default function Menu() {
                         <DrawerBody>
                             <VStack w="full" align="stretch" spacing={4}>
                                 {!isAuthed && <>
-                                    <Button leftIcon={<FaSignInAlt />} textColor="black" colorScheme="primary" variant="solid" onClick={login.onToggle}>{t('sign-in')}</Button>
+                                    <Button leftIcon={<FaSignInAlt />} textColor="gray.900" colorScheme="primary" variant="solid" onClick={login.onToggle}>{t('sign-in')}</Button>
                                     <Authentication modal={login} />
                                 </>}
                                 {isAuthed &&
                                     <NextLink href="/user">
-                                        <Button leftIcon={<FaUserCog />} textColor="black" colorScheme="primary" variant="solid">{t('menu-account')}</Button>
+                                        <Button leftIcon={<FaUserCog />} textColor="gray.900" colorScheme="primary" variant="solid">{t('menu-account')}</Button>
                                     </NextLink>
                                 }
                                 {links.map((link, index) =>
@@ -79,12 +83,13 @@ export default function Menu() {
 
                         <DrawerFooter>
                             <VStack w="full" align="stretch" spacing={4}>
+                                <Geolocation />
                                 {isAuthed && <Button leftIcon={<FaSignOutAlt />} colorScheme="red" variant="ghost" onClick={authUser.signOut}>{t('sign-out')}</Button>}
                                 <Button leftIcon={<FaHandsHelping />} colorScheme="gray" variant="ghost">{t('support')}</Button>
                                 <Languages />
-                                <HStack justifyContent="center" divider={<StackDivider borderColor="black" />}>
-                                    <Link color="black">{t('about-us')}</Link>
-                                    <Link color="black">{t('privacy')}</Link>
+                                <HStack justifyContent="center" divider={<StackDivider borderColor="gray.900" />}>
+                                    <Link color="gray.900">{t('about-us')}</Link>
+                                    <Link color="gray.900">{t('privacy')}</Link>
                                 </HStack>
                             </VStack>
                         </DrawerFooter>

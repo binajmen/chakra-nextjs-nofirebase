@@ -2270,6 +2270,11 @@ gcs-resumable-upload@^3.1.0:
     pumpify "^2.0.0"
     stream-events "^1.0.4"
 
+geofire-common@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/geofire-common/-/geofire-common-5.1.0.tgz#f197c57af140a19e6259b97e5efa0eb80af2a854"
+  integrity sha512-zdVQ+QGfW6Edty/FplWANzh7M40LpagIgjHGk0mAuF58oXMosZmIYcGjmBwHoAsOCgZ1mlvTC7XvsBOYXDxAFA==
+
 get-nonce@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/get-nonce/-/get-nonce-1.0.1.tgz#fdf3f0278073820d2ce9426c18f07481b1e0cdf3"

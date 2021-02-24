@@ -1,5 +1,3 @@
-// https://github.com/streamich/react-use/blob/master/src/useGeolocation.ts
-
 import { useEffect, useState } from 'react';
 
 /**
@@ -58,6 +56,7 @@ const useGeolocation = (options?: PositionOptions): GeoLocationSensorState => {
             });
         }
     };
+    
     const onEventError = (error: IGeolocationPositionError) =>
         mounted && setState((oldState) => ({ ...oldState, loading: false, error }));
 
