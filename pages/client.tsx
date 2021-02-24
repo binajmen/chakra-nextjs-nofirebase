@@ -50,3 +50,6 @@ function Index() {
 }
 
 export default withAuthUser()(Index)
+
+// https://github.com/vinissimus/next-translate/issues/487
+export function getStaticProps() { return { props: {} }; }
