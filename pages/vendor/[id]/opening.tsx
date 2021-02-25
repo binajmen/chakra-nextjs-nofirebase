@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
-import { Flex, Box, Heading, Switch, FormControl, FormLabel, Text, Input, HStack, Button, Spacer, useToast } from '@chakra-ui/react'
+import { Flex, Box, Heading, Switch, FormControl, FormLabel, Text, Input, HStack, Button, Spacer, useToast, useDisclosure } from '@chakra-ui/react'
 import { FaPlus, FaMinus, FaSave } from 'react-icons/fa'
 
 import admin from '../../../src/firebase/admin'
@@ -20,12 +20,13 @@ type OpeningHours = {
 
 function VendorOpeningHours() {
     const { t } = useTranslation('common')
-    const authUser = useAuthUser()
     const toast = useToast()
     const router = useRouter()
-    const { query: { id } } = router
     const [opening, setOpening] = React.useState<OpeningHours>({})
     const [types, setTypes] = React.useState<string[]>([])
+    const { isOpen: saving, onToggle } = useDisclosure()
+
+    const { query: { id } } = router
 
     function saveOpeningHours() {
         try {
@@ -46,6 +47,7 @@ function VendorOpeningHours() {
                 })
             })
 
+            onToggle()
             updateVendor(id as string, { opening, types })
                 .then(() => toast({
                     description: "The order types and their related opening hours has been saved.",
@@ -59,6 +61,12 @@ function VendorOpeningHours() {
             })
         }
     }
+
+    React.useEffect(() => {
+        if (saving) {
+            setTimeout(() => onToggle(), 1000)
+        }
+    }, [saving])
 
     React.useEffect(() => {
         getOpeningHours(id as string)
@@ -89,7 +97,7 @@ function VendorOpeningHours() {
             <Flex>
                 <Heading>{t('opening-hours')}</Heading>
                 <Spacer />
-                <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveOpeningHours}>{t('save')}</Button>
+                <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveOpeningHours} isDisabled={saving} isLoading={saving}>{t('save')}</Button>
             </Flex>
             <Opening type="now"
                 opening={opening} setOpening={setOpening}
