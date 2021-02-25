@@ -1,65 +1,37 @@
 import * as React from 'react'
 import produce from 'immer'
 import { useRouter } from 'next/router'
-import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
-import { Flex, Box, Heading, Switch, FormControl, FormLabel, Text, Input, HStack, Button, Spacer } from '@chakra-ui/react'
+import { Flex, Box, Heading, Switch, FormControl, FormLabel, Text, Input, HStack, Button, Spacer, useToast } from '@chakra-ui/react'
 import { FaPlus, FaMinus, FaSave } from 'react-icons/fa'
 
-import Vendor from '../../../src/layout/Vendor'
+import admin from '../../../src/firebase/admin'
 
-type OpeningType = {
+import Vendor from '../../../src/layout/Vendor'
+import { updateVendor, getOpeningHours } from '../../../src/firebase/helpers/vendors'
+
+type OpeningHours = {
     [index: string]: {
         [index: string]: string[]
     }
 }
 
-const openingHours: OpeningType = {
-    now: {
-        mon: ['1130', '1400', '1800', '2200'],
-        tue: ['1130', '1400', '1800', '2200'],
-        wed: ['1130', '1400', '1800', '2200'],
-        thu: ['1130', '1400', '1800', '2200'],
-        fri: ['1130', '1400', '1800', '2200'],
-        sat: ['0900', '1400', '1800', '2200'],
-        sun: ['0900', '1400', '1800', '2200']
-    },
-    takeaway: {
-        mon: ['1130', '1400', '1800', '2200'],
-        tue: ['1130', '1400', '1800', '2200'],
-        wed: ['1130', '1400', '1800', '2200'],
-        thu: ['1130', '1400', '1800', '2200'],
-        fri: ['1130', '1400', '1800', '2200'],
-        sat: ['0900', '1400', '1800', '2200'],
-        sun: ['0900', '1400', '1800', '2200']
-    },
-    delivery: {
-        mon: ['1130', '1400', '1800', '2200'],
-        tue: ['1130', '1400', '1800', '2200'],
-        wed: ['1130', '1400', '1800', '2200'],
-        thu: ['1130', '1400', '1800', '2200'],
-        fri: ['1130', '1400', '1800', '2200'],
-        sat: ['0900', '1400', '1800', '2200'],
-        sun: ['0900', '1400', '1800', '2200']
-    }
-}
-
-const METHODS = ['now', 'takeaway', 'delivery']
-
 function VendorOpeningHours() {
     const { t } = useTranslation('common')
     const authUser = useAuthUser()
+    const toast = useToast()
     const router = useRouter()
     const { query: { id } } = router
-    const [opening, setOpening] = React.useState<OpeningType>(openingHours)
-    const [methods, setMethods] = React.useState<string[]>(METHODS)
+    const [opening, setOpening] = React.useState<OpeningHours>({})
+    const [types, setTypes] = React.useState<string[]>([])
 
     function saveOpeningHours() {
         try {
-            Object.entries(opening).forEach(([method, days]) => {
+            Object.entries(opening).forEach(([type, days]) => {
                 Object.entries(days).forEach(([day, slots]) => {
-                    if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(method)} / ${t(day)}`)
+                    if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(type)} / ${t(day)}`)
                     const success = slots.every((slot, index, array) => {
                         if (index === array.length - 1) return true
                         else if (
@@ -70,14 +42,46 @@ function VendorOpeningHours() {
                         ) return true
                         else return false
                     })
-                    if (!success) throw new Error(`Wrong format/order for: ${t(method)} / ${t(day)}`)
+                    if (!success) throw new Error(`Wrong format and/or order for: ${t(type)} / ${t(day)}`)
                 })
             })
-            window.alert("good format")
+
+            updateVendor(id as string, { opening, types })
+                .then(() => toast({
+                    description: "The order types and their related opening hours has been saved.",
+                    status: "success"
+                }))
+                .catch((error) => { throw new Error(error) })
         } catch (error) {
-            window.alert(error)
+            toast({
+                description: error.message,
+                status: "error"
+            })
         }
     }
+
+    React.useEffect(() => {
+        getOpeningHours(id as string)
+            .then(doc => {
+                if (doc.exists) {
+                    setOpening(doc.data()!.opening)
+                    setTypes(doc.data()!.types)
+                } else {
+                    toast({
+                        description: "Data not found.",
+                        status: "warning"
+                    })
+                    router.push('/vendor')
+                }
+            })
+            .catch(error => {
+                toast({
+                    description: error,
+                    status: "error"
+                })
+                router.push('/404')
+            })
+    }, [])
 
     // TODO: <Vendor> title props to add in <Head>
     return (
@@ -87,15 +91,15 @@ function VendorOpeningHours() {
                 <Spacer />
                 <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveOpeningHours}>{t('save')}</Button>
             </Flex>
-            <Opening method="now"
+            <Opening type="now"
                 opening={opening} setOpening={setOpening}
-                methods={methods} setMethods={setMethods} />
-            <Opening method="takeaway"
+                types={types} setTypes={setTypes} />
+            <Opening type="takeaway"
                 opening={opening} setOpening={setOpening}
-                methods={methods} setMethods={setMethods} />
-            <Opening method="delivery"
+                types={types} setTypes={setTypes} />
+            <Opening type="delivery"
                 opening={opening} setOpening={setOpening}
-                methods={methods} setMethods={setMethods} />
+                types={types} setTypes={setTypes} />
         </Vendor>
     )
 }
@@ -103,58 +107,57 @@ function VendorOpeningHours() {
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 type OpeningProps = {
-    method: string
-    opening: OpeningType
-    setOpening: React.Dispatch<React.SetStateAction<OpeningType>>
-    methods: string[]
-    setMethods: React.Dispatch<React.SetStateAction<string[]>>
+    type: string
+    opening: OpeningHours
+    setOpening: React.Dispatch<React.SetStateAction<OpeningHours>>
+    types: string[]
+    setTypes: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-function Opening({ method, opening, setOpening, methods, setMethods }: OpeningProps) {
+function Opening({ type, opening, setOpening, types, setTypes }: OpeningProps) {
     const { t } = useTranslation('common')
 
     const addNewTimeSlot = (day: string) => (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (opening[method][day].length > 4) return
+        if (opening[type][day].length > 4) return
 
         setOpening(produce(draft => {
-            draft[method][day].push('', '')
+            draft[type][day].push('', '')
         }))
     }
 
     const removeLastTimeSlot = (day: string) => (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (opening[method][day].length < 2) return
+        if (opening[type][day].length < 2) return
 
         setOpening(produce(draft => {
-            draft[method][day].splice(draft[method][day].length - 2, 2)
+            draft[type][day].splice(draft[type][day].length - 2, 2)
         }))
     }
 
-    const updateTimeValue = (method: string, day: string, index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updateTimeValue = (type: string, day: string, index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!event.target.value.match(/^[0-9]{0,4}$/g)) return
 
         setOpening(produce(draft => {
-            draft[method][day][index] = event.target.value
+            draft[type][day][index] = event.target.value
         }))
     }
 
     function switchMethod() {
-        if (methods.includes(method))
-            setMethods(produce(draft => draft.filter((m: string) => m !== method)))
-        // setMethods(produce(draft => draft = draft.filter((m: string) => m === method)))
+        if (types.includes(type))
+            setTypes(produce(draft => draft.filter((m: string) => m !== type)))
         else
-            setMethods(produce(draft => { draft.push(method) }))
+            setTypes(produce(draft => { draft.push(type) }))
     }
 
     return (
         <Box my={3} w="full">
-            <Heading size="md">{t(method)}</Heading>
+            <Heading size="md">{t(type)}</Heading>
             <Box pt={3}>
                 <FormControl display="flex" alignItems="center">
-                    <FormLabel htmlFor={`${method}-status`} mb="0">
+                    <FormLabel htmlFor={`${type}-status`} mb="0">
                         {t('enabled-?')}
                     </FormLabel>
-                    <Switch id={`${method}-status`}
-                        isChecked={methods.includes(method)}
+                    <Switch id={`${type}-status`}
+                        isChecked={types.includes(type)}
                         onChange={switchMethod} />
                 </FormControl>
             </Box>
@@ -162,7 +165,7 @@ function Opening({ method, opening, setOpening, methods, setMethods }: OpeningPr
                 {DAYS.map((day, index) =>
                     <HStack key={index} py={1}>
                         <Text w={100}>{t(day)}</Text>
-                        {opening[method][day].map((time, index, src) => {
+                        {opening[type]?.[day].map((time, index, src) => {
                             if (index % 2 === 0 && index + 1 < src.length) {
                                 return (
                                     <React.Fragment key={index}>
@@ -171,7 +174,7 @@ function Opening({ method, opening, setOpening, methods, setMethods }: OpeningPr
                                             value={time}
                                             maxW={70}
                                             size="sm"
-                                            onChange={updateTimeValue(method, day, index)}
+                                            onChange={updateTimeValue(type, day, index)}
                                         />
                                         <Text>–</Text>
                                         <Input
@@ -179,7 +182,7 @@ function Opening({ method, opening, setOpening, methods, setMethods }: OpeningPr
                                             value={src[index + 1]}
                                             maxW={70}
                                             size="sm"
-                                            onChange={updateTimeValue(method, day, index + 1)}
+                                            onChange={updateTimeValue(type, day, index + 1)}
                                         />
                                     </React.Fragment>
                                 )
@@ -187,7 +190,7 @@ function Opening({ method, opening, setOpening, methods, setMethods }: OpeningPr
                                 return <Text key={index} color="gray.300">|</Text>
                             }
                         })}
-                        {opening[method][day].length < 5 &&
+                        {opening[type]?.[day].length < 5 &&
                             <Button
                                 size="xs"
                                 leftIcon={<FaPlus />}
@@ -215,5 +218,21 @@ export default withAuthUser({
     whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(VendorOpeningHours)
 
-// https://github.com/vinissimus/next-translate/issues/487
-export function getServerSideProps() { return { props: {} }; }
+export const getServerSideProps = withAuthUserSSR({
+    whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ query, AuthUser }) => {
+    try {
+        const { id } = query
+
+        const doc = await admin.firestore()
+            .collection('roles')
+            .doc(AuthUser.id!)
+            .get()
+
+        if (!doc.exists || !doc.data()!.vendors?.includes(id)) return { notFound: true }
+        else return { props: {} }
+    } catch (error) {
+        console.error(error)
+        return { notFound: true }
+    }
+})

@@ -21,8 +21,6 @@ export default function VendorMenu() {
     const router = useRouter()
     const { pathname, query } = router
 
-    console.log(router)
-
     return (
         <VStack w="full" align="stretch" spacing={3}>
             {items.map((item, index) => {
