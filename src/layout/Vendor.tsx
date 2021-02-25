@@ -15,7 +15,7 @@ export default function VendorLayout({ children }: VendorLayoutProps) {
     return (
         <Layout>
             <Flex px={3}>
-                <Box px={3} borderRight="1px solid gray">
+                <Box pr={6} borderRight="1px solid gray">
                     <VendorMenu />
                 </Box>
                 <Box w="full" px={6}>
