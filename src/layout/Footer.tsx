@@ -55,7 +55,7 @@ export default function Footer() {
                         <VStack align="flex-start">
                             <Heading size="sm" textTransform="uppercase" color="primary.700">Contact</Heading>
                             <Link fontSize="sm">+32 477 19 98 76</Link>
-                            <Link fontSize="sm">info@sitback.app</Link>
+                            <Link fontSize="sm">info@mail.be</Link>
                         </VStack>
                         <VStack align="flex-start">
                             <Heading size="sm" textTransform="uppercase" color="primary.700">Legal</Heading>

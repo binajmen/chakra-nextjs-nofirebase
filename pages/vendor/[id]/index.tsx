@@ -8,8 +8,8 @@ import {
     Box
 } from '@chakra-ui/react'
 
-import Layout from '../../src/layout/Layout'
-import VendorMenu from '../../src/components/VendorMenu'
+import Layout from '../../../src/layout/Layout'
+import VendorMenu from '../../../src/components/VendorMenu'
 
 function VendorIndex() {
     const { t } = useTranslation('common')
@@ -43,4 +43,4 @@ export default withAuthUser({
 })(VendorIndex)
 
 // https://github.com/vinissimus/next-translate/issues/487
-export function getStaticProps() { return { props: {} }; }
+export function getServerSideProps() { return { props: {} }; }

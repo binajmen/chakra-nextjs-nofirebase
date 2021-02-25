@@ -5,10 +5,10 @@ import { Select } from "@chakra-ui/react"
 
 export default function Menu() {
     const router = useRouter()
-    const { locale, pathname } = router
+    const { locale, pathname, query } = router
 
     function onSelect(event: React.ChangeEvent<HTMLSelectElement>) {
-        router.push(pathname, pathname, { locale: event.target.value })
+        router.push({ pathname, query }, undefined, { locale: event.target.value })
     }
 
     return (
