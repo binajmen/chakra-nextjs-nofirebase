@@ -5,7 +5,7 @@ import {
 } from '@chakra-ui/react'
 
 import Layout from '../../src/layout/Layout'
-import VendorMenu from '../../src/components/VendorMenu'
+import Menu from '../components/vendor/Menu'
 
 type VendorLayoutProps = {
     children: React.ReactNode
@@ -16,7 +16,7 @@ export default function VendorLayout({ children }: VendorLayoutProps) {
         <Layout>
             <Flex px={3}>
                 <Box pr={6} borderRight="1px solid gray">
-                    <VendorMenu />
+                    <Menu />
                 </Box>
                 <Box w="full" px={6}>
                     {children}

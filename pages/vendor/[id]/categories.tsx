@@ -1,43 +1,136 @@
-import Head from 'next/head'
+import * as React from 'react'
 import { useRouter } from 'next/router'
-import { AuthAction, useAuthUser,  withAuthUser } from 'next-firebase-auth'
+import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
-import {
-    Flex,
-    Box
-} from '@chakra-ui/react'
+import { Flex, Box, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
+import { FaSave } from 'react-icons/fa'
 
-import Layout from '../../../src/layout/Layout'
-import VendorMenu from '../../../src/components/VendorMenu'
+import admin from '../../../src/firebase/admin'
+import { updateVendor, getOpeningHours } from '../../../src/firebase/helpers/vendors'
 
-function VendorIndex() {
+import VendorLayout from '../../../src/layout/Vendor'
+
+import SwitchOrderType from '../../../src/components/vendor/SwitchOrderType'
+import Timetable from '../../../src/components/vendor/Timetable'
+
+import type { OpeningHours } from '../../../src/types/vendor'
+
+const TYPES = ['now', 'takeaway', 'delivery']
+
+function VendorCategories() {
     const { t } = useTranslation('common')
-    const authUser = useAuthUser()
+    const toast = useToast()
     const router = useRouter()
-    const isActive = router.pathname.includes('schedule')
 
+    const [opening, setOpening] = React.useState<OpeningHours>({})
+    const [types, setTypes] = React.useState<string[]>([])
+
+    const { query: { id } } = router
+
+    function saveOpeningHours() {
+        try {
+            Object.entries(opening).forEach(([type, days]) => {
+                Object.entries(days).forEach(([day, slots]) => {
+                    if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(type)} / ${t(day)}`)
+                    const success = slots.every((slot, index, array) => {
+                        if (index === array.length - 1) return true
+                        else if (
+                            index + 1 <= array.length - 1 &&
+                            slot < array[index + 1] &&
+                            slot.length === 4 &&
+                            array[index + 1].length === 4
+                        ) return true
+                        else return false
+                    })
+                    if (!success) throw new Error(`Wrong format and/or order for: ${t(type)} / ${t(day)}`)
+                })
+            })
+
+            updateVendor(id as string, { opening, types })
+                .then(() => toast({
+                    description: t('vendor:changes-saved'),
+                    status: "success"
+                }))
+                .catch((error) => { throw new Error(error) })
+        } catch (error) {
+            toast({
+                description: error.message,
+                status: "error"
+            })
+        }
+    }
+
+    React.useEffect(() => {
+        getOpeningHours(id as string)
+            .then(doc => {
+                if (doc.exists) {
+                    setOpening(doc.data()!.opening)
+                    setTypes(doc.data()!.types)
+                } else {
+                    toast({
+                        description: t('vendor:not-found'),
+                        status: "warning"
+                    })
+                    router.push('/vendor')
+                }
+            })
+            .catch(error => {
+                toast({
+                    description: error,
+                    status: "error"
+                })
+                router.push('/404')
+            })
+    }, [])
+
+    // TODO: <Vendor> title props to add in <Head>
     return (
-        <>
-            <Head>
-                <title>Myresto.brussels - Vendor administration</title>
-            </Head>
-            <Layout>
-                <Flex px={3}>
-                    <Box px={3} borderRight="1px solid gray"><VendorMenu /></Box>
-                    <Box w="full" p={3}>
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                    </Box>
-                </Flex>
-            </Layout>
-        </>
+        <VendorLayout>
+
+            <Flex>
+                <Heading>{t('opening-hours')}</Heading>
+                <Spacer />
+                <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveOpeningHours}>{t('save')}</Button>
+            </Flex>
+
+            {TYPES.map((type, index) =>
+                <Box key={index} my={3} w="full">
+                    <Heading size="md">{t(type)}</Heading>
+                    <SwitchOrderType type={type} types={types} setTypes={setTypes} />
+                    <Timetable type={type} opening={opening} setOpening={setOpening} />
+                </Box>
+            )}
+
+        </VendorLayout>
     )
 }
 
 export default withAuthUser({
     whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
     whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(VendorIndex)
+})(VendorCategories)
 
-// https://github.com/vinissimus/next-translate/issues/487
-export function getServerSideProps() { return { props: {} }; }
+export const getServerSideProps = withAuthUserSSR({
+    whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ query, AuthUser }) => {
+    try {
+        // retrieve vendor id
+        const { id } = query
+
+        // retrieve roles for the current user
+        const doc = await admin.firestore()
+            .collection('roles')
+            .doc(AuthUser.id!)
+            .get()
+
+        // if no roles or no roles for the requested vendor, 404
+        if (!doc.exists || !doc.data()!.vendors?.includes(id)) return { notFound: true }
+
+        // else
+        return { props: {} }
+    } catch (error) {
+        console.error(error)
+        return { notFound: true }
+    }
+})

@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react'
 
 import Layout from '../../../src/layout/Layout'
-import VendorMenu from '../../../src/components/VendorMenu'
+import VendorMenu from '../../../src/components/vendor/Menu'
 
 function VendorIndex() {
     const { t } = useTranslation('common')

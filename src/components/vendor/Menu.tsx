@@ -1,11 +1,10 @@
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
-import { VStack } from '@chakra-ui/react'
+import { Divider, VStack } from '@chakra-ui/react'
+import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaFolderOpen, FaDrumstickBite, FaArrowLeft } from 'react-icons/fa'
 
-import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaFolderOpen, FaDrumstickBite, FaFolder, FaTag } from 'react-icons/fa'
-
-import ButtonLink from './ButtonLink'
+import ButtonLink from '../ButtonLink'
 
 const items = [
     { label: "general", pathname: "/vendor/[id]", icon: <FaBuilding /> },
@@ -16,7 +15,7 @@ const items = [
     { label: "events", pathname: "/vendor/[id]/events", icon: <FaRegCalendarCheck /> },
 ]
 
-export default function VendorMenu() {
+export default function Menu() {
     const { t } = useTranslation('common')
     const router = useRouter()
     const { pathname, query } = router
@@ -37,6 +36,14 @@ export default function VendorMenu() {
                     >{t(item.label)}</ButtonLink>
                 )
             })}
+            <Divider />
+            <ButtonLink
+                pathname="/vendor"
+                leftIcon={<FaArrowLeft />}
+                variant='ghost'
+                colorScheme='gray'
+                justifyContent="left"
+            >{t('back')}</ButtonLink>
         </VStack>
     )
 }

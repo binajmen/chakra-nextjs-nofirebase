@@ -9,8 +9,8 @@
         "*": [
             "common"
         ],
-        "/test": [
-            "test"
+        "rgx:^/vendor": [
+            "vendor"
         ]
     }
 }

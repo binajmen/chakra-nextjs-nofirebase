@@ -17,6 +17,7 @@
     "list-restaurant": "Liste des restaurants :",
     "opening-hours": "Heures d'ouverture",
     "enabled-?": "Activé ?",
+    "back": "Retour",
     "save": "Sauver",
     "add": "Ajouter",
     "remove": "Supprimer",
@@ -32,5 +33,5 @@
     "opening": "Horaire",
     "categories": "Catégories",
     "products": "Produits",
-    "events": "Événement"
+    "events": "Événements"
 }

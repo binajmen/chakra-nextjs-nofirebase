@@ -16,6 +16,7 @@ import Vendors from '../src/components/Vendors'
 function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const { t } = useTranslation('test')
     const router = useRouter()
+    const { vendors } = props
 
     const { locale, locales, defaultLocale } = router
 
@@ -26,7 +27,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
-                <Vendors vendors={props.vendors} />
+                <Vendors vendors={vendors} />
             </Layout>
         </>
     )
@@ -66,6 +67,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         // }
     } catch (error) {
         console.error(error)
-        return { redirect: { destination: '/404', permanent: false } }
+        return { notFound: true }
     }
 }
