@@ -38,16 +38,24 @@ export const getServerSideProps = withAuthUserSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }) => {
     try {
+        // retrieve roles for the current user
         const doc = await admin.firestore()
             .collection('roles')
             .doc(AuthUser.id!)
             .get()
 
+        // if no roles, 404
         if (!doc.exists) return { notFound: true }
 
+        // extract vendors list
         const { vendors } = doc.data() ?? []
-        console.log('vendors:', vendors)
 
+        // if empty list, 404
+        if (vendors.length === 0) return { notFound: true }
+
+        // retrieve vendors data
+        // TOFIX: limit to 10 when using 'in' query
+        // TOFIX: return first 10 + id list -> lazy loading at client side for the rest
         const snapshot = await admin.firestore()
             .collection('vendors')
             .where(admin.firestore.FieldPath.documentId(), "in", vendors)
@@ -58,8 +66,6 @@ export const getServerSideProps = withAuthUserSSR({
         snapshot.forEach(doc => {
             data.push({ ...doc.data(), id: doc.id })
         })
-
-        console.log('data:', data)
 
         return { props: { vendors: data } }
     } catch (error) {
