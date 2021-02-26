@@ -20,7 +20,7 @@ function VendorIndex() {
     return (
         <>
             <Head>
-                <title>Sitback.app - Vendor administration</title>
+                <title>Myresto.brussels - Vendor administration</title>
             </Head>
             <Layout>
                 <Flex px={3}>

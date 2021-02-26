@@ -22,11 +22,10 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     return (
         <>
             <Head>
-                <title>Order.brussels</title>
+                <title>Myresto.brussels</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <Layout>
-                <SearchInput />
                 <Vendors vendors={props.vendors} />
             </Layout>
         </>

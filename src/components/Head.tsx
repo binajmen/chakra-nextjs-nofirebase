@@ -6,7 +6,7 @@ export type HeadProps = {
     siteTitle?: string
 }
 
-export default function Head({ description, title, siteTitle = "Order.brussels" }: HeadProps) {
+export default function Head({ description, title, siteTitle = "Myresto.brussels" }: HeadProps) {
     return (
         <NextHead>
             <title>{`${title} | ${siteTitle}`}</title>

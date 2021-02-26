@@ -29,7 +29,7 @@ export default function Footer() {
                         mb={{ base: '6', md: '0' }}
                         mr={{ base: '0', md: '6' }}
                     >
-                        <Image boxSize="75px" objectFit="contain" src="/logo.svg" alt="Order.brussels" />
+                        <Image boxSize="75px" objectFit="contain" src="/logo.svg" alt="Myresto.brussels" />
                         <Text fontSize="sm">
                             Plateforme de commandes reposant sur un modèle équitable pous tous.
                         </Text>
@@ -66,7 +66,7 @@ export default function Footer() {
                 </Flex>
             </Container>
             <Box as="footer" py={6} bg="primary.100">
-                <Text fontSize="sm" color="gray.700" textAlign="center">Copyright &copy; {new Date().getFullYear()} Sitback.app</Text>
+                <Text fontSize="sm" color="gray.700" textAlign="center">Copyright &copy; {new Date().getFullYear()} Myresto.brussels</Text>
             </Box>
         </Box >
     )

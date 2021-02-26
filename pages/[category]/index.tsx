@@ -8,7 +8,7 @@ export default function CategoryIndex() {
     return (
         <div>
             <Head>
-                <title>Order.brussels</title>
+                <title>Myresto.brussels</title>
                 <link rel="icon" href="/favicon.ico" />
             </Head>
 
