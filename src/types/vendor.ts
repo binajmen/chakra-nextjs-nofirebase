@@ -12,6 +12,7 @@ export type OpeningHours = {
 }
 
 export type Vendor = {
+    id?: string
     address?: string
     cover?: string
     geo?: Geolocation

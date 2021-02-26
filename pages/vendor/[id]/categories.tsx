@@ -4,17 +4,16 @@ import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
 import { Flex, Box, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
-import { FaSave } from 'react-icons/fa'
+import { FaPlus } from 'react-icons/fa'
 
 import admin from '../../../src/firebase/admin'
-import { updateVendor, getOpeningHours } from '../../../src/firebase/helpers/vendors'
+import { getCategories } from '../../../src/firebase/helpers/vendors'
 
 import VendorLayout from '../../../src/layout/Vendor'
 
-import SwitchOrderType from '../../../src/components/vendor/SwitchOrderType'
-import Timetable from '../../../src/components/vendor/Timetable'
+import Categories from '../../../src/components/vendor/Categories'
 
-import type { OpeningHours } from '../../../src/types/vendor'
+import type { Categories as CategoriesType } from '../../../src/types/category'
 
 const TYPES = ['now', 'takeaway', 'delivery']
 
@@ -23,57 +22,20 @@ function VendorCategories() {
     const toast = useToast()
     const router = useRouter()
 
-    const [opening, setOpening] = React.useState<OpeningHours>({})
-    const [types, setTypes] = React.useState<string[]>([])
+    const [meta, setMeta] = React.useState<string[]>([])
+    const [categories, setCategories] = React.useState<CategoriesType>({})
 
     const { query: { id } } = router
 
-    function saveOpeningHours() {
-        try {
-            Object.entries(opening).forEach(([type, days]) => {
-                Object.entries(days).forEach(([day, slots]) => {
-                    if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(type)} / ${t(day)}`)
-                    const success = slots.every((slot, index, array) => {
-                        if (index === array.length - 1) return true
-                        else if (
-                            index + 1 <= array.length - 1 &&
-                            slot < array[index + 1] &&
-                            slot.length === 4 &&
-                            array[index + 1].length === 4
-                        ) return true
-                        else return false
-                    })
-                    if (!success) throw new Error(`Wrong format and/or order for: ${t(type)} / ${t(day)}`)
-                })
-            })
-
-            updateVendor(id as string, { opening, types })
-                .then(() => toast({
-                    description: t('vendor:changes-saved'),
-                    status: "success"
-                }))
-                .catch((error) => { throw new Error(error) })
-        } catch (error) {
-            toast({
-                description: error.message,
-                status: "error"
-            })
-        }
-    }
-
     React.useEffect(() => {
-        getOpeningHours(id as string)
-            .then(doc => {
-                if (doc.exists) {
-                    setOpening(doc.data()!.opening)
-                    setTypes(doc.data()!.types)
-                } else {
-                    toast({
-                        description: t('vendor:not-found'),
-                        status: "warning"
-                    })
-                    router.push('/vendor')
-                }
+        getCategories(id as string)
+            .then(snapshot => {
+                let docs: CategoriesType = {}
+                snapshot.forEach(doc => {
+                    if (doc.id === '_meta_') setMeta(doc.data().items)
+                    else docs[doc.id] = doc.data()
+                })
+                setCategories(docs)
             })
             .catch(error => {
                 toast({
@@ -89,18 +51,12 @@ function VendorCategories() {
         <VendorLayout>
 
             <Flex>
-                <Heading>{t('opening-hours')}</Heading>
+                <Heading>{t('categories')}</Heading>
                 <Spacer />
-                <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveOpeningHours}>{t('save')}</Button>
+                <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary">{t('add-category')}</Button>
             </Flex>
 
-            {TYPES.map((type, index) =>
-                <Box key={index} my={3} w="full">
-                    <Heading size="md">{t(type)}</Heading>
-                    <SwitchOrderType type={type} types={types} setTypes={setTypes} />
-                    <Timetable type={type} opening={opening} setOpening={setOpening} />
-                </Box>
-            )}
+            <Categories meta={meta} categories={categories} />
 
         </VendorLayout>
     )
