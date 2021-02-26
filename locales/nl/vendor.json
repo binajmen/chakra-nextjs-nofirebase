@@ -1,4 +1,6 @@
 {
+    "not-found": "Not found..",
     "changes-saved": "The changes has been saved.",
-    "manage": "Manage"
+    "manage": "Manage",
+    "new-category": "New category"
 }

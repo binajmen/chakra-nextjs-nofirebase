@@ -2,6 +2,7 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 import { Flex, Box, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
 import { FaPlus } from 'react-icons/fa'
@@ -13,9 +14,7 @@ import VendorLayout from '../../../src/layout/Vendor'
 
 import Categories from '../../../src/components/vendor/Categories'
 
-import type { Categories as CategoriesType } from '../../../src/types/category'
-
-const TYPES = ['now', 'takeaway', 'delivery']
+import type { Categories as CategoriesType, Category } from '../../../src/types/category'
 
 function VendorCategories() {
     const { t } = useTranslation('common')
@@ -30,12 +29,14 @@ function VendorCategories() {
     React.useEffect(() => {
         getCategories(id as string)
             .then(snapshot => {
+                let meta: string[] = []
                 let docs: CategoriesType = {}
                 snapshot.forEach(doc => {
-                    if (doc.id === '_meta_') setMeta(doc.data().items)
+                    if (doc.id === '_meta_') meta = doc.data().items
                     else docs[doc.id] = doc.data()
                 })
                 setCategories(docs)
+                setMeta(meta)
             })
             .catch(error => {
                 toast({
@@ -53,7 +54,7 @@ function VendorCategories() {
             <Flex>
                 <Heading>{t('categories')}</Heading>
                 <Spacer />
-                <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary">{t('add-category')}</Button>
+                <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary">{t('vendor:new-category')}</Button>
             </Flex>
 
             <Categories meta={meta} categories={categories} />
@@ -70,6 +71,7 @@ export default withAuthUser({
 export const getServerSideProps = withAuthUserSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
+    resetServerContext()
     try {
         // retrieve vendor id
         const { id } = query
