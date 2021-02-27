@@ -87,7 +87,7 @@ export default function Timetable({ type, opening, setOpening }: TimetableProps)
                         colorScheme="red"
                         variant="ghost"
                         onClick={removeLastTimeSlot(day)}
-                    >{t('remove')}</Button>
+                    >{t('delete')}</Button>
                 </HStack>
             )}
         </Box>

@@ -4,40 +4,41 @@ import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 import { resetServerContext } from 'react-beautiful-dnd'
 
-import { Flex, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
-import { FaSave } from 'react-icons/fa'
+import { Flex, Heading, Button, Spacer, useToast, useDisclosure } from '@chakra-ui/react'
+import { FaPlus } from 'react-icons/fa'
 
-import admin from '../../../../src/firebase/admin'
-import { getCategory } from '../../../../src/firebase/helpers/vendors'
+import admin from '../../../src/firebase/admin'
+import { getProducts } from '../../../src/firebase/helpers/products'
 
-import VendorLayout from '../../../../src/layout/Vendor'
+import VendorLayout from '../../../src/layout/Vendor'
 
-import Categories from '../../../../src/components/vendor/Categories'
+import Products from '../../../src/components/vendor/Products'
+import NewProduct from '../../../src/forms/NewProduct'
 
-import type { Categories as CategoriesType, Category } from '../../../../src/types/category'
+import type { Products as ProductsType, Product } from '../../../src/types/product'
 
-function VendorCategories() {
+function VendorProducts() {
     const { t } = useTranslation('common')
     const toast = useToast()
     const router = useRouter()
+    const modal = useDisclosure()
 
-    const [category, setCategory] = React.useState<Category>({})
+    const [order, setOrder] = React.useState<string[]>([])
+    const [products, setProducts] = React.useState<ProductsType>({})
 
-    const { query: { vendorId, catId } } = router
+    const { query: { vendorId } } = router
 
     React.useEffect(() => {
-        getCategory(vendorId as string, catId as string)
-            .then(doc => {
-                if (doc.exists) {
-                    setCategory(doc.data() as Category)
-                } else {
-                    toast({
-                        description: t('vendor:not-found'),
-                        status: "warning"
-                    })
-                    // TOFIX: redirect to categories
-                    router.push('/vendor')
-                }
+        getProducts(vendorId as string)
+            .then(snapshot => {
+                let order: string[] = []
+                let docs: ProductsType = {}
+                snapshot.forEach(doc => {
+                    if (doc.id === '_meta_') order = doc.data().order
+                    else docs[doc.id] = { ...doc.data(), id: doc.id }
+                })
+                setProducts(docs)
+                setOrder(order)
             })
             .catch(error => {
                 toast({
@@ -53,13 +54,18 @@ function VendorCategories() {
         <VendorLayout>
 
             <Flex mb={6}>
-                <Heading>{t('vendor:category')}</Heading>
+                <Heading>{t('products')}</Heading>
                 <Spacer />
-                <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary">{t('save')}</Button>
+                <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('vendor:new-product')}</Button>
+                <NewProduct modal={modal} order={order} setOrder={setOrder} setProducts={setProducts} />
             </Flex>
 
-            {category.name}
-            {/* <Categories meta={meta} categories={categories} /> */}
+            <Products
+                order={order}
+                setOrder={setOrder}
+                products={products}
+                setProducts={setProducts}
+            />
 
         </VendorLayout>
     )
@@ -68,7 +74,7 @@ function VendorCategories() {
 export default withAuthUser({
     whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
     whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(VendorCategories)
+})(VendorProducts)
 
 export const getServerSideProps = withAuthUserSSR({
     whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,

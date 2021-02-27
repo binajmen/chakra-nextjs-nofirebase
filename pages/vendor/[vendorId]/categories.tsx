@@ -4,22 +4,24 @@ import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 import { resetServerContext } from 'react-beautiful-dnd'
 
-import { Flex, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
+import { Flex, Heading, Button, Spacer, useToast, useDisclosure } from '@chakra-ui/react'
 import { FaPlus } from 'react-icons/fa'
 
-import admin from '../../../../src/firebase/admin'
-import { getCategories } from '../../../../src/firebase/helpers/vendors'
+import admin from '../../../src/firebase/admin'
+import { getCategories } from '../../../src/firebase/helpers/vendors'
 
-import VendorLayout from '../../../../src/layout/Vendor'
+import VendorLayout from '../../../src/layout/Vendor'
 
-import Categories from '../../../../src/components/vendor/Categories'
+import Categories from '../../../src/components/vendor/Categories'
+import NewCategory from '../../../src/forms/NewCategory'
 
-import type { Categories as CategoriesType, Category } from '../../../../src/types/category'
+import type { Categories as CategoriesType, Category } from '../../../src/types/category'
 
 function VendorCategories() {
     const { t } = useTranslation('common')
     const toast = useToast()
     const router = useRouter()
+    const modal = useDisclosure()
 
     const [order, setOrder] = React.useState<string[]>([])
     const [categories, setCategories] = React.useState<CategoriesType>({})
@@ -33,7 +35,7 @@ function VendorCategories() {
                 let docs: CategoriesType = {}
                 snapshot.forEach(doc => {
                     if (doc.id === '_meta_') order = doc.data().order
-                    else docs[doc.id] = doc.data()
+                    else docs[doc.id] = { ...doc.data(), id: doc.id }
                 })
                 setCategories(docs)
                 setOrder(order)
@@ -54,10 +56,16 @@ function VendorCategories() {
             <Flex mb={6}>
                 <Heading>{t('categories')}</Heading>
                 <Spacer />
-                <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary">{t('vendor:new-category')}</Button>
+                <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('vendor:new-category')}</Button>
+                <NewCategory modal={modal} order={order} setOrder={setOrder} setCategories={setCategories} />
             </Flex>
 
-            <Categories order={order} categories={categories} setCategories={setCategories} />
+            <Categories
+                order={order}
+                setOrder={setOrder}
+                categories={categories}
+                setCategories={setCategories}
+            />
 
         </VendorLayout>
     )

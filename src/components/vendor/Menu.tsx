@@ -12,7 +12,7 @@ const items = [
     { label: "opening", pathname: "/vendor/[vendorId]/opening", icon: <FaClock /> },
     { label: "categories", pathname: "/vendor/[vendorId]/categories", icon: <FaFolderOpen /> },
     { label: "products", pathname: "/vendor/[vendorId]/products", icon: <FaDrumstickBite /> },
-    { label: "events", pathname: "/vendor/[vendorId]/events", icon: <FaRegCalendarCheck /> },
+    // { label: "events", pathname: "/vendor/[vendorId]/events", icon: <FaRegCalendarCheck /> },
 ]
 
 export default function Menu() {

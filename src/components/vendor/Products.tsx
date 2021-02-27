@@ -24,19 +24,19 @@ import {
 } from '@chakra-ui/react'
 import { FaEllipsisV, FaTrash, FaArrowsAltV } from 'react-icons/fa'
 
-import { updateCategoryOrder, updateCategoryAvailability, deleteCategory } from '../../firebase/helpers/vendors'
-import EditCategory from '../../forms/EditCategory'
+import { updateProductAvailability, deleteProduct } from '../../firebase/helpers/products'
+import EditProduct from '../../forms/EditProduct'
 
 import type {
-    Categories as CategoriesType,
-    Category
-} from '../../types/category'
+    Products as ProductsType,
+    Product
+} from '../../types/product'
 
-type CategoriesProps = {
+type ProductsProps = {
     order: string[]
     setOrder: React.Dispatch<React.SetStateAction<string[]>>
-    categories: CategoriesType
-    setCategories: React.Dispatch<React.SetStateAction<CategoriesType>>
+    products: ProductsType
+    setProducts: React.Dispatch<React.SetStateAction<ProductsType>>
 }
 
 function reorder(list: string[], startIndex: number, endIndex: number) {
@@ -47,7 +47,7 @@ function reorder(list: string[], startIndex: number, endIndex: number) {
     return result
 }
 
-export default function Categories(props: CategoriesProps) {
+export default function Products(props: ProductsProps) {
     const { t } = useTranslation('common')
     const toast = useToast()
     const router = useRouter()
@@ -67,21 +67,21 @@ export default function Categories(props: CategoriesProps) {
             result.destination.index
         )
 
-        updateCategoryOrder(vendorId as string, newOrder)
-            .then(() => {
-                setOrder(newOrder)
-                toast({
-                    description: t('vendor:changes-saved'),
-                    status: "success"
-                })
-            })
-            .catch((error) => {
-                console.error(error)
-                toast({
-                    description: error,
-                    status: "error"
-                })
-            })
+        // updateProductOrder(vendorId as string, newOrder)
+        //     .then(() => {
+        //         setOrder(newOrder)
+        //         toast({
+        //             description: t('vendor:changes-saved'),
+        //             status: "success"
+        //         })
+        //     })
+        //     .catch((error) => {
+        //         console.error(error)
+        //         toast({
+        //             description: error,
+        //             status: "error"
+        //         })
+        //     })
     }
 
     return (
@@ -101,13 +101,13 @@ export default function Categories(props: CategoriesProps) {
                             </Thead>
                             <Tbody >
                                 {order.map((catId, index) => (
-                                    <CategoryRow key={catId}
+                                    <ProductRow key={catId}
                                         catId={catId}
                                         index={index}
                                         order={props.order}
                                         setOrder={props.setOrder}
-                                        categories={props.categories}
-                                        setCategories={props.setCategories}
+                                        products={props.products}
+                                        setProducts={props.setProducts}
                                     />
                                 ))}
                                 {provided.placeholder}
@@ -120,16 +120,16 @@ export default function Categories(props: CategoriesProps) {
     )
 }
 
-type CategoryRowProps = {
+type ProductRowProps = {
     catId: string
     index: number
     order: string[]
     setOrder: React.Dispatch<React.SetStateAction<string[]>>
-    categories: CategoriesType
-    setCategories: React.Dispatch<React.SetStateAction<CategoriesType>>
+    products: ProductsType
+    setProducts: React.Dispatch<React.SetStateAction<ProductsType>>
 }
 
-function CategoryRow({ catId, index, order, setOrder, categories, setCategories }: CategoryRowProps) {
+function ProductRow({ catId, index, order, setOrder, products, setProducts }: ProductRowProps) {
     const { t } = useTranslation()
     const toast = useToast()
     const modal = useDisclosure()
@@ -138,9 +138,9 @@ function CategoryRow({ catId, index, order, setOrder, categories, setCategories 
     const vendorId = router.query.vendorId as string
 
     function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
-        updateCategoryAvailability(vendorId, catId, !categories[catId].available)
+        updateProductAvailability(vendorId, catId, !products[catId].available)
             .then(() => {
-                setCategories(produce(draft => { draft[catId].available = !categories[catId].available }))
+                setProducts(produce(draft => { draft[catId].available = !products[catId].available }))
                 toast({
                     description: t('vendor:changes-saved'),
                     status: "success"
@@ -158,13 +158,13 @@ function CategoryRow({ catId, index, order, setOrder, categories, setCategories 
     function onDelete(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         const newOrder = order.filter(item => item !== catId)
         let promises: Promise<void>[] = [
-            deleteCategory(vendorId, catId),
-            updateCategoryOrder(vendorId, newOrder)
+            deleteProduct(vendorId, catId),
+            // updateProductOrder(vendorId, newOrder)
         ]
         Promise.all(promises)
             .then(() => {
                 setOrder(draft => newOrder)
-                setCategories(produce(draft => { delete draft[catId] }))
+                setProducts(produce(draft => { delete draft[catId] }))
                 toast({
                     description: t('vendor:changes-saved'),
                     status: "success"
@@ -184,12 +184,12 @@ function CategoryRow({ catId, index, order, setOrder, categories, setCategories 
             {provided => (
                 <Tr ref={provided.innerRef} {...provided.draggableProps} _hover={{ bgColor: 'primary.50' }}>
                     <Td {...provided.dragHandleProps}><Icon as={FaEllipsisV} /></Td>
-                    <Td><Switch isChecked={categories[catId].available} onChange={updateAvailability} /></Td>
+                    <Td><Switch isChecked={products[catId].available} onChange={updateAvailability} /></Td>
                     <Td>
-                        <Link onClick={modal.onOpen}>{categories[catId].name}</Link>
-                        <EditCategory modal={modal} category={categories[catId]} setCategories={setCategories} />
+                        <Link onClick={modal.onOpen}>{products[catId].name}</Link>
+                        <EditProduct modal={modal} product={products[catId]} setProducts={setProducts} />
                     </Td>
-                    <Td>{categories[catId].desc}</Td>
+                    <Td>{products[catId].desc}</Td>
                     <Td>
                         <IconButton aria-label="delete"
                             colorScheme="gray"
