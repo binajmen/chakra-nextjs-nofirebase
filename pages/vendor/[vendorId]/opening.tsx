@@ -26,7 +26,7 @@ function VendorOpeningHours() {
     const [opening, setOpening] = React.useState<OpeningHours>({})
     const [types, setTypes] = React.useState<string[]>([])
 
-    const { query: { id } } = router
+    const { query: { vendorId } } = router
 
     function saveOpeningHours() {
         try {
@@ -47,7 +47,7 @@ function VendorOpeningHours() {
                 })
             })
 
-            updateVendor(id as string, { opening, types })
+            updateVendor(vendorId as string, { opening, types })
                 .then(() => toast({
                     description: t('vendor:changes-saved'),
                     status: "success"
@@ -62,7 +62,7 @@ function VendorOpeningHours() {
     }
 
     React.useEffect(() => {
-        getOpeningHours(id as string)
+        getOpeningHours(vendorId as string)
             .then(doc => {
                 if (doc.exists) {
                     setOpening(doc.data()!.opening)
@@ -116,7 +116,7 @@ export const getServerSideProps = withAuthUserSSR({
 })(async ({ query, AuthUser }) => {
     try {
         // retrieve vendor id
-        const { id } = query
+        const { vendorId } = query
 
         // retrieve roles for the current user
         const doc = await admin.firestore()
@@ -125,7 +125,7 @@ export const getServerSideProps = withAuthUserSSR({
             .get()
 
         // if no roles or no roles for the requested vendor, 404
-        if (!doc.exists || !doc.data()!.vendors?.includes(id)) return { notFound: true }
+        if (!doc.exists || !doc.data()!.vendors?.includes(vendorId)) return { notFound: true }
 
         // else
         return { props: {} }

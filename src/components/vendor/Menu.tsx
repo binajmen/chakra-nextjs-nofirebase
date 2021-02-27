@@ -7,27 +7,30 @@ import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaFolderOpen, FaDrumsti
 import ButtonLink from '../ButtonLink'
 
 const items = [
-    { label: "general", pathname: "/vendor/[id]", icon: <FaBuilding /> },
-    { label: "settings", pathname: "/vendor/[id]/settings", icon: <FaCog /> },
-    { label: "opening", pathname: "/vendor/[id]/opening", icon: <FaClock /> },
-    { label: "categories", pathname: "/vendor/[id]/categories", icon: <FaFolderOpen /> },
-    { label: "products", pathname: "/vendor/[id]/products", icon: <FaDrumstickBite /> },
-    { label: "events", pathname: "/vendor/[id]/events", icon: <FaRegCalendarCheck /> },
+    { label: "general", pathname: "/vendor/[vendorId]", icon: <FaBuilding /> },
+    { label: "settings", pathname: "/vendor/[vendorId]/settings", icon: <FaCog /> },
+    { label: "opening", pathname: "/vendor/[vendorId]/opening", icon: <FaClock /> },
+    { label: "categories", pathname: "/vendor/[vendorId]/categories", icon: <FaFolderOpen /> },
+    { label: "products", pathname: "/vendor/[vendorId]/products", icon: <FaDrumstickBite /> },
+    { label: "events", pathname: "/vendor/[vendorId]/events", icon: <FaRegCalendarCheck /> },
 ]
 
 export default function Menu() {
     const { t } = useTranslation('common')
     const router = useRouter()
-    const { pathname, query } = router
+    const { pathname, query: { vendorId } } = router
+
+    const split = pathname.split('/')
+    const active = split[3] === undefined ? 'general' : split[3]
 
     return (
         <VStack w="full" align="stretch" spacing={3}>
             {items.map((item, index) => {
-                const isActive = pathname === item.pathname
+                const isActive = item.label === active
                 return (
                     <ButtonLink key={index}
                         pathname={item.pathname}
-                        query={query}
+                        query={{ vendorId }}
                         leftIcon={item.icon}
                         color="gray.900"
                         variant={isActive ? 'solid' : 'ghost'}

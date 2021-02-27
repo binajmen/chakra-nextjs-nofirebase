@@ -2,5 +2,9 @@
     "not-found": "Not found..",
     "changes-saved": "The changes has been saved.",
     "manage": "Manage",
-    "new-category": "New category"
+    "new-category": "New category",
+    "category": "Category",
+    "available": "Available",
+    "name": "Name",
+    "description": "Description"
 }

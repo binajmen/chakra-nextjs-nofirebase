@@ -2,5 +2,9 @@
     "not-found": "Impossible de trouver les données..",
     "changes-saved": "The changes has been saved.",
     "manage": "Gérer",
-    "new-category": "Nouvelle catégorie"
+    "new-category": "Nouvelle catégorie",
+    "category": "Catégorie",
+    "available": "Disponible",
+    "name": "Nom",
+    "description": "Description"
 }

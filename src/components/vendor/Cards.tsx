@@ -54,7 +54,7 @@ function VendorCard({ vendor }: VendorCardProps) {
                     size="sm"
                     color="gray.900"
                     colorScheme="primary"
-                    pathname="/vendor/[id]"
+                    pathname="/vendor/[vendorId]"
                     query={{ id: vendor.id }}
                 >{t('vendor:manage')}</ButtonLink>
             </Box>
