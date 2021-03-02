@@ -22,65 +22,55 @@ import {
     ModalBody,
     ModalCloseButton,
     VStack,
-    useToast
+    useToast,
+    FormHelperText
 } from '@chakra-ui/react'
-
-import { createProduct, updateProductOrder } from '../firebase/helpers/products'
-import { generateId } from '../utils'
 
 import type { Product, Products } from '../types/product'
 
+import { useStoreActions } from '../store/hooks'
+
 export type NewProductProps = {
     modal: ReturnType<typeof useDisclosure>
-    order: string[]
-    setOrder: React.Dispatch<React.SetStateAction<string[]>>
-    setProducts: React.Dispatch<React.SetStateAction<Products>>
 }
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required(),
-    desc: Yup.string().required()
+    longName: Yup.string().required(),
+    desc: Yup.string().required(),
+    price: Yup.number().required(),
+    tax: Yup.number().required(),
+    size: Yup.string(),
 })
 
 const defaultValues: Product = {
-    available: true
+    available: true,
+    name: "",
+    longName: "",
+    desc: "",
+    price: 0,
+    tax: 0,
+    size: "",
+    categoryIds: [],
+    type: "product"
 }
 
-export default function NewProduct({ modal, order, setOrder, setProducts }: NewProductProps) {
+export default function NewProduct({ modal }: NewProductProps) {
     const { t } = useTranslation('common')
     const router = useRouter()
     const toast = useToast()
     const vendorId = router.query.vendorId as string
+    const categoryId = router.query.categoryId as string
+
+    const createProduct = useStoreActions(actions => actions.products.createProduct)
 
     return (
         <Modal size="md" isOpen={modal.isOpen} onClose={modal.onClose}>
             <Formik
-                initialValues={{ name: '', desc: '' }}
+                initialValues={defaultValues}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
-                    const catId = generateId(values.name)
-                    const newProduct = { ...defaultValues, ...values }
-                    let newOrder = [...order, catId]
-                    newOrder = newOrder.filter((item: string, index: number) => newOrder.indexOf(item) === index)
-
-                    let promises: Promise<void>[] = [
-                        createProduct(vendorId, catId, newProduct),
-                        updateProductOrder(vendorId, newOrder)
-                    ]
-                    Promise.all(promises).then(() => {
-                        setProducts(produce(draft => { draft[catId] = { ...newProduct, id: catId } }))
-                        setOrder(newOrder)
-                        toast({
-                            description: t('vendor:changes-saved'),
-                            status: "success"
-                        })
-                    })
-                        .catch(error => {
-                            toast({
-                                description: error,
-                                status: "error"
-                            })
-                        })
+                    createProduct({ vendorId, categoryId, product: values })
                     modal.onClose()
                 }}
             >
@@ -88,7 +78,7 @@ export default function NewProduct({ modal, order, setOrder, setProducts }: NewP
                     <Form>
                         <ModalOverlay />
                         <ModalContent>
-                            <ModalHeader>{t('edit')}</ModalHeader>
+                            <ModalHeader>{t('new')}</ModalHeader>
                             <ModalCloseButton />
 
                             <ModalBody>
@@ -102,12 +92,49 @@ export default function NewProduct({ modal, order, setOrder, setProducts }: NewP
                                             </FormControl>
                                         )}
                                     </Field>
+                                    <Field name="longName">
+                                        {({ field, form, meta }: FieldProps) => (
+                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                                                <FormLabel htmlFor="longName">{t('vendor:longName')}</FormLabel>
+                                                <Input {...field} id="longName" placeholder="" />
+                                                <FormErrorMessage>{form.errors.longName}</FormErrorMessage>
+                                            </FormControl>
+                                        )}
+                                    </Field>
                                     <Field name="desc">
                                         {({ field, form, meta }: FieldProps) => (
                                             <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
                                                 <FormLabel htmlFor="desc">{t('vendor:description')}</FormLabel>
                                                 <Input {...field} id="desc" placeholder="" />
                                                 <FormErrorMessage>{form.errors.desc}</FormErrorMessage>
+                                            </FormControl>
+                                        )}
+                                    </Field>
+                                    <Field name="price">
+                                        {({ field, form, meta }: FieldProps) => (
+                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                                                <FormLabel htmlFor="price">{t('vendor:price')}</FormLabel>
+                                                <Input {...field} id="price" placeholder="" />
+                                                <FormHelperText>Eurocents: 100 = 1€</FormHelperText>
+                                                <FormErrorMessage>{form.errors.price}</FormErrorMessage>
+                                            </FormControl>
+                                        )}
+                                    </Field>
+                                    <Field name="tax">
+                                        {({ field, form, meta }: FieldProps) => (
+                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                                                <FormLabel htmlFor="tax">{t('vendor:tax')}</FormLabel>
+                                                <Input {...field} id="tax" placeholder="6, 12, 21" />
+                                                <FormErrorMessage>{form.errors.tax}</FormErrorMessage>
+                                            </FormControl>
+                                        )}
+                                    </Field>
+                                    <Field name="size">
+                                        {({ field, form, meta }: FieldProps) => (
+                                            <FormControl isInvalid={!!meta.error && !!meta.touched}>
+                                                <FormLabel htmlFor="size">{t('vendor:size')}</FormLabel>
+                                                <Input {...field} id="size" placeholder="25cl, bouteille, ..." />
+                                                <FormErrorMessage>{form.errors.size}</FormErrorMessage>
                                             </FormControl>
                                         )}
                                     </Field>

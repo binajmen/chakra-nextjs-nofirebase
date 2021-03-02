@@ -1,5 +1,4 @@
 import * as React from 'react'
-import produce from 'immer'
 import { useRouter } from 'next/router'
 import * as Yup from 'yup'
 import { Formik, Form, Field, FieldProps } from 'formik'
@@ -11,8 +10,6 @@ import {
     FormErrorMessage,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
     Modal,
     useDisclosure,
     ModalOverlay,
@@ -21,20 +18,15 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    VStack,
-    useToast
+    VStack
 } from '@chakra-ui/react'
-
-import { createCategory, updateCategoryOrder } from '../firebase/helpers/vendors'
-import { generateId } from '../utils'
 
 import type { Category, Categories } from '../types/category'
 
+import { useStoreActions } from '../store/hooks'
+
 export type NewCategoryProps = {
     modal: ReturnType<typeof useDisclosure>
-    order: string[]
-    setOrder: React.Dispatch<React.SetStateAction<string[]>>
-    setCategories: React.Dispatch<React.SetStateAction<Categories>>
 }
 
 const validationSchema = Yup.object().shape({
@@ -43,17 +35,20 @@ const validationSchema = Yup.object().shape({
 })
 
 const defaultValues: Category = {
+    name: "",
+    desc: "",
     available: true,
     events: {},
     items: [],
     modifiers: {}
 }
 
-export default function NewCategory({ modal, order, setOrder, setCategories }: NewCategoryProps) {
+export default function NewCategory({ modal }: NewCategoryProps) {
     const { t } = useTranslation('common')
     const router = useRouter()
-    const toast = useToast()
     const vendorId = router.query.vendorId as string
+
+    const createCategory = useStoreActions(actions => actions.categories.createCategory)
 
     return (
         <Modal size="md" isOpen={modal.isOpen} onClose={modal.onClose}>
@@ -61,29 +56,7 @@ export default function NewCategory({ modal, order, setOrder, setCategories }: N
                 initialValues={{ name: '', desc: '' }}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
-                    const catId = generateId(values.name)
-                    const newCategory = { ...defaultValues, ...values }
-                    let newOrder = [...order, catId]
-                    newOrder = newOrder.filter((item: string, index: number) => newOrder.indexOf(item) === index)
-
-                    let promises: Promise<void>[] = [
-                        createCategory(vendorId, catId, newCategory),
-                        updateCategoryOrder(vendorId, newOrder)
-                    ]
-                    Promise.all(promises).then(() => {
-                        setCategories(produce(draft => { draft[catId] = { ...newCategory, id: catId } }))
-                        setOrder(newOrder)
-                        toast({
-                            description: t('vendor:changes-saved'),
-                            status: "success"
-                        })
-                    })
-                        .catch(error => {
-                            toast({
-                                description: error,
-                                status: "error"
-                            })
-                        })
+                    createCategory({ vendorId, category: { ...defaultValues, ...values } })
                     modal.onClose()
                 }}
             >
@@ -91,7 +64,7 @@ export default function NewCategory({ modal, order, setOrder, setCategories }: N
                     <Form>
                         <ModalOverlay />
                         <ModalContent>
-                            <ModalHeader>{t('edit')}</ModalHeader>
+                            <ModalHeader>{t('new')}</ModalHeader>
                             <ModalCloseButton />
 
                             <ModalBody>
@@ -120,7 +93,7 @@ export default function NewCategory({ modal, order, setOrder, setCategories }: N
                             <ModalFooter>
                                 <Button
                                     type="submit"
-                                    // width="full"
+                                    width="full"
                                     color="gray.900"
                                     colorScheme="primary"
                                     isLoading={props.isSubmitting}

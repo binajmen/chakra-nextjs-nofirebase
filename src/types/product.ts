@@ -1,15 +1,14 @@
 
 export type Product = {
-    id?: string
-    available?: boolean
-    name?: string
-    longName?: string
-    desc?: string
-    price?: number
-    tax?: number
-    size?: string
-    categoryIds?: string[]
-    type?: string
+    available: boolean
+    name: string
+    longName: string
+    desc: string
+    price: number
+    tax: number
+    size: string
+    categoryIds: string[]
+    type: string
     // "choiceIds": [],
     // "comboIds": [],
     // "modifierIds": [],

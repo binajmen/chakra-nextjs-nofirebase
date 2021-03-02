@@ -4,7 +4,13 @@
     "manage": "Manage",
     "new-category": "New category",
     "category": "Category",
+    "new-product": "New product",
+    "product": "Product",
     "available": "Available",
     "name": "Name",
-    "description": "Description"
+    "longName": "Full name",
+    "description": "Description",
+    "price": "Price",
+    "tax": "Tax",
+    "size": "Size"
 }

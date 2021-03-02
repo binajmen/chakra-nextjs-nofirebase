@@ -7,6 +7,8 @@ import {
 import Layout from '../../src/layout/Layout'
 import Menu from '../components/vendor/Menu'
 
+import type { Categories } from '../types/category'
+
 type VendorLayoutProps = {
     children: React.ReactNode
 }

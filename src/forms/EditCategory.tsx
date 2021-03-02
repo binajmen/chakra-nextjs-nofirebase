@@ -1,5 +1,4 @@
 import * as React from 'react'
-import produce from 'immer'
 import { useRouter } from 'next/router'
 import * as Yup from 'yup'
 import { Formik, Form, Field, FieldProps } from 'formik'
@@ -11,8 +10,6 @@ import {
     FormErrorMessage,
     Input,
     Button,
-    InputGroup,
-    InputRightElement,
     Modal,
     useDisclosure,
     ModalOverlay,
@@ -21,18 +18,14 @@ import {
     ModalFooter,
     ModalBody,
     ModalCloseButton,
-    VStack,
-    useToast
+    VStack
 } from '@chakra-ui/react'
 
-import { updateCategory } from '../firebase/helpers/vendors'
-
-import type { Category, Categories } from '../types/category'
+import { useStoreState, useStoreActions } from '../store/hooks'
 
 export type EditCategoryProps = {
     modal: ReturnType<typeof useDisclosure>
-    category: Category
-    setCategories: React.Dispatch<React.SetStateAction<Categories>>
+    categoryId: string
 }
 
 const validationSchema = Yup.object().shape({
@@ -40,33 +33,21 @@ const validationSchema = Yup.object().shape({
     desc: Yup.string().required()
 })
 
-export default function EditCategory({ modal, category, setCategories }: EditCategoryProps) {
+export default function EditCategory({ modal, categoryId }: EditCategoryProps) {
     const { t } = useTranslation('common')
     const router = useRouter()
-    const toast = useToast()
     const vendorId = router.query.vendorId as string
-    const categoryId = category.id!
+
+    const categories = useStoreState(state => state.categories.list)
+    const updateCategory = useStoreActions(actions => actions.categories.updateCategory)
 
     return (
         <Modal size="md" isOpen={modal.isOpen} onClose={modal.onClose}>
             <Formik
-                initialValues={category}
+                initialValues={categories[categoryId]}
                 validationSchema={validationSchema}
                 onSubmit={(values) => {
-                    updateCategory(vendorId, values)
-                        .then(() => {
-                            setCategories(produce(draft => { draft[categoryId] = { ...draft[categoryId], ...values } }))
-                            toast({
-                                description: t('vendor:changes-saved'),
-                                status: "success"
-                            })
-                        })
-                        .catch(error => {
-                            toast({
-                                description: error,
-                                status: "error"
-                            })
-                        })
+                    updateCategory({ vendorId, categoryId, category: values })
                     modal.onClose()
                 }}
             >
@@ -103,7 +84,7 @@ export default function EditCategory({ modal, category, setCategories }: EditCat
                             <ModalFooter>
                                 <Button
                                     type="submit"
-                                    // width="full"
+                                    width="full"
                                     color="gray.900"
                                     colorScheme="primary"
                                     isLoading={props.isSubmitting}

@@ -1,7 +1,5 @@
 import * as React from 'react'
-import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import produce from 'immer'
 import useTranslation from 'next-translate/useTranslation'
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 
@@ -10,34 +8,20 @@ import {
     Table,
     Thead,
     Tbody,
-    Tfoot,
     Tr,
     Th,
     Td,
-    TableCaption,
     Icon,
     Switch,
     Link,
     IconButton,
-    useToast,
     useDisclosure
 } from '@chakra-ui/react'
-import { FaEllipsisV, FaTrash, FaArrowsAltV } from 'react-icons/fa'
+import { FaEllipsisV, FaTrash } from 'react-icons/fa'
 
-import { updateCategoryOrder, updateCategoryAvailability, deleteCategory } from '../../firebase/helpers/vendors'
 import EditCategory from '../../forms/EditCategory'
 
-import type {
-    Categories as CategoriesType,
-    Category
-} from '../../types/category'
-
-type CategoriesProps = {
-    order: string[]
-    setOrder: React.Dispatch<React.SetStateAction<string[]>>
-    categories: CategoriesType
-    setCategories: React.Dispatch<React.SetStateAction<CategoriesType>>
-}
+import { useStoreState, useStoreActions } from '../../store/hooks'
 
 function reorder(list: string[], startIndex: number, endIndex: number) {
     const result = Array.from(list)
@@ -47,15 +31,13 @@ function reorder(list: string[], startIndex: number, endIndex: number) {
     return result
 }
 
-export default function Categories(props: CategoriesProps) {
+export default function Categories() {
     const { t } = useTranslation('common')
-    const toast = useToast()
     const router = useRouter()
-    const { vendorId } = router.query
+    const vendorId = router.query.vendorId as string
 
-    const [order, setOrder] = React.useState<string[]>(props.order)
-
-    React.useEffect(() => { setOrder(props.order) }, [props.order])
+    const order = useStoreState(state => state.categories.order)
+    const updateOrder = useStoreActions(actions => actions.categories.updateOrder)
 
     function onDragEnd(result: any) {
         if (!result.destination) return
@@ -67,21 +49,7 @@ export default function Categories(props: CategoriesProps) {
             result.destination.index
         )
 
-        updateCategoryOrder(vendorId as string, newOrder)
-            .then(() => {
-                setOrder(newOrder)
-                toast({
-                    description: t('vendor:changes-saved'),
-                    status: "success"
-                })
-            })
-            .catch((error) => {
-                console.error(error)
-                toast({
-                    description: error,
-                    status: "error"
-                })
-            })
+        updateOrder({ vendorId, newOrder })
     }
 
     return (
@@ -100,14 +68,10 @@ export default function Categories(props: CategoriesProps) {
                                 </Tr>
                             </Thead>
                             <Tbody >
-                                {order.map((catId, index) => (
-                                    <CategoryRow key={catId}
-                                        catId={catId}
+                                {order.map((categoryId, index) => (
+                                    <CategoryRow key={categoryId}
+                                        categoryId={categoryId}
                                         index={index}
-                                        order={props.order}
-                                        setOrder={props.setOrder}
-                                        categories={props.categories}
-                                        setCategories={props.setCategories}
                                     />
                                 ))}
                                 {provided.placeholder}
@@ -121,75 +85,41 @@ export default function Categories(props: CategoriesProps) {
 }
 
 type CategoryRowProps = {
-    catId: string
+    categoryId: string
     index: number
-    order: string[]
-    setOrder: React.Dispatch<React.SetStateAction<string[]>>
-    categories: CategoriesType
-    setCategories: React.Dispatch<React.SetStateAction<CategoriesType>>
 }
 
-function CategoryRow({ catId, index, order, setOrder, categories, setCategories }: CategoryRowProps) {
-    const { t } = useTranslation()
-    const toast = useToast()
+function CategoryRow({ categoryId, index }: CategoryRowProps) {
     const modal = useDisclosure()
     const router = useRouter()
-
     const vendorId = router.query.vendorId as string
 
+    const categories = useStoreState(state => state.categories.list)
+    const actions = useStoreActions(actions => actions.categories)
+
     function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
-        updateCategoryAvailability(vendorId, catId, !categories[catId].available)
-            .then(() => {
-                setCategories(produce(draft => { draft[catId].available = !categories[catId].available }))
-                toast({
-                    description: t('vendor:changes-saved'),
-                    status: "success"
-                })
-            })
-            .catch((error) => {
-                console.error(error)
-                toast({
-                    description: error,
-                    status: "error"
-                })
-            })
+        actions.updateAvailability({
+            vendorId,
+            categoryId,
+            available: !categories[categoryId].available
+        })
     }
 
     function onDelete(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        const newOrder = order.filter(item => item !== catId)
-        let promises: Promise<void>[] = [
-            deleteCategory(vendorId, catId),
-            updateCategoryOrder(vendorId, newOrder)
-        ]
-        Promise.all(promises)
-            .then(() => {
-                setOrder(draft => newOrder)
-                setCategories(produce(draft => { delete draft[catId] }))
-                toast({
-                    description: t('vendor:changes-saved'),
-                    status: "success"
-                })
-            })
-            .catch((error) => {
-                console.error(error)
-                toast({
-                    description: error,
-                    status: "error"
-                })
-            })
+        actions.deleteCategory({ vendorId, categoryId })
     }
 
     return (
-        <Draggable draggableId={catId} index={index}>
+        <Draggable draggableId={categoryId} index={index}>
             {provided => (
                 <Tr ref={provided.innerRef} {...provided.draggableProps} _hover={{ bgColor: 'primary.50' }}>
                     <Td {...provided.dragHandleProps}><Icon as={FaEllipsisV} /></Td>
-                    <Td><Switch isChecked={categories[catId].available} onChange={updateAvailability} /></Td>
+                    <Td><Switch isChecked={categories[categoryId].available} onChange={updateAvailability} /></Td>
                     <Td>
-                        <Link onClick={modal.onOpen}>{categories[catId].name}</Link>
-                        <EditCategory modal={modal} category={categories[catId]} setCategories={setCategories} />
+                        <Link onClick={modal.onOpen}>{categories[categoryId].name}</Link>
+                        <EditCategory modal={modal} categoryId={categoryId} />
                     </Td>
-                    <Td>{categories[catId].desc}</Td>
+                    <Td>{categories[categoryId].desc}</Td>
                     <Td>
                         <IconButton aria-label="delete"
                             colorScheme="gray"

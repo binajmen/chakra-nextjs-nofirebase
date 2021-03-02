@@ -1,36 +1,55 @@
 import { useMemo } from 'react'
 import { createStore, persist, Store } from 'easy-peasy'
 
+import * as ui from './ui'
 import * as session from './session'
 import * as geolocation from './geolocation'
+import * as categories from './categories'
+import * as products from './products'
 
 let store: Store | undefined = undefined
 
 export type State = {
+    ui: ui.State
     session: session.State
     geolocation: geolocation.State
+    categories: categories.State
+    products: products.State
 }
 
 const initialState: State = {
+    ui: ui.state,
     session: session.state,
     geolocation: geolocation.state,
+    categories: categories.state,
+    products: products.state,
 }
 
 export type StoreModel = {
+    ui: ui.Model
     session: session.Model
     geolocation: geolocation.Model
+    categories: categories.Model
+    products: products.Model
 }
 
 const model: StoreModel = {
+    ui: ui.model,
     session: session.model,
     geolocation: geolocation.model,
+    categories: categories.model,
+    products: products.model,
 }
 
 function initStore(preloadedState = initialState) {
     return createStore<StoreModel, State>(
         persist(
             model,
-            { allow: ['session'] }
+            {
+                allow: [
+                    'session'
+                ]
+            }
         ),
         { initialState: preloadedState }
     )

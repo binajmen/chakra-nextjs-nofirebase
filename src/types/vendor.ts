@@ -1,9 +1,5 @@
 
-export type Geolocation = {
-    hash: string
-    lat: number
-    lng: number
-}
+import type { Geolocation } from './shared'
 
 export type OpeningHours = {
     [index: string]: {              // now, takeaway, delivery

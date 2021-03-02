@@ -4,6 +4,8 @@ import Header from './Header'
 import Container from './Container'
 import Footer from './Footer'
 
+import Toaster from '../components/Toaster'
+
 type LayoutProps = {
     children: React.ReactNode
 }
@@ -16,6 +18,7 @@ export default function Layout({ children }: LayoutProps) {
                 {children}
             </Container>
             <Footer />
+            <Toaster />
         </>
     )
 }
