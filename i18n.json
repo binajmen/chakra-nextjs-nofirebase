@@ -9,8 +9,8 @@
         "*": [
             "common"
         ],
-        "rgx:^/vendor": [
-            "vendor"
+        "rgx:^/manage": [
+            "manager"
         ]
     }
 }

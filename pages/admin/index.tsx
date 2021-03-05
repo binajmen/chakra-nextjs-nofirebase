@@ -5,7 +5,7 @@ import {
     withAuthUserTokenSSR
 } from 'next-firebase-auth'
 
-import admin from '../../src/firebase/admin'
+import admin from '@/lib/firebase/admin'
 
 export type AdminIndexProps = {
     admin: boolean
@@ -35,8 +35,8 @@ export const getServerSideProps = withAuthUserTokenSSR({
     const decodedToken = await admin.auth().verifyIdToken(token ?? '')
 
     if (decodedToken.admin) {
-        return { props: { } }
+        return { props: {} }
     } else {
-        return { redirect: { destination: '/', permanent: false } }
+        return { notFound: true }
     }
 })

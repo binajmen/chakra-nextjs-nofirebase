@@ -1,72 +1,66 @@
 import * as React from 'react'
-import Head from 'next/head'
-import { useRouter } from 'next/router'
 import { withAuthUser } from 'next-firebase-auth'
-
 import useTranslation from 'next-translate/useTranslation'
 
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 
-import admin from '../src/firebase/admin'
+import { FaArrowRight } from 'react-icons/fa'
 
-import Layout from '../src/layout/Layout'
-import SearchInput from '../src/components/SearchInput'
-import Vendors from '../src/components/Vendors'
+import admin from '@/lib/firebase/admin'
+
+import Wrapper from '@/layout/Wrapper'
+import Header from '@/layout/client/Header'
+import Footer from '@/layout/client/Footer'
+
+import PlacesList from '@/components/PlacesList'
+import ButtonLink from '@/components/ButtonLink'
 
 function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-    const { t } = useTranslation('test')
-    const router = useRouter()
-    const { vendors } = props
+  const { places } = props
+  const { t } = useTranslation('common')
 
-    const { locale, locales, defaultLocale } = router
-
-    return (
-        <>
-            <Head>
-                <title>Myresto.brussels</title>
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
-            <Layout>
-                <Vendors vendors={vendors} />
-            </Layout>
-        </>
-    )
+  return (
+    <Wrapper
+      title="Order.brussels"
+      renderHeader={() => <Header />}
+      renderFooter={() => <Footer />}
+    >
+      <PlacesList
+        places={places}
+        buttonRender={(id) => (
+          <ButtonLink
+            size="sm"
+            color="gray.900"
+            colorScheme="primary"
+            variant="ghost"
+            rightIcon={<FaArrowRight />}
+            pathname="/place/[place]"
+            query={{ place: id }}
+          >{t('visit')}</ButtonLink>
+        )}
+      />
+    </Wrapper>
+  )
 }
 
 export default withAuthUser<InferGetServerSidePropsType<typeof getServerSideProps>>()(Index)
 
 export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
-    try {
-        const vendorsRef = admin.firestore().collection('vendors')
-        const snapshot = await vendorsRef.get()
+  try {
+    const placesRef = admin.firestore().collection('vendors')
+    const snapshot = await placesRef.get()
 
-        if (snapshot.empty) {
-            return { props: { vendors: [] } }
-        }
+    if (snapshot.empty) {
+      return { props: { places: [] } }
+    } else {
+      const places = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
 
-        const docs: any = [] // TOFIX: define type
-        snapshot.forEach(doc => {
-            const { geopoint, ...rest } = doc.data()
-            docs.push({ id: doc.id, ...rest })
-        })
-
-        return {
-            props: {
-                vendors: docs
-            }
-        }
-
-        // return {
-        //     props: {
-        //         vendors: [
-        //             { id: "test", name: "Test", address: "test", phone: "test" },
-        //             { id: "test", name: "Test", address: "test", phone: "test" },
-        //             { id: "test", name: "Test", address: "test", phone: "test" },
-        //         ]
-        //     }
-        // }
-    } catch (error) {
-        console.error(error)
-        return { notFound: true }
+      return {
+        props: { places }
+      }
     }
+  } catch (error) {
+    console.error(error)
+    return { notFound: true } // TOFIX: replace by internal server error?
+  }
 }

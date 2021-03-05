@@ -3,9 +3,9 @@ import { extendTheme, ChakraProvider, CSSReset } from '@chakra-ui/react'
 
 import type { AppProps /*, AppContext */ } from 'next/app'
 
-import initAuth from '../src/firebase/auth'
+import initAuth from '@/lib/firebase/auth'
 import theme from '../theme'
-import { useStore } from '../src/store'
+import { useStore } from '@/store/index'
 
 initAuth()
 
