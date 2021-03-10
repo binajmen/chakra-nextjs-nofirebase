@@ -1,16 +1,19 @@
 {
-    "locales": [
-        "fr",
-        "nl",
-        "en"
+  "locales": [
+    "fr",
+    "nl",
+    "en"
+  ],
+  "defaultLocale": "fr",
+  "pages": {
+    "*": [
+      "common"
     ],
-    "defaultLocale": "fr",
-    "pages": {
-        "*": [
-            "common"
-        ],
-        "rgx:^/manage": [
-            "manager"
-        ]
-    }
+    "rgx:^/manage": [
+      "manager"
+    ],
+    "rgx:^/checkout": [
+      "checkout"
+    ]
+  }
 }

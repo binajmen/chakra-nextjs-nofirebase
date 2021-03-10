@@ -10,7 +10,7 @@
   "menu-account": "Mon compte",
   "order-type": "Type de commande",
   "now": "Sur place",
-  "takeaway": "Emporter",
+  "collect": "Emporter",
   "delivery": "Livraison",
   "support": "Support",
   "your-address": "Votre adresse",
@@ -38,5 +38,10 @@
   "products": "Produits",
   "events": "Événements",
   "new": "Nouveau",
-  "visit": "Visiter"
+  "visit": "Visiter",
+  "add-to-basket": "Ajouter au panier",
+  "cancel": "Annuler",
+  "continue": "Continuer",
+  "checkout": "Continuer",
+  "your-basket": "Votre panier"
 }

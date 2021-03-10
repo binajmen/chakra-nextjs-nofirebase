@@ -3,7 +3,7 @@ import { geohashForLocation } from 'geofire-common'
 
 import type { GeoLocationSensorState } from '@/hooks/useGeolocation'
 
-export type Method = "now" | "takeaway" | "delivery" | null
+export type Method = "now" | "collect" | "delivery" | null
 
 type State = {
     method: Method

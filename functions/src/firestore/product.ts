@@ -7,7 +7,7 @@ export const onCreateProduct = async (
     snapshot: functions.firestore.DocumentSnapshot,
     context: functions.EventContext
 ) => {
-    const { vendorId, productId } = context.params
+    const { placeId, productId } = context.params
     const data = snapshot.data()!
 
     if (data.type !== "product") return null
@@ -27,7 +27,7 @@ export const onCreateProduct = async (
     // - add ref to associated category
     const categories = data.categoryIds.map((categoryId: string) => {
         console.log("adding", productId, "to", categoryId)
-        return admin.firestore().doc(`vendors/${vendorId}/categories/${categoryId}`)
+        return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
             .update({ items: admin.firestore.FieldValue.arrayUnion(productId) })
     })
 
@@ -49,7 +49,7 @@ export const onDeleteProduct = async (
     snapshot: functions.firestore.DocumentSnapshot,
     context: functions.EventContext
 ) => {
-    const { vendorId, productId } = context.params
+    const { placeId, productId } = context.params
     const data = snapshot.data()!
 
     if (data.type !== "product") return null
@@ -93,7 +93,7 @@ export const onDeleteProduct = async (
 
     // - remove ref from categories
     const removeFromCategory = data.categoryIds.map((categoryId: string) => {
-        return admin.firestore().doc(`vendors/${vendorId}/categories/${categoryId}`)
+        return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
             .update({ items: admin.firestore.FieldValue.arrayRemove(productId) })
     })
 

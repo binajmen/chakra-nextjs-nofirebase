@@ -35,7 +35,7 @@ export default function Wrapper(props: React.PropsWithChildren<CustomMeta & Layo
       <Head>
         <title>{meta.title}</title>
         <meta name="robots" content="follow, index" />
-        <meta content={meta.description} name="description" />
+        <meta name="description" content={meta.description} />
         <meta property="og:url" content={`https://order.brussels${router.asPath}`} />
         <link rel="canonical" href={`https://order.brussels${router.asPath}`} />
         <meta property="og:type" content={meta.type} />
@@ -53,9 +53,9 @@ export default function Wrapper(props: React.PropsWithChildren<CustomMeta & Layo
         )}
       </Head>
       {renderHeader && renderHeader()}
-      <Container p={6}>
+      <Box mx="auto" w={{ base: 'full', xl: "80em" }} p="6">
         {children}
-      </Container>
+      </Box>
       {renderFooter && renderFooter()}
     </div>
   )

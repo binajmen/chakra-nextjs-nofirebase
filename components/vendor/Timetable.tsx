@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { Box, Text, Input, HStack, Button } from '@chakra-ui/react'
 import { FaPlus, FaMinus } from 'react-icons/fa'
 
-import type { OpeningHours } from '@/types/vendor'
+import type { OpeningHours } from '@/types/place'
 
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 

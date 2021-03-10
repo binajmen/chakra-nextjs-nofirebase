@@ -8,14 +8,17 @@ import {
 } from '@chakra-ui/react'
 import { MdStar } from "react-icons/md"
 
+import type { Document } from '@/types/common'
 import type { Place } from '@/types/place'
 
 export type PlacesListProps = {
-  places: Place[]
+  places: Document<Place>[] | null | undefined
   buttonRender: (id: string) => JSX.Element | null
 }
 
 export default function PlacesList({ places, buttonRender }: PlacesListProps) {
+  if (!places) return null
+
   return (
     <Box>
       <SimpleGrid columns={[1, 2, 3, 4]} spacing={6}>
@@ -38,7 +41,7 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
 
       <Box p="3">
         <Box d="flex" alignItems="baseline">
-          <Badge borderRadius="full" px="2" colorScheme="primary">
+          <Badge borderRadius="md" px="2" colorScheme="primary">
             New
           </Badge>
           <Box

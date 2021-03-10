@@ -5,29 +5,29 @@ import useTranslation from 'next-translate/useTranslation'
 import { Box, Switch, FormControl, FormLabel } from '@chakra-ui/react'
 
 type SwitchOrderTypeProps = {
-    type: string
-    types: string[]
-    setTypes: React.Dispatch<React.SetStateAction<string[]>>
+  method: string
+  methods: string[]
+  setMethods: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-export default function SwitchOrderType({ type, types, setTypes }: SwitchOrderTypeProps) {
-    const { t } = useTranslation('common')
+export default function SwitchOrderType({ method, methods, setMethods }: SwitchOrderTypeProps) {
+  const { t } = useTranslation('common')
 
-    function switchMethod() {
-        if (types.includes(type))
-            setTypes(produce(draft => draft.filter((m: string) => m !== type)))
-        else
-            setTypes(produce(draft => { draft.push(type) }))
-    }
+  function switchMethod() {
+    if (methods.includes(method))
+      setMethods(produce(draft => draft.filter((m: string) => m !== method)))
+    else
+      setMethods(produce(draft => { draft.push(method) }))
+  }
 
-    return (
-        <Box py={3}>
-            <FormControl display="flex" alignItems="center">
-                <FormLabel htmlFor={`${type}-status`} mb="0">
-                    {t('enabled-?')}
-                </FormLabel>
-                <Switch id={`${type}-status`} isChecked={types.includes(type)} onChange={switchMethod} />
-            </FormControl>
-        </Box>
-    )
+  return (
+    <Box py={3}>
+      <FormControl display="flex" alignItems="center">
+        <FormLabel htmlFor={`${method}-status`} mb="0">
+          {t('enabled-?')}
+        </FormLabel>
+        <Switch id={`${method}-status`} isChecked={methods.includes(method)} onChange={switchMethod} />
+      </FormControl>
+    </Box>
+  )
 }

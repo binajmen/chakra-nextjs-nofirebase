@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
 import { AuthAction, useAuthUser, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
@@ -11,15 +10,13 @@ import {
 import { FaArrowRight } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-
 import Wrapper from '@/layout/Wrapper'
 import Header from '@/layout/client/Header'
 import Footer from '@/layout/client/Footer'
-
 import PlacesList from '@/components/PlacesList'
-import ButtonLink from '@/components/ButtonLink'
+import ButtonLink from '@/components/atoms/NextButton'
 
-function VendorIndex(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { places } = props
   const { t } = useTranslation('common')
 
@@ -27,7 +24,7 @@ function VendorIndex(props: InferGetServerSidePropsType<typeof getServerSideProp
     <Wrapper
       title="Order.brussels"
       renderHeader={() => <Header />}
-      // renderFooter={() => <Footer />}
+    // renderFooter={() => <Footer />}
     >
       <Heading mb={3} size="md">Vos places :</Heading>
       <PlacesList
@@ -51,7 +48,7 @@ function VendorIndex(props: InferGetServerSidePropsType<typeof getServerSideProp
 export default withAuthUser<InferGetServerSidePropsType<typeof getServerSideProps>>({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(VendorIndex)
+})(PlaceIndex)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -64,17 +61,17 @@ export const getServerSideProps = withAuthUserSSR({
     // if no roles, 404
     if (!role.exists) return { notFound: true }
 
-    // extract vendors list
-    const placeIds = role.data()?.vendors ?? []
+    // extract places list
+    const placeIds = role.data()?.places ?? []
 
     // if empty list, 404
     if (placeIds.length === 0) return { notFound: true }
 
-    // retrieve vendors data
+    // retrieve places data
     // TOFIX: limit to 10 when using 'in' query
     // TOFIX: return first 10 + id list -> lazy loading at client side for the rest
     const snapshot = await admin.firestore()
-      .collection('vendors')
+      .collection('places')
       .where(admin.firestore.FieldPath.documentId(), "in", placeIds)
       .get()
 

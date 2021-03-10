@@ -22,12 +22,12 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/forms/*": ["forms/*"],
+      "@/helpers/*": ["helpers/*"],
       "@/hooks/*": ["hooks/*"],
       "@/layout/*": ["layout/*"],
       "@/lib/*": ["lib/*"],
       "@/store/*": ["store/*"],
       "@/types/*": ["types/*"],
-      "@/utils/*": ["utils/*"],
     },
   },
   "include": [

@@ -2,12 +2,12 @@
 import type { Geolocation } from './shared'
 
 export type OpeningHours = {
-    [index: string]: {              // now, takeaway, delivery
+    [index: string]: {              // now, collect, delivery
         [index: string]: string[]   // mon - sun
     }
 }
 
-export type Vendor = {
+export type Place = {
     id?: string
     address?: string
     cover?: string
@@ -16,6 +16,6 @@ export type Vendor = {
     phone?: string
     slug?: string
     web?: string
-    types?: string[]        // now, takeaway, delivery
+    methods: string[]        // now, collect, delivery
     opening?: OpeningHours
 }

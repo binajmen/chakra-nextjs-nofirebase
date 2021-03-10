@@ -10,7 +10,7 @@
   "menu-account": "My account",
   "order-type": "Order type",
   "now": "Now",
-  "takeaway": "Take-away",
+  "collect": "Take-away",
   "delivery": "Delivery",
   "support": "Support",
   "your-address": "Your address",
@@ -38,5 +38,10 @@
   "products": "Products",
   "events": "Events",
   "new": "New",
-  "visit": "Visit"
+  "visit": "Visit",
+  "add-to-basket": "Add to basket",
+  "cancel": "Cancel",
+  "continue": "Continue",
+  "checkout": "Checkout",
+  "your-basket": "Your basket"
 }

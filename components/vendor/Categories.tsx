@@ -34,7 +34,7 @@ function reorder(list: string[], startIndex: number, endIndex: number) {
 export default function Categories() {
     const { t } = useTranslation('common')
     const router = useRouter()
-    const vendorId = router.query.vendorId as string
+    const placeId = router.query.placeId as string
 
     const order = useStoreState(state => state.categories.order)
     const updateOrder = useStoreActions(actions => actions.categories.updateOrder)
@@ -49,7 +49,7 @@ export default function Categories() {
             result.destination.index
         )
 
-        updateOrder({ vendorId, newOrder })
+        updateOrder({ placeId, newOrder })
     }
 
     return (
@@ -92,21 +92,21 @@ type CategoryRowProps = {
 function CategoryRow({ categoryId, index }: CategoryRowProps) {
     const modal = useDisclosure()
     const router = useRouter()
-    const vendorId = router.query.vendorId as string
+    const placeId = router.query.placeId as string
 
     const categories = useStoreState(state => state.categories.list)
     const actions = useStoreActions(actions => actions.categories)
 
     function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
         actions.updateAvailability({
-            vendorId,
+            placeId,
             categoryId,
             available: !categories[categoryId].available
         })
     }
 
     function onDelete(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-        actions.deleteCategory({ vendorId, categoryId })
+        actions.deleteCategory({ placeId, categoryId })
     }
 
     return (

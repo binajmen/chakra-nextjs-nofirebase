@@ -2,38 +2,45 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
+import { useDocument } from '@nandorojo/swr-firestore'
 
-import { Flex, Box, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
+import { Flex, Box, Heading, Button, Spacer, Text, useToast } from '@chakra-ui/react'
 import { FaSave } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import { updateVendor, getOpeningHours } from '@/lib/firebase/helpers/vendors'
-
 import Wrapper from '@/layout/Wrapper'
 import Header from '@/layout/client/Header'
 import ManageLayout from '@/layout/manager/Manage'
+import SwitchOrderType from '@/components/place/SwitchOrderType'
+import Timetable from '@/components/place/Timetable'
 
-import SwitchOrderType from '@/components/vendor/SwitchOrderType'
-import Timetable from '@/components/vendor/Timetable'
+import type { Place, OpeningHours } from '@/types/place'
 
-import type { OpeningHours } from '@/types/vendor'
+const METHODS = ['now', 'collect', 'delivery']
 
-const TYPES = ['now', 'takeaway', 'delivery']
-
-function VendorOpeningHours() {
+function PlaceOpeningHours() {
   const { t } = useTranslation('common')
   const toast = useToast()
   const router = useRouter()
-  const place = router.query.place
+  const placeId = router.query.place
 
-  const [opening, setOpening] = React.useState<OpeningHours>({})
-  const [types, setTypes] = React.useState<string[]>([])
+  const { data: place, update } = useDocument<Place>(`places/${placeId}`)
 
-  function saveOpeningHours() {
+  const [opening, setOpening] = React.useState<OpeningHours>(place?.opening ?? {})
+  const [methods, setMethods] = React.useState<string[]>(place?.methods ?? [])
+
+  React.useEffect(() => {
+    if (place) {
+      setOpening(place.opening)
+      setMethods(place.methods)
+    }
+  }, [place])
+
+  function saveChanges() {
     try {
-      Object.entries(opening).forEach(([type, days]) => {
+      Object.entries(opening).forEach(([method, days]) => {
         Object.entries(days).forEach(([day, slots]) => {
-          if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(type)} / ${t(day)}`)
+          if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(method)} / ${t(day)}`)
           const success = slots.every((slot, index, array) => {
             if (index === array.length - 1) return true
             else if (
@@ -44,11 +51,11 @@ function VendorOpeningHours() {
             ) return true
             else return false
           })
-          if (!success) throw new Error(`Wrong format and/or order for: ${t(type)} / ${t(day)}`)
+          if (!success) throw new Error(`Wrong format and/or order for: ${t(method)} / ${t(day)}`)
         })
       })
 
-      updateVendor(place as string, { opening, types })
+      update({ opening, methods })!
         .then(() => toast({
           description: t('manager:changes-saved'),
           status: "success"
@@ -62,30 +69,6 @@ function VendorOpeningHours() {
     }
   }
 
-  React.useEffect(() => {
-    getOpeningHours(place as string)
-      .then(doc => {
-        if (doc.exists) {
-          setOpening(doc.data()!.opening)
-          setTypes(doc.data()!.types)
-        } else {
-          toast({
-            description: t('manager:not-found'),
-            status: "warning"
-          })
-          router.push('/vendor')
-        }
-      })
-      .catch(error => {
-        toast({
-          description: error,
-          status: "error"
-        })
-        router.push('/404')
-      })
-  }, [])
-
-  // TODO: <Vendor> title props to add in <Head>
   return (
     <Wrapper
       title="Order.brussels"
@@ -96,14 +79,14 @@ function VendorOpeningHours() {
         <Flex>
           <Heading>{t('opening-hours')}</Heading>
           <Spacer />
-          <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveOpeningHours}>{t('save')}</Button>
+          <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveChanges}>{t('save')}</Button>
         </Flex>
 
-        {TYPES.map((type, index) =>
+        {METHODS.map((method, index) =>
           <Box key={index} my={3} w="full">
-            <Heading size="md">{t(type)}</Heading>
-            <SwitchOrderType type={type} types={types} setTypes={setTypes} />
-            <Timetable type={type} opening={opening} setOpening={setOpening} />
+            <Heading size="md">{t(method)}</Heading>
+            <SwitchOrderType method={method} methods={methods} setMethods={setMethods} />
+            <Timetable method={method} opening={opening} setOpening={setOpening} />
           </Box>
         )}
       </ManageLayout>
@@ -114,13 +97,13 @@ function VendorOpeningHours() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(VendorOpeningHours)
+})(PlaceOpeningHours)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
   try {
-    // retrieve vendor id
+    // retrieve place id
     const { place } = query
 
     // retrieve roles for the current user
@@ -129,8 +112,8 @@ export const getServerSideProps = withAuthUserSSR({
       .doc(AuthUser.id!)
       .get()
 
-    // if no roles or no roles for the requested vendor, 404
-    if (!doc.exists || !doc.data()!.vendors?.includes(place)) return { notFound: true }
+    // if no roles or no roles for the requested place, 404
+    if (!doc.exists || !doc.data()!.places?.includes(place)) return { notFound: true }
 
     // else
     return { props: {} }

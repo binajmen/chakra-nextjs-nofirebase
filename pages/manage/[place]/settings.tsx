@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
@@ -9,13 +8,15 @@ import {
 } from '@chakra-ui/react'
 
 import admin from '@/lib/firebase/admin'
-
 import Wrapper from '@/layout/Wrapper'
 import Header from '@/layout/client/Header'
 import ManageLayout from '@/layout/manager/Manage'
 
+// TODO:
+// Payment (mollie)
+// Notification per order type (sms)
 
-function VendorIndex() {
+function PlaceIndex() {
   return (
     <Wrapper
       title="Order.brussels"
@@ -23,11 +24,7 @@ function VendorIndex() {
     // renderFooter={() => <Footer />}
     >
       <ManageLayout>
-        {/* 
-                        TODO:
-                        Payment (mollie)
-                        Notification per order type (sms)
-                        */}
+        Under construction
       </ManageLayout>
     </Wrapper>
 
@@ -37,7 +34,7 @@ function VendorIndex() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(VendorIndex)
+})(PlaceIndex)
 
 // https://github.com/vinissimus/next-translate/issues/487
 export function getServerSideProps() { return { props: {} }; }

@@ -8,9 +8,9 @@ import {
     Text
 } from '@chakra-ui/react'
 
-import ButtonLink from '@/components/ButtonLink'
+import ButtonLink from '@/components/atoms/NextButton'
 
-export type Vendor = {
+export type Place = {
     id: string
     name: string
     phone: string
@@ -18,35 +18,35 @@ export type Vendor = {
     cover: string
 }
 
-export type VendorsProps = {
-    vendors: Vendor[]
+export type PlacesProps = {
+    places: Place[]
 }
 
-export default function Vendors({ vendors }: VendorsProps) {
+export default function Places({ places }: PlacesProps) {
     return (
         <Box p={3}>
             <SimpleGrid columns={[1, 2, 3, 4]} spacing={5}>
-                {vendors.map((vendor, index) => <VendorCard key={index} vendor={vendor} />)}
+                {places.map((place, index) => <PlaceCard key={index} place={place} />)}
             </SimpleGrid>
         </Box>
     )
 }
 
-export type VendorCardProps = {
-    manager: Vendor
+export type PlaceCardProps = {
+    manager: Place
 }
 
-function VendorCard({ vendor }: VendorCardProps) {
+function PlaceCard({ place }: PlaceCardProps) {
     const { t } = useTranslation()
 
     return (
         <Box boxShadow="lg" borderRadius="lg" overflow="hidden">
             {/* TODO: use Next Image for optimization? */}
-            <Image w="100%" src={vendor.cover} alt="Image du restaurant" />
+            <Image w="100%" src={place.cover} alt="Image du restaurant" />
 
             <Box p="3">
-                <Text as="b">{vendor.name}</Text>
-                <Text>{vendor.address}</Text>
+                <Text as="b">{place.name}</Text>
+                <Text>{place.address}</Text>
             </Box>
 
             <Box p="3" textAlign="right">
@@ -54,8 +54,8 @@ function VendorCard({ vendor }: VendorCardProps) {
                     size="sm"
                     color="gray.900"
                     colorScheme="primary"
-                    pathname="/vendor/[vendorId]"
-                    query={{ vendorId: vendor.id }}
+                    pathname="/place/[placeId]"
+                    query={{ placeId: place.id }}
                 >{t('manager:manage')}</ButtonLink>
             </Box>
         </Box>

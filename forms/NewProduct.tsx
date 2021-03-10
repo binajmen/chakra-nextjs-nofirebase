@@ -1,161 +1,181 @@
 import * as React from 'react'
-import produce from 'immer'
 import { useRouter } from 'next/router'
 import * as Yup from 'yup'
 import { Formik, Form, Field, FieldProps } from 'formik'
 import useTranslation from 'next-translate/useTranslation'
+import { useDocument } from '@nandorojo/swr-firestore'
+import fuego from '@/lib/firebase/fuego'
 
 import {
-    FormControl,
-    FormLabel,
-    FormErrorMessage,
-    Input,
-    Button,
-    InputGroup,
-    InputRightElement,
-    Modal,
-    useDisclosure,
-    ModalOverlay,
-    ModalContent,
-    ModalHeader,
-    ModalFooter,
-    ModalBody,
-    ModalCloseButton,
-    VStack,
-    useToast,
-    FormHelperText
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+  Input,
+  Button,
+  InputGroup,
+  InputRightElement,
+  Modal,
+  useDisclosure,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  VStack,
+  useToast,
+  FormHelperText
 } from '@chakra-ui/react'
 
-import CentsPriceField from '@/components/CentsPriceField'
+import { generateId } from '@/helpers/index'
 
-import type { Product, Products } from '@/types/product'
+import CentsPriceField from '@/components/atoms/CentsPriceField'
 
-import { useStoreActions } from '@/store/hooks'
+import type { Category } from '@/types/category'
+import type { Product } from '@/types/product'
 
 export type NewProductProps = {
-    modal: ReturnType<typeof useDisclosure>
+  modal: ReturnType<typeof useDisclosure>
 }
 
 const validationSchema = Yup.object().shape({
-    name: Yup.string().required(),
-    longName: Yup.string().required(),
-    desc: Yup.string().required(),
-    price: Yup.number().required(),
-    tax: Yup.number().required(),
-    size: Yup.string(),
+  name: Yup.string().required(),
+  longName: Yup.string().required(),
+  desc: Yup.string().required(),
+  price: Yup.number().required(),
+  tax: Yup.number().required(),
+  size: Yup.string(),
 })
 
 const defaultValues: Product = {
-    available: true,
-    name: "",
-    longName: "",
-    desc: "",
-    price: 0,
-    tax: 0,
-    size: "",
-    categoryIds: [],
-    type: "product"
+  available: true,
+  name: "",
+  longName: "",
+  desc: "",
+  price: 0,
+  tax: 0,
+  size: "",
+  categoryIds: [],
+  type: "product"
 }
 
 export default function NewProduct({ modal }: NewProductProps) {
-    const { t } = useTranslation('common')
-    const router = useRouter()
-    const toast = useToast()
-    const vendorId = router.query.vendorId as string
-    const categoryId = router.query.categoryId as string
+  const { t } = useTranslation('common')
+  const router = useRouter()
+  const toast = useToast()
+  const place = router.query.place as string
+  const categoryId = router.query.category as string
 
-    const createProduct = useStoreActions(actions => actions.products.createProduct)
+  const { data: category, update: updateCategory } = useDocument<Category>(`places/${place}/categories/${categoryId}`)
 
-    return (
-        <Modal size="md" isOpen={modal.isOpen} onClose={modal.onClose}>
-            <Formik
-                initialValues={defaultValues}
-                validationSchema={validationSchema}
-                onSubmit={(values) => {
-                    createProduct({ vendorId, categoryId, product: values })
-                    modal.onClose()
-                }}
-            >
-                {(props) => (
-                    <Form>
-                        <ModalOverlay />
-                        <ModalContent>
-                            <ModalHeader>{t('new')}</ModalHeader>
-                            <ModalCloseButton />
+  return (
+    <Modal size="md" isOpen={modal.isOpen} onClose={modal.onClose}>
+      <Formik
+        initialValues={defaultValues}
+        validationSchema={validationSchema}
+        onSubmit={(values) => {
+          const genId = generateId(values.name)
+          const product = {
+            ...defaultValues,
+            ...values,
+            categoryIds: [categoryId]
+          }
 
-                            <ModalBody>
-                                <VStack spacing={3}>
-                                    <Field name="name">
-                                        {({ field, form, meta }: FieldProps) => (
-                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                                                <FormLabel htmlFor="name">{t('manager:name')}</FormLabel>
-                                                <Input {...field} id="name" placeholder="" />
-                                                <FormErrorMessage>{form.errors.name}</FormErrorMessage>
-                                            </FormControl>
-                                        )}
-                                    </Field>
-                                    <Field name="longName">
-                                        {({ field, form, meta }: FieldProps) => (
-                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                                                <FormLabel htmlFor="longName">{t('manager:longName')}</FormLabel>
-                                                <Input {...field} id="longName" placeholder="" />
-                                                <FormErrorMessage>{form.errors.longName}</FormErrorMessage>
-                                            </FormControl>
-                                        )}
-                                    </Field>
-                                    <Field name="desc">
-                                        {({ field, form, meta }: FieldProps) => (
-                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                                                <FormLabel htmlFor="desc">{t('manager:description')}</FormLabel>
-                                                <Input {...field} id="desc" placeholder="" />
-                                                <FormErrorMessage>{form.errors.desc}</FormErrorMessage>
-                                            </FormControl>
-                                        )}
-                                    </Field>
-                                    <Field name="price">
-                                        {(formikProps: FieldProps) => (
-                                            <CentsPriceField
-                                                {...formikProps}
-                                                id="price"
-                                                label={t('manager:price')}
-                                                helperText="100 = 1€"
-                                            />
-                                        )}
-                                    </Field>
-                                    <Field name="tax">
-                                        {({ field, form, meta }: FieldProps) => (
-                                            <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                                                <FormLabel htmlFor="tax">{t('manager:tax')}</FormLabel>
-                                                <Input {...field} id="tax" placeholder="6, 12, 21" />
-                                                <FormErrorMessage>{form.errors.tax}</FormErrorMessage>
-                                            </FormControl>
-                                        )}
-                                    </Field>
-                                    <Field name="size">
-                                        {({ field, form, meta }: FieldProps) => (
-                                            <FormControl isInvalid={!!meta.error && !!meta.touched}>
-                                                <FormLabel htmlFor="size">{t('manager:size')}</FormLabel>
-                                                <Input {...field} id="size" placeholder="25cl, bouteille, ..." />
-                                                <FormErrorMessage>{form.errors.size}</FormErrorMessage>
-                                            </FormControl>
-                                        )}
-                                    </Field>
-                                </VStack>
-                            </ModalBody>
+          fuego.db.doc(`places/${place}/products/${genId}`)
+            .set(product, { merge: true })
+            .then(() => toast({
+              description: t('manager:changes-saved'),
+              status: "success"
+            }))
+            .then(() => updateCategory({ items: [...category!.items, genId] }))
+            .catch((error) => toast({
+              description: error.message,
+              status: "error"
+            }))
 
-                            <ModalFooter>
-                                <Button
-                                    type="submit"
-                                    // width="full"
-                                    color="gray.900"
-                                    colorScheme="primary"
-                                    isLoading={props.isSubmitting}
-                                >{t('save')}</Button>
-                            </ModalFooter>
-                        </ModalContent>
-                    </Form>
-                )}
-            </Formik>
-        </Modal >
-    )
+          modal.onClose()
+        }}
+      >
+        {(props) => (
+          <Form>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>{t('new')}</ModalHeader>
+              <ModalCloseButton />
+
+              <ModalBody>
+                <VStack spacing={3}>
+                  <Field name="name">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="name">{t('manager:name')}</FormLabel>
+                        <Input {...field} id="name" placeholder="" />
+                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="longName">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="longName">{t('manager:longName')}</FormLabel>
+                        <Input {...field} id="longName" placeholder="" />
+                        <FormErrorMessage>{form.errors.longName}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="desc">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="desc">{t('manager:description')}</FormLabel>
+                        <Input {...field} id="desc" placeholder="" />
+                        <FormErrorMessage>{form.errors.desc}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="price">
+                    {(formikProps: FieldProps) => (
+                      <CentsPriceField
+                        {...formikProps}
+                        id="price"
+                        label={t('manager:price')}
+                        helperText="100 = 1€"
+                      />
+                    )}
+                  </Field>
+                  <Field name="tax">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="tax">{t('manager:tax')}</FormLabel>
+                        <Input {...field} id="tax" placeholder="6, 12, 21" />
+                        <FormErrorMessage>{form.errors.tax}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="size">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched}>
+                        <FormLabel htmlFor="size">{t('manager:size')}</FormLabel>
+                        <Input {...field} id="size" placeholder="25cl, bouteille, ..." />
+                        <FormErrorMessage>{form.errors.size}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </VStack>
+              </ModalBody>
+
+              <ModalFooter>
+                <Button
+                  type="submit"
+                  // width="full"
+                  color="gray.900"
+                  colorScheme="primary"
+                  isLoading={props.isSubmitting}
+                >{t('save')}</Button>
+              </ModalFooter>
+            </ModalContent>
+          </Form>
+        )}
+      </Formik>
+    </Modal >
+  )
 }

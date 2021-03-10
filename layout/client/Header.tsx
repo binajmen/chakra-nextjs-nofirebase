@@ -39,15 +39,15 @@ import MethodMenu from '@/components/MethodMenu'
 
 const methods = [
   { label: 'now', icon: <FaChair /> },
-  { label: 'takeaway', icon: <FaWalking /> },
+  { label: 'collect', icon: <FaWalking /> },
   { label: 'delivery', icon: <FaBicycle /> },
 ]
 
 export default function Header() {
   const { t } = useTranslation('common')
   const login = useDisclosure()
-  const method = useStoreState(state => state.session.method)
-  const setMethod = useStoreActions(actions => actions.session.setMethod)
+  const method = useStoreState(state => state.basket.method)
+  const setMethod = useStoreActions(actions => actions.basket.setMethod)
   const geoColor = useStoreState(state => state.geolocation.color)
   const setGeolocation = useStoreActions(actions => actions.geolocation.setGeolocation)
   const geolocation = useGeolocation()

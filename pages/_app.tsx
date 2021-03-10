@@ -1,25 +1,30 @@
 import { StoreProvider } from 'easy-peasy'
+import { FuegoProvider } from '@nandorojo/swr-firestore'
 import { extendTheme, ChakraProvider, CSSReset } from '@chakra-ui/react'
 
 import type { AppProps /*, AppContext */ } from 'next/app'
 
+import fuego from '@/lib/firebase/fuego'
 import initAuth from '@/lib/firebase/auth'
-import theme from '../theme'
+
 import { useStore } from '@/store/index'
+
+import theme from '../theme'
+const customTheme = extendTheme(theme)
 
 initAuth()
 
-const customTheme = extendTheme(theme)
-
 export default function MyApp({ Component, pageProps }: AppProps) {
-    const store = useStore(pageProps.ssrStoreState)
+  const store = useStore(pageProps.ssrStoreState)
 
-    return (
-        <StoreProvider store={store}>
-            <ChakraProvider theme={customTheme}>
-                <CSSReset />
-                <Component {...pageProps} />
-            </ChakraProvider>
-        </StoreProvider>
-    )
+  return (
+    <FuegoProvider fuego={fuego}>
+      <StoreProvider store={store}>
+        <ChakraProvider theme={customTheme}>
+          <CSSReset />
+          <Component {...pageProps} />
+        </ChakraProvider>
+      </StoreProvider>
+    </FuegoProvider>
+  )
 }
