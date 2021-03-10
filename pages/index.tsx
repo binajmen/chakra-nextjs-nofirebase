@@ -34,8 +34,6 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
         buttonRender={(id) => (
           <ButtonLink
             size="sm"
-            color="gray.900"
-            colorScheme="primary"
             variant="ghost"
             rightIcon={<FaArrowRight />}
             pathname="/place/[place]"
