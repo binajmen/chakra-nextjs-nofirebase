@@ -23,6 +23,7 @@ import { useStoreRehydrated } from 'easy-peasy'
 import { nextInterval } from '@/helpers/hours'
 
 import Wrapper from '@/layout/Wrapper'
+import StandardHeader from '@/components/layouts/StandardHeader'
 import Footer from '@/layout/client/Footer'
 import Button from '@/components/atoms/Button'
 import DateField from '@/components/atoms/DateField'
@@ -42,28 +43,6 @@ function CheckoutCollect() {
   const basket = useStoreActions(actions => actions.basket)
   const isRehydrated = useStoreRehydrated()
 
-
-
-  const [date, setDate] = React.useState<string>(dayjs().format("YYYY-MM-DD"))
-  const [time, setTime] = React.useState<string>(nextInterval().format("HH:mm"))
-
-  const isToday = dayjs().isSame(date, 'day')
-
-  // TODO: reflect opening hours in time selection
-  //       setTime to first slot if incorrect
-  React.useEffect(() => {
-    basket.setDate(date)
-    if (isToday)
-      basket.setTime(nextInterval().format("HH:mm"))
-  }, [date])
-
-  React.useEffect(() => {
-    basket.setTime(time)
-  }, [time])
-
-
-
-
   if (!isRehydrated) {
     return <Progress size="xs" isIndeterminate />
   }
@@ -71,7 +50,7 @@ function CheckoutCollect() {
   return (
     <Wrapper
       title="Order.brussels"
-      renderHeader={() => null}
+      renderHeader={() => <StandardHeader />}
       renderFooter={() => <Footer />}
     >
       <Box w={["full", "sm"]} mx="auto">
@@ -85,9 +64,9 @@ function CheckoutCollect() {
           onSubmit={(values) => {
             basket.setDate(values.date)
             basket.setTime(values.time)
-            // router.push({
-            //   pathname: "/checkout/payment"
-            // })
+            router.push({
+              pathname: "/checkout/payment"
+            })
           }}
         >
           {(props) => (

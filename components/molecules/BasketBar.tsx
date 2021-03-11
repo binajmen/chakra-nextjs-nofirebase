@@ -50,7 +50,7 @@ export default function BasketBar({ onClick }: BasketBarProps) {
                 <Text>{size}</Text>
               </HStack>
               <Text>
-                View basket
+                {t('view-basket')}
               </Text>
               <Text>{total / 100}€</Text>
             </Flex>

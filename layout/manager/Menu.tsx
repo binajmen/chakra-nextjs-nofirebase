@@ -51,7 +51,7 @@ export default function Menu() {
       })}
       <Divider />
       <ButtonLink
-        pathname="/place"
+        pathname="/manage"
         leftIcon={<FaArrowLeft />}
         variant='ghost'
         colorScheme='gray'

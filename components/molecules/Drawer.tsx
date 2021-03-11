@@ -23,8 +23,8 @@ export default function Drawer(props: MyDrawerProps) {
 
   return (
     <ChakraDrawer onClose={onClose} isOpen={isOpen} {...drawerProps}>
-      <DrawerOverlay>
-        <DrawerContent>
+      <DrawerOverlay heigth="100% !important">
+        <DrawerContent heigth="100% !important">
           <DrawerCloseButton />
           <DrawerHeader>
             {header}

@@ -42,9 +42,9 @@ export default function Footer() {
           <SimpleGrid columns={[2, 2, 2, 4]} w="full" gap={6} justifyContent="space-between">
             <VStack align="flex-start">
               <Heading size="sm" textTransform="uppercase" color="primary.700">À propos</Heading>
-              <Link fontSize="sm">Histoire</Link>
+              <Link fontSize="sm">Valeurs</Link>
               <Link fontSize="sm">Partenaires</Link>
-              <Link fontSize="sm">Jobs</Link>
+              {/* <Link fontSize="sm">Jobs</Link> */}
             </VStack>
             <VStack align="flex-start">
               <Heading size="sm" textTransform="uppercase" color="primary.700">Plateforme</Heading>
@@ -54,8 +54,8 @@ export default function Footer() {
             </VStack>
             <VStack align="flex-start">
               <Heading size="sm" textTransform="uppercase" color="primary.700">Contact</Heading>
-              <Link fontSize="sm">+32 477 19 98 76</Link>
-              <Link fontSize="sm">info@mail.be</Link>
+              <Link fontSize="sm">+32 456 12 34 56</Link>
+              <Link fontSize="sm">info@myresto.brussels</Link>
             </VStack>
             <VStack align="flex-start">
               <Heading size="sm" textTransform="uppercase" color="primary.700">Legal</Heading>
@@ -66,7 +66,7 @@ export default function Footer() {
         </Flex>
       </Container>
       <Box as="footer" py={6} bg="primary.100">
-        <Text fontSize="sm" color="gray.700" textAlign="center">Copyright &copy; {new Date().getFullYear()} Myresto.brussels</Text>
+        <Text fontSize="sm" color="gray.700" textAlign="center">Copyright &copy; {new Date().getFullYear()}</Text>
       </Box>
     </Box >
   )

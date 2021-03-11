@@ -10,35 +10,35 @@ import type { OpeningHours } from '@/types/place'
 const DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
 type TimetableProps = {
-    type: string
+  method: string
     opening: OpeningHours
     setOpening: React.Dispatch<React.SetStateAction<OpeningHours>>
 }
 
-export default function Timetable({ type, opening, setOpening }: TimetableProps) {
+export default function Timetable({ method, opening, setOpening }: TimetableProps) {
     const { t } = useTranslation('common')
 
     const addNewTimeSlot = (day: string) => (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (opening[type][day].length > 4) return
+        if (opening[method][day].length > 4) return
 
         setOpening(produce(draft => {
-            draft[type][day].push('', '')
+            draft[method][day].push('', '')
         }))
     }
 
     const removeLastTimeSlot = (day: string) => (event: React.MouseEvent<HTMLButtonElement>) => {
-        if (opening[type][day].length < 2) return
+        if (opening[method][day].length < 2) return
 
         setOpening(produce(draft => {
-            draft[type][day].splice(draft[type][day].length - 2, 2)
+            draft[method][day].splice(draft[method][day].length - 2, 2)
         }))
     }
 
-    const updateTimeValue = (type: string, day: string, index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updateTimeValue = (method: string, day: string, index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
         if (!event.target.value.match(/^[0-9]{0,4}$/g)) return
 
         setOpening(produce(draft => {
-            draft[type][day][index] = event.target.value
+            draft[method][day][index] = event.target.value
         }))
     }
 
@@ -47,7 +47,7 @@ export default function Timetable({ type, opening, setOpening }: TimetableProps)
             {DAYS.map((day, index) =>
                 <HStack key={index} py={1}>
                     <Text w={100}>{t(day)}</Text>
-                    {opening[type]?.[day].map((time, index, src) => {
+                    {opening[method]?.[day].map((time, index, src) => {
                         if (index % 2 === 0 && index + 1 < src.length) {
                             return (
                                 <React.Fragment key={index}>
@@ -56,7 +56,7 @@ export default function Timetable({ type, opening, setOpening }: TimetableProps)
                                         value={time}
                                         maxW={70}
                                         size="sm"
-                                        onChange={updateTimeValue(type, day, index)}
+                                        onChange={updateTimeValue(method, day, index)}
                                     />
                                     <Text>–</Text>
                                     <Input
@@ -64,7 +64,7 @@ export default function Timetable({ type, opening, setOpening }: TimetableProps)
                                         value={src[index + 1]}
                                         maxW={70}
                                         size="sm"
-                                        onChange={updateTimeValue(type, day, index + 1)}
+                                        onChange={updateTimeValue(method, day, index + 1)}
                                     />
                                 </React.Fragment>
                             )
@@ -72,7 +72,7 @@ export default function Timetable({ type, opening, setOpening }: TimetableProps)
                             return <Text key={index} color="gray.300">|</Text>
                         }
                     })}
-                    {opening[type]?.[day].length < 5 &&
+                    {opening[method]?.[day].length < 5 &&
                         <Button
                             size="xs"
                             leftIcon={<FaPlus />}

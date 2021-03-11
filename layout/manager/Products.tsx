@@ -120,7 +120,11 @@ function ProductRow({ categoryId, productId, deleteFromCategory, index }: Produc
   const { data: product, update, deleteDocument } = useDocument<Product>(`places/${placeId}/products/${productId}`)
 
   function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
-    update({ available: !product!.available })
+    update({ available: !product!.available })!
+      .then(() => toast({
+        description: t('manager:changes-saved'),
+        status: "success"
+      }))
   }
 
   function onDelete(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {

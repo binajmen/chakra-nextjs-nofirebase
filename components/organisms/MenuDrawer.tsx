@@ -42,6 +42,7 @@ type MenuProps = {
 export default function Menu({ withCover = false }: MenuProps) {
   const { t } = useTranslation('common')
   const { isOpen, onOpen, onClose } = useDisclosure()
+
   const login = useDisclosure()
   const geoColor = useStoreState(state => state.geolocation.color)
   const isMobile = useBreakpointValue({ base: true, md: false })
@@ -59,23 +60,23 @@ export default function Menu({ withCover = false }: MenuProps) {
           variant={withCover ? "solid" : "ghost"}
           onClick={onOpen} />
       ) : (
-          <Button ref={buttonRef}
-            leftIcon={<FaBars />}
-            textColor="gray.900"
-            colorScheme="primary"
-            variant={withCover ? "solid" : "ghost"}
-            onClick={onOpen}
-          >
-            {t('menu-header')}
-          </Button>
-        )}
+        <Button ref={buttonRef}
+          leftIcon={<FaBars />}
+          textColor="gray.900"
+          colorScheme="primary"
+          variant={withCover ? "solid" : "ghost"}
+          onClick={onOpen}
+        >
+          {t('menu-header')}
+        </Button>
+      )}
       <Drawer
         isOpen={isOpen}
         placement="right"
         onClose={onClose}
         finalFocusRef={buttonRef}
       >
-        <DrawerOverlay>
+        <DrawerOverlay heigth="100% !important">
           <DrawerContent heigth="100% !important">
             <DrawerCloseButton />
             <DrawerHeader>{t('menu-header')}</DrawerHeader>

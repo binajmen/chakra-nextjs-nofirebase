@@ -58,7 +58,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
   }
 
   function isSamePlace() {
-    if (place !== basketPlace) {
+    if (basketPlace !== "" && place !== basketPlace) {
       alert.onOpen()
     } else {
       addToBasket()

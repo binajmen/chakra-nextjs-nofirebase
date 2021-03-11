@@ -44,6 +44,7 @@ const validationSchema = Yup.object().shape({
 })
 
 const defaultValues: Product = {
+  id: "_TEMP_",
   available: true,
   name: "",
   longName: "",
@@ -73,7 +74,8 @@ export default function EditProduct({ modal, productId }: EditProductProps) {
         initialValues={{ ...defaultValues, ...product }}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          update(values)!
+          const { id, ...rest } = values
+          update(rest)!
             .then(() => toast({
               description: t('manager:changes-saved'),
               status: "success"

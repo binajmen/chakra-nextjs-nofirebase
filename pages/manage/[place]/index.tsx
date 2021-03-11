@@ -36,7 +36,7 @@ function PlaceIndex() {
     // renderFooter={() => <Footer />}
     >
       <ManageLayout>
-        Temp
+        Under construction
       </ManageLayout>
     </Wrapper>
   )

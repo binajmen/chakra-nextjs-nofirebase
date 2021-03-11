@@ -53,7 +53,7 @@ export default function Wrapper(props: React.PropsWithChildren<CustomMeta & Layo
         )}
       </Head>
       {renderHeader && renderHeader()}
-      <Box mx="auto" w={{ base: 'full', xl: "80em" }} p="6">
+      <Box mx="auto" w={{ base: 'full', xl: "80em" }} p="3">
         {children}
       </Box>
       {renderFooter && renderFooter()}

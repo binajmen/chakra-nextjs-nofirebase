@@ -33,7 +33,7 @@ export default function Places({ places }: PlacesProps) {
 }
 
 export type PlaceCardProps = {
-    manager: Place
+  place: Place
 }
 
 function PlaceCard({ place }: PlaceCardProps) {

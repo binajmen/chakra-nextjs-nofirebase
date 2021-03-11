@@ -25,7 +25,7 @@ import { FaLocationArrow, FaSignInAlt, FaUserCog, FaChair, FaWalking, FaBicycle 
 import { useStoreState, useStoreActions } from '@/store/hooks'
 
 import Container from '@/layout/Container'
-import Menu from '@/layout/client/Menu'
+import Menu from '@/components/organisms/MenuDrawer'
 
 import Login from '@/forms/Login'
 import Authentication from '@/forms/Authentication'
@@ -35,7 +35,7 @@ import type { Method } from '@/store/session'
 import useGeolocation from '@/hooks/useGeolocation'
 
 import Geolocation from '@/components/Geolocation'
-import MethodMenu from '@/components/MethodMenu'
+import MethodMenu from '@/components/molecules/MethodMenu'
 
 const methods = [
   { label: 'now', icon: <FaChair /> },

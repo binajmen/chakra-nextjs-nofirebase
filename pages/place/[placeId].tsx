@@ -32,7 +32,7 @@ import { FaCartPlus, FaPlus, FaMinus, FaShoppingBasket } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
 import Wrapper from '@/layout/Wrapper'
-import Header from '@/layout/place/Header'
+import PlaceHeader from '@/components/layouts/PlaceHeader'
 import Footer from '@/layout/client/Footer'
 import ProductDrawer from '@/components/ProductDrawer'
 import BasketBar from '@/components/molecules/BasketBar'
@@ -75,20 +75,22 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     <Wrapper
       title="Order.brussels"
       renderHeader={() =>
-        <Header
-          cover={place!.cover}
-          logo={place!.logo}
-          opening={place!.opening}
+        <PlaceHeader
+          place={place!}
         />
       }
-      renderFooter={() => <Footer />}
+      renderFooter={() => null}
     >
       <Box>
-        {hasCategories && meta!.order.map(catId => (
-          <Box mb="3">
-            <Heading key={catId} mb="6" pb="1" borderBottom="1px solid lightgray">{categories[catId].name}</Heading>
+        {hasCategories && meta!.order.filter(c => categories[c].available).map(catId => (
+          <Box mb="6">
+            <Heading key={catId}
+              mb="3" pb="1"
+              borderBottomWidth={["1px", "1px", "0"]}
+              borderBottomColor="lightgray"
+            >{categories[catId].name}</Heading>
             <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
-              {hasProducts && categories[catId].items.map((prodId, index, array) => (
+              {hasProducts && categories[catId].items.filter(p => products[p].available).map((prodId) => (
                 <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
                   <Box m="auto 0" w="full">
                     <Stack direction="column">

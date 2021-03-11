@@ -1,0 +1,22 @@
+{
+  "give-your-name": "Merci de spécifier votre prénom pour nous permettre de vous appeler dès que votre commande sera prête :",
+  "choose-collect-time": "Merci de choisir une date ainsi qu'une tranche horaire à laquelle vous souhaitez récupérer votre commande :",
+  "give-your-address": "Merci de spécifier votre adresse ci-dessous afin de poursuivre votre commande :",
+  "name": "Prénom",
+  "email": "Email",
+  "why-email": "Nous vous enverrons le récapitulatif et l'avancement de votre commande sur votre email.",
+  "date": "Date",
+  "today": "Aujourd'hui",
+  "tomorrow": "Demain",
+  "monday": "Lundi",
+  "tuesday": "Mardi",
+  "wednesday": "Mercredi",
+  "thursday": "Jeudi",
+  "friday": "Vendredi",
+  "saturday": "Samedi",
+  "sunday": "Dimanche",
+  "time": "Heure approximative",
+  "street": "Adresse",
+  "postcode": "Code postal",
+  "go-to-payment": "Aller au Paiement"
+}

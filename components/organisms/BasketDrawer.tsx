@@ -33,6 +33,7 @@ import { useStoreState, useStoreActions } from '@/store/hooks'
 
 import Drawer from '@/components/molecules/Drawer'
 import Method from '@/components/atoms/Method'
+import NextButton from '@/components/atoms/NextButton'
 
 type BasketDrawerProps = {
   logo: string
@@ -52,15 +53,14 @@ export default function BasketDrawer({ logo, isOpen, onClose }: BasketDrawerProp
     <Drawer
       isOpen={isOpen}
       onClose={onClose}
-      size="full"
+      // size="full"
       header={
         <Heading size="lg">{t('your-basket')}</Heading>
       }
       footer={
-        <Button
+        <NextButton
           w="full"
-          color="gray.900"
-          colorScheme="primary"
+          pathname={`/checkout/${method}`}
         >
           <Flex justify="space-between" w="full">
             <HStack>
@@ -68,19 +68,19 @@ export default function BasketDrawer({ logo, isOpen, onClose }: BasketDrawerProp
               <Text>{size}</Text>
             </HStack>
             <Text>
-              {t('continue')}
+              {t('checkout')}
             </Text>
             <Text>{total / 100}€</Text>
           </Flex>
-        </Button>
+        </NextButton >
       }
     >
       <Image m="auto" boxSize="100px" objectFit="contain" src={logo} alt="Myresto.brussels" />
-      <Method method={method} />
+      <Method method={method as string} />
       <Box>
         {items.map((item, index) => <BasketItem key={index} index={index} item={item} />)}
       </Box>
-    </Drawer>
+    </Drawer >
   )
 }
 

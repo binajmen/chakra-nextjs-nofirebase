@@ -9,6 +9,8 @@ import {
 } from '@chakra-ui/react'
 import { MdStar } from "react-icons/md"
 
+import MethodsAvailable from '@/components/atoms/MethodsAvailable'
+
 import type { Document } from '@/types/common'
 import type { Place } from '@/types/place'
 
@@ -43,21 +45,7 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
 
         <Flex direction="column" justify="space-between">
           <Box p="3">
-            <Box d="flex" alignItems="baseline">
-              <Badge borderRadius="md" px="2" colorScheme="primary">
-                New
-              </Badge>
-              <Box
-                color="gray.500"
-                fontWeight="semibold"
-                letterSpacing="wide"
-                fontSize="xs"
-                textTransform="uppercase"
-                ml="2"
-              >
-                {place.phone}
-              </Box>
-            </Box>
+            <MethodsAvailable methods={place.methods} filter={true} />
 
             <Box
               mt="1"

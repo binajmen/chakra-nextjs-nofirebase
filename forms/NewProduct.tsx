@@ -48,6 +48,7 @@ const validationSchema = Yup.object().shape({
 })
 
 const defaultValues: Product = {
+  id: "WILL_BE_DELETED",
   available: true,
   name: "",
   longName: "",
@@ -74,10 +75,11 @@ export default function NewProduct({ modal }: NewProductProps) {
         initialValues={defaultValues}
         validationSchema={validationSchema}
         onSubmit={(values) => {
-          const genId = generateId(values.name)
+          const { id, ...rest } = values
+          const genId = generateId(rest.name)
           const product = {
             ...defaultValues,
-            ...values,
+            ...rest,
             categoryIds: [categoryId]
           }
 
