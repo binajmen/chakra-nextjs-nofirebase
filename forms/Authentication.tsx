@@ -1,6 +1,7 @@
 import * as React from 'react'
 import StyledFirebaseAuth from 'react-firebaseui/StyledFirebaseAuth'
 import useTranslation from 'next-translate/useTranslation'
+import { useRouter } from 'next/router'
 
 import {
   Modal,
@@ -21,10 +22,11 @@ export type AuthenticationProps = {
 
 export default function Authentication({ modal }: AuthenticationProps) {
   const { t } = useTranslation('common')
+  const router = useRouter()
 
   const firebaseUIConfig = {
     signInFlow: 'popup',
-    signInSuccessUrl: '/',
+    // signInSuccessUrl: router.asPath,
     signInOptions: [
       firebase.auth.EmailAuthProvider.PROVIDER_ID,
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,

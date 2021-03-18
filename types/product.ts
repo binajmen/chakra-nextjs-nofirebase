@@ -10,6 +10,7 @@ export type Product = {
   size: string
   categoryIds: string[]
   type: string
+  method: string[]
   // "choiceIds": [],
   // "comboIds": [],
   // "modifierIds": [],

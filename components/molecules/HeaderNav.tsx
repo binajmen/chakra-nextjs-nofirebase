@@ -15,9 +15,13 @@ import MenuDrawer from '@/components/organisms/MenuDrawer'
 
 type HeaverNavProps = {
   withCover?: boolean
+  withMethod?: boolean
 }
 
-export default function HeaverNav({ withCover = false }: HeaverNavProps) {
+export default function HeaverNav({
+  withCover = false,
+  withMethod = true
+}: HeaverNavProps) {
   const { t } = useTranslation('common')
 
   const authUser = useAuthUser()
@@ -27,7 +31,7 @@ export default function HeaverNav({ withCover = false }: HeaverNavProps) {
 
   return (
     <HStack spacing={3}>
-      <MethodMenu />
+      {withMethod && <MethodMenu />}
 
       <NextButton
         pathname="/account"

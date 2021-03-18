@@ -81,6 +81,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
         quantity: quantity,
         subtotal: product.price,
         total: product.price * quantity,
+        method: product.method
         // choices: [],
         // options: [],
       }

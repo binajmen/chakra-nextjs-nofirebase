@@ -14,7 +14,8 @@ import {
   Input,
   Select,
   VStack,
-  Progress
+  Progress,
+  Heading
 } from '@chakra-ui/react'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
@@ -81,7 +82,7 @@ function CheckoutDelivery() {
   return (
     <Wrapper
       title="Order.brussels"
-      renderHeader={() => <StandardHeader />}
+      renderHeader={() => <StandardHeader withMethod={false} />}
       renderFooter={() => <Footer />}
     >
       <Box w={["full", "sm"]} mx="auto">
@@ -105,7 +106,8 @@ function CheckoutDelivery() {
         >
           {(props) => (
             <Form>
-              <VStack spacing="10">
+              <VStack spacing="5">
+              <Heading>{t('common:delivery')}</Heading>
                 <Text>
                   {t('give-your-address')}
                 </Text>

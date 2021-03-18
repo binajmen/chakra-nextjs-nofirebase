@@ -12,7 +12,8 @@ import {
   FormErrorMessage,
   Input,
   VStack,
-  Progress
+  Progress,
+  Heading
 } from '@chakra-ui/react'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
@@ -43,7 +44,7 @@ function CheckoutNow() {
   return (
     <Wrapper
       title="Order.brussels"
-      renderHeader={() => <StandardHeader />}
+      renderHeader={() => <StandardHeader withMethod={false} />}
       renderFooter={() => <Footer />}
     >
       <Box w={["full", "sm"]} mx="auto">
@@ -59,7 +60,8 @@ function CheckoutNow() {
         >
           {(props) => (
             <Form>
-              <VStack spacing="10">
+              <VStack spacing="5">
+                <Heading>{t('common:now')}</Heading>
                 <Text>
                   {t('give-your-name')}
                 </Text>

@@ -1,4 +1,4 @@
-import { Action, action, Computed, computed } from 'easy-peasy'
+import { Action, action, Thunk, thunk, Computed, computed } from 'easy-peasy'
 
 import type { Method, BasketItem } from '@/types/basket'
 
@@ -17,6 +17,7 @@ type State = {
   date: string
   time: string
   address: Address
+  payment: string
 }
 
 const state: State = {
@@ -31,7 +32,13 @@ const state: State = {
     street: "",
     postcode: "",
     city: ""
-  }
+  },
+  payment: ""
+}
+
+type ChangeMethodPayload = {
+  method: string
+  isConfirmed?: boolean
 }
 
 type Model = State & {
@@ -39,18 +46,20 @@ type Model = State & {
   total: Computed<Model, number>
 
   setPlace: Action<Model, string>
-  setMethod: Action<Model, Method>
+  _setMethod: Action<Model, Method>
   setName: Action<Model, string>
   setEmail: Action<Model, string>
   setDate: Action<Model, string>
   setTime: Action<Model, string>
   setAddress: Action<Model, Address>
+  setPayment: Action<Model, string>
 
   addItem: Action<Model, BasketItem>
   increaseItem: Action<Model, number>
   decreaseItem: Action<Model, number>
   deleteItem: Action<Model, number>
   clearBasket: Action<Model>
+  setMethod: Thunk<Model, ChangeMethodPayload>
 }
 
 const model: Model = {
@@ -68,7 +77,7 @@ const model: Model = {
     }
   }),
 
-  setMethod: action((state, method) => {
+  _setMethod: action((state, method) => {
     state.method = method
   }),
 
@@ -90,6 +99,10 @@ const model: Model = {
 
   setAddress: action((state, address) => {
     state.address = address
+  }),
+
+  setPayment: action((state, payment) => {
+    state.payment = payment
   }),
 
   addItem: action((state, item) => {
@@ -138,6 +151,36 @@ const model: Model = {
   clearBasket: action((state) => {
     state.items = []
   }),
+
+  setMethod: thunk((actions, payload, helpers) => {
+    const { getState } = helpers
+    const currentMethod = getState().method
+    const items = getState().items
+    const { method, isConfirmed = false } = payload
+
+    if (isConfirmed) {
+      // remove items that doesn't belong in new method
+      items.forEach((item, index) => {
+        if (!item.method.includes(method))
+          actions.deleteItem(index)
+      })
+
+      actions._setMethod(method as Method)
+      return true
+    } else if (currentMethod !== method) {
+      // every items belongs in the new method
+      const isOk = items.every(item => item.method.includes(method))
+
+      if (isOk) {
+        actions._setMethod(method as Method)
+        return true
+      } else {
+        return false
+      }
+    } else {
+      return true
+    }
+  })
 }
 
 export type { State, Model }

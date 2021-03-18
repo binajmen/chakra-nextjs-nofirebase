@@ -21,6 +21,7 @@
     "framer-motion": "^3.3.0",
     "geofire-common": "^5.1.0",
     "immer": "^8.0.1",
+    "nanoid": "^3.1.22",
     "next": "^10.0.7",
     "next-firebase-auth": "^0.13.0-alpha.0",
     "next-translate": "^1.0.2",

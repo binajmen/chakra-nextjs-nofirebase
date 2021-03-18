@@ -104,7 +104,7 @@ export default function Header() {
                 colorScheme="primary"
                 fontSize="xl"
                 leftIcon={method.icon}
-                onClick={() => setMethod(method.label as Method)}
+                onClick={() => setMethod({ method: method.label })}
               >{t(method.label)}</Button>
             )}
           </Stack>

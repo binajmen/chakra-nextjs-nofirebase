@@ -9,13 +9,17 @@ import {
 import Container from '@/layout/Container'
 import HeaderNav from '@/components/molecules/HeaderNav'
 
-export default function Header() {
+type StandardHeaderProps = {
+  withMethod?: boolean
+}
+
+export default function StandardHeader({ withMethod }: StandardHeaderProps) {
   return (
     <Container p={6}>
       <Flex w="100%" align="center">
         <Image boxSize="100px" objectFit="contain" src="/logo.svg" alt="Myresto.brussels" />
         <Spacer />
-        <HeaderNav />
+        <HeaderNav withMethod={withMethod} />
       </Flex>
     </Container >
   )

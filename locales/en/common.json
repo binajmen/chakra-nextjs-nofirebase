@@ -38,10 +38,18 @@
   "products": "Products",
   "events": "Events",
   "new": "New",
+  "sent": "Sent",
+  "ongoing": "Ongoing",
+  "ready": "Ready",
   "visit": "Visit",
   "add-to-basket": "Add to basket",
   "cancel": "Cancel",
   "continue": "Continue",
   "checkout": "Checkout",
-  "your-basket": "Your basket"
+  "your-basket": "Your basket",
+  "view-basket": "View basket",
+  "cash": "Cash",
+  "paid": "Paid",
+  "unpaid": "Unpaid",
+  "bancontact": "Bancontact"
 }

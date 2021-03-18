@@ -46,11 +46,18 @@
   "products": "Produits",
   "events": "Événements",
   "new": "Nouveau",
+  "sent": "Reçu",
+  "ongoing": "En cours",
+  "ready": "Prêt",
   "visit": "Visiter",
   "add-to-basket": "Ajouter au panier",
   "cancel": "Annuler",
   "continue": "Continuer",
   "checkout": "Commander",
   "your-basket": "Votre panier",
-  "view-basket": "Voir le panier"
+  "view-basket": "Voir le panier",
+  "cash": "Cash",
+  "paid": "Payé",
+  "unpaid": "À payer",
+  "bancontact": "Bancontact"
 }

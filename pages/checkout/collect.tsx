@@ -14,7 +14,8 @@ import {
   FormHelperText,
   FormErrorMessage,
   Input,
-  Progress
+  Progress,
+  Heading
 } from '@chakra-ui/react'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
@@ -50,7 +51,7 @@ function CheckoutCollect() {
   return (
     <Wrapper
       title="Order.brussels"
-      renderHeader={() => <StandardHeader />}
+      renderHeader={() => <StandardHeader withMethod={false} />}
       renderFooter={() => <Footer />}
     >
       <Box w={["full", "sm"]} mx="auto">
@@ -71,7 +72,8 @@ function CheckoutCollect() {
         >
           {(props) => (
             <Form>
-              <VStack spacing="10">
+              <VStack spacing="5">
+                <Heading>{t('common:collect')}</Heading>
                 <Text>
                   {t('choose-collect-time')}
                 </Text>

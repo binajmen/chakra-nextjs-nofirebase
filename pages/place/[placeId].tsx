@@ -26,6 +26,13 @@ import {
   Portal,
   Button,
   Icon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   useDisclosure,
 } from '@chakra-ui/react'
 import { FaCartPlus, FaPlus, FaMinus, FaShoppingBasket } from 'react-icons/fa'
@@ -37,6 +44,8 @@ import Footer from '@/layout/client/Footer'
 import ProductDrawer from '@/components/ProductDrawer'
 import BasketBar from '@/components/molecules/BasketBar'
 import BasketDrawer from '@/components/organisms/BasketDrawer'
+import SelectMethod from '@/components/molecules/SelectMethod'
+
 import { useStoreState } from '@/store/hooks'
 
 function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
@@ -46,6 +55,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter()
   const placeId = router.query.placeId
 
+  const method = useStoreState(state => state.basket.method)
   const basketSize = useStoreState(state => state.basket.size)
   const total = useStoreState(state => state.basket.total)
   const [product, setProduct] = React.useState<Product | null>(null)
@@ -71,62 +81,85 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       setProduct(null)
   }, [drawer.isOpen])
 
+  console.log(method)
+
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() =>
-        <PlaceHeader
-          place={place!}
-        />
-      }
-      renderFooter={() => null}
-    >
-      <Box>
-        {hasCategories && meta!.order.filter(c => categories[c].available).map(catId => (
-          <Box mb="6">
-            <Heading key={catId}
-              mb="3" pb="1"
-              borderBottomWidth={["1px", "1px", "0"]}
-              borderBottomColor="lightgray"
-            >{categories[catId].name}</Heading>
-            <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
-              {hasProducts && categories[catId].items.filter(p => products[p].available).map((prodId) => (
-                <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
-                  <Box m="auto 0" w="full">
-                    <Stack direction="column">
-                      <Heading size="md">{products[prodId].name}</Heading>
-                      <Text>{products[prodId].desc}</Text>
-                    </Stack>
-                  </Box>
-                  {/* <Spacer /> */}
-                  <Box pl="3">
-                    <Center h="100%">
-                      {products[prodId].price / 100}€
-                    </Center>
-                  </Box>
-                  <Box pl="3">
-                    <Center h="100%">
-                      <IconButton
-                        color="gray.900"
-                        colorScheme="primary"
-                        aria-label="Add to cart"
-                        onClick={() => setProduct(products[prodId])}
-                        icon={<FaPlus />}
-                      />
-                    </Center>
-                  </Box>
-                </Flex>
-              ))}
-            </SimpleGrid>
-          </Box>
-        ))}
-      </Box>
+    <>
+      <Modal closeOnOverlayClick={false} isOpen={method === null} onClose={() => { }} isCentered>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('order-type')}</ModalHeader>
+          <ModalBody>
+            <SelectMethod />
+          </ModalBody>
+          <ModalFooter>
+            <Text>Veuillez sélectionner un type de commande pour obtenir le menu adéquat.</Text>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
 
-      <ProductDrawer product={product} onClose={drawer.onClose} isOpen={drawer.isOpen} />
-      <BasketBar onClick={basketDrawer.onOpen} />
-      <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
+      <Wrapper
+        title="Order.brussels"
+        renderHeader={() =>
+          <PlaceHeader
+            place={place!}
+          />
+        }
+        renderFooter={() => null}
+      >
+        <Box>
+          {hasCategories && meta!.order
+            .filter(c => categories[c].available)
+            .filter(c => method === null || categories[c].method.includes(method))
+            .map(catId => (
+              <Box mb="6" key={catId}>
+                <Heading
+                  mb="3" pb="1"
+                  borderBottomWidth={["1px", "1px", "0"]}
+                  borderBottomColor="lightgray"
+                >{categories[catId].name}</Heading>
+                <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
+                  {hasProducts && categories[catId].items
+                    .filter(p => products[p].available)
+                    .filter(p => method === null || products[p].method.includes(method))
+                    .map((prodId) => (
+                      <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
+                        <Box m="auto 0" w="full">
+                          <Stack direction="column">
+                            <Heading size="md">{products[prodId].name}</Heading>
+                            <Text>{products[prodId].desc}</Text>
+                          </Stack>
+                        </Box>
+                        {/* <Spacer /> */}
+                        <Box pl="3">
+                          <Center h="100%">
+                            {products[prodId].price / 100}€
+                    </Center>
+                        </Box>
+                        <Box pl="3">
+                          <Center h="100%">
+                            <IconButton
+                              color="gray.900"
+                              colorScheme="primary"
+                              aria-label="Add to cart"
+                              onClick={() => setProduct(products[prodId])}
+                              icon={<FaPlus />}
+                            />
+                          </Center>
+                        </Box>
+                      </Flex>
+                    ))}
+                </SimpleGrid>
+              </Box>
+            ))}
+        </Box>
 
-    </Wrapper >
+        <ProductDrawer product={product} onClose={drawer.onClose} isOpen={drawer.isOpen} />
+        <BasketBar onClick={basketDrawer.onOpen} />
+        <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
+
+      </Wrapper >
+    </>
   )
 }
 

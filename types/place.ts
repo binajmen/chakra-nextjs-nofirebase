@@ -6,6 +6,10 @@ export type OpeningHours = {
   }
 }
 
+export type PaymentMethods = {
+  [index: string]: string[]   // mon - sun
+}
+
 export type Place = {
   id?: string
   address: string
@@ -18,4 +22,5 @@ export type Place = {
   web: string
   methods: string[]        // now, collect, delivery
   opening: OpeningHours
+  payment: PaymentMethods
 }

@@ -12,7 +12,8 @@ export type Category = {
   items: string[],
   // TOFIX: Event and Modifier types
   events: any,
-  modifiers: any
+  modifiers: any,
+  method: string[]
 }
 
 export type Categories = {

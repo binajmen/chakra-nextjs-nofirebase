@@ -9,4 +9,17 @@ export type BasketItem = {
   subtotal: number
   quantity: number
   total: number
+  method: string[]
+}
+
+export type Order = {
+  placeId: string
+  userId: string
+  method: string
+  payment: any
+  status: string
+  progress: string
+  total: number
+  items: BasketItem[]
+  createdAt: Date
 }
