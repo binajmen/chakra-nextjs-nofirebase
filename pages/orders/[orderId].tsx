@@ -9,7 +9,7 @@ import {
   HStack,
   Wrap,
   WrapItem,
-  Box,
+  Button,
   Flex,
   Heading,
   Text,
@@ -17,9 +17,10 @@ import {
   Center,
   Icon,
   CircularProgress,
+  Collapse,
   Progress
 } from '@chakra-ui/react'
-import { FaChevronRight, FaCheck } from 'react-icons/fa'
+import { FaChevronRight, FaChevronDown, FaCheck } from 'react-icons/fa'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
 import { useStoreRehydrated } from 'easy-peasy'
@@ -29,7 +30,7 @@ import { nextInterval } from '@/helpers/hours'
 import Wrapper from '@/layout/Wrapper'
 import StandardHeader from '@/components/layouts/StandardHeader'
 import Footer from '@/layout/client/Footer'
-import Button from '@/components/atoms/Button'
+import OrderId from '@/components/atoms/OrderId'
 import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
@@ -39,6 +40,7 @@ function CheckoutCollect() {
   const { t } = useTranslation('common')
   const router = useRouter()
   const orderId = router.query.orderId as string
+  const [details, showDetails] = React.useState<boolean>(false)
 
   const { data: order, loading, error } = useDocument<Order>(`orders/${orderId}`, { listen: true })
 
@@ -59,36 +61,17 @@ function CheckoutCollect() {
       renderFooter={() => <Footer />}
     >
       <Stack direction="column">
-        <Heading size="lg" mb="3">Récapitulatif de votre commande</Heading>
-        <Wrap>
-          <WrapItem><Text fontSize="sm" as="b">Type de commande :</Text></WrapItem>
-          <WrapItem><Text fontSize="sm">{t(order!.method)}</Text></WrapItem>
-        </Wrap>
-        <Wrap>
-          <WrapItem><Text fontSize="sm" as="b">Commande # :</Text></WrapItem>
-          <WrapItem><Text fontSize="sm">{order!.id}</Text></WrapItem>
-        </Wrap>
-        <Wrap>
-          <WrapItem><Text fontSize="sm" as="b">Commerce :</Text></WrapItem>
-          <WrapItem><Text fontSize="sm">{order!.placeId}</Text></WrapItem>
-        </Wrap>
-        <Wrap>
-          <WrapItem><Text fontSize="sm" as="b">Paiement :</Text></WrapItem>
-          <WrapItem><Badge borderRadius="lg">{t(order!.payment.method)}</Badge></WrapItem>
-          <WrapItem><Badge borderRadius="lg" colorScheme={order!.payment.status === "paid" ? "green" : "red"}>{t(order!.payment.status)}</Badge></WrapItem>
-        </Wrap>
-        <hr />
-        <Stack direction="column" maxW="lg" py="2">
-          <Center><Heading size="sm">Statut de votre commande :</Heading></Center>
+        <Center mb="5"><Heading size="md">Votre commande</Heading></Center>
+        <Center mb="5"><OrderId size="xl" expSize="md" id={order!.id} expandable={true} /></Center>
+        <Stack direction="column" maxW="lg" py="2" mb="4">
           <Flex justify="space-around">
             <Status status="new" label={t('sent')} current={order!.progress} />
             <Center><Icon as={FaChevronRight} color="gray.300" /></Center>
             <Status status="ongoing" label={t('ongoing')} current={order!.progress} />
             <Center><Icon as={FaChevronRight} color="gray.300" /></Center>
-            <Status status="completed" label={t('completed')} current={order!.progress} />
+            <Status status="ready" label={t('ready')} current={order!.progress} />
           </Flex>
         </Stack>
-        <hr />
         <Stack direction="column" p="3" spacing="2" border="1px solid" borderColor="gray.100" borderRadius="lg" boxShadow="lg" maxW="lg">
           <Heading size="md">Articles</Heading>
           {order!.items.map(item => (
@@ -102,6 +85,29 @@ function CheckoutCollect() {
             <Text w="full">Total :</Text>
             <Text size="md">{order!.total / 100}€</Text>
           </Flex>
+        </Stack>
+        <Stack direction="column">
+          <Button variant="ghost"
+            size="sm"
+            colorScheme="white"
+            onClick={() => showDetails(!details)}
+            rightIcon={details ? <FaChevronDown /> : <FaChevronRight />}
+          >Détails</Button>
+          <Collapse in={details}>
+            <Wrap>
+              <WrapItem><Text fontSize="sm" as="b">Commerce :</Text></WrapItem>
+              <WrapItem><Text fontSize="sm">{order!.placeId}</Text></WrapItem>
+            </Wrap>
+            <Wrap>
+              <WrapItem><Text fontSize="sm" as="b">Type de commande :</Text></WrapItem>
+              <WrapItem><Text fontSize="sm">{t(order!.method)}</Text></WrapItem>
+            </Wrap>
+            <Wrap>
+              <WrapItem><Text fontSize="sm" as="b">Paiement :</Text></WrapItem>
+              <WrapItem><Badge borderRadius="lg">{t(order!.payment.method)}</Badge></WrapItem>
+              <WrapItem><Badge borderRadius="lg" colorScheme={order!.payment.status === "paid" ? "green" : "red"}>{t(order!.payment.status)}</Badge></WrapItem>
+            </Wrap>
+          </Collapse>
         </Stack>
       </Stack>
     </Wrapper>
