@@ -2,7 +2,7 @@
 export type Customer = {
   firstName: string
   lastName: string
-  mail: string
+  email: string
   newsletter: boolean
   addresses: string[]
   favorties: string[]
