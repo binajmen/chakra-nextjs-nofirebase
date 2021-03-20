@@ -1,8 +1,8 @@
 import * as React from 'react'
-import { useRouter } from 'next/router'
 import * as Yup from 'yup'
-import { Formik, Form, Field, FieldProps } from 'formik'
 import useTranslation from 'next-translate/useTranslation'
+import { useRouter } from 'next/router'
+import { Formik, Form, Field, FieldProps } from 'formik'
 import { useDocument } from '@nandorojo/swr-firestore'
 
 import {
@@ -53,7 +53,8 @@ const defaultValues: Product = {
   tax: 0,
   size: "",
   categoryIds: [],
-  type: "product"
+  type: "product",
+  method: ["now", "collect", "delivery"]
 }
 
 export default function EditProduct({ modal, productId }: EditProductProps) {

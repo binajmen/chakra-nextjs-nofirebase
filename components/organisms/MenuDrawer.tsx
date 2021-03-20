@@ -21,18 +21,20 @@ import {
   useBreakpointValue
 } from "@chakra-ui/react"
 
-import { FaBars, FaSignInAlt, FaSignOutAlt, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaLocationArrow, FaHandsHelping } from 'react-icons/fa'
+import { FaBars, FaSignInAlt, FaSignOutAlt, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaLocationArrow, FaHandsHelping, FaReceipt } from 'react-icons/fa'
 
 import { useStoreState } from '@/store/hooks'
 
 import Languages from '@/layout/Languages'
 import Authentication from '@/forms/Authentication'
 import Geolocation from '@/components/Geolocation'
+import NextButton from '@/components/atoms/NextButton'
 
 const links = [
   // { label: "menu-categories", icon: <FaSitemap />, color: 'primary', variant: "ghost" },
-  { label: "menu-favorites", icon: <FaHeart />, color: 'gray', variant: "ghost" },
-  { label: "menu-basket", icon: <FaShoppingBasket />, color: 'gray', variant: "ghost" },
+  // { label: "menu-favorites", to: "/favorites", icon: <FaHeart />, color: 'gray', variant: "ghost" },
+  // { label: "menu-basket", to: "/basket", icon: <FaShoppingBasket />, color: 'gray', variant: "ghost" },
+  { label: "menu-orders", to: "/orders", icon: <FaReceipt />, color: 'gray', variant: "ghost" },
 ]
 
 type MenuProps = {
@@ -88,12 +90,12 @@ export default function Menu({ withCover = false }: MenuProps) {
                   <Authentication modal={login} />
                 </>}
                 {isAuthed &&
-                  <NextLink href="/user">
+                  <NextLink href="/account">
                     <Button leftIcon={<FaUserCog />} textColor="gray.900" colorScheme="primary" variant="solid">{t('menu-account')}</Button>
                   </NextLink>
                 }
                 {links.map((link, index) =>
-                  <Button key={index} leftIcon={link.icon} colorScheme={link.color} variant={link.variant}>{t(link.label)}</Button>
+                  <NextButton key={index} leftIcon={link.icon} colorScheme={link.color} variant={link.variant} pathname={link.to}>{t(link.label)}</NextButton>
                 )}
               </VStack>
             </DrawerBody>

@@ -30,13 +30,12 @@ export const retrieveMollieAccessToken = async (
         data: {
           grant_type: "authorization_code",
           code: data.code,
-          redirect_uri: "https://dashboard.sitback.app/mollie"
+          redirect_uri: `${functions.config().portal.baseurl}/setupMollie`
         },
         withCredentials: true,
         auth: {
-          // TODO: use `${functions.config().mollie.XXX}`
-          username: "app_7fAT8gcwu45eeknqjkcJuawV",
-          password: "wypt9PbBVuxWupN49nR7MnHa4cBDpaWNHpehzgkv"
+          username: `${functions.config().mollie.appid}`,
+          password: `${functions.config().mollie.secret}`
         },
       })
 
@@ -81,13 +80,12 @@ async function getToken(mollieDoc: any, mollieRef: any) {
     data: {
       grant_type: "refresh_token",
       refresh_token: mollieDoc.refresh_token,
-      redirect_uri: "https://dashboard.sitback.app/mollie"
+      redirect_uri: `${functions.config().portal.baseurl}/setupMollie`
     },
     withCredentials: true,
     auth: {
-      // TODO: use `${functions.config().mollie.XXX}`
-      username: "app_7fAT8gcwu45eeknqjkcJuawV",
-      password: "wypt9PbBVuxWupN49nR7MnHa4cBDpaWNHpehzgkv"
+      username: `${functions.config().mollie.appid}`,
+      password: `${functions.config().mollie.secret}`
     },
   })
 
@@ -130,18 +128,18 @@ export const createOnlineOrder = async (
 ) => {
   try {
     // TOFIX? validate order totals
-    console.log(data.placeId)
+
     // retrieve private data
     const mollieRef = admin.firestore().doc(`places/${data.placeId}/settings/mollie`)
-    const mollieData = await mollieRef.get()
-    if (!mollieData.exists)
+    const mollieDoc = await mollieRef.get()
+    if (!mollieDoc.exists)
       throw new Error("Unable to process payment: missing Mollie settings")
-    const customer = mollieData.data()
-    if (customer === undefined)
+    const mollieData = mollieDoc.data()
+    if (mollieData === undefined)
       throw new Error("Unable to process payment: Mollie settings undefined")
 
     // retrieve customer access token
-    const access_token = await getToken(customer, mollieRef)
+    const access_token = await getToken(mollieData, mollieRef)
 
     // create order
     const orderDoc = await admin.firestore().collection("orders").add({
@@ -153,28 +151,23 @@ export const createOnlineOrder = async (
     const totDecimals = data.total / 100
 
     // create mollie client instance with customer access token
-    const { createMollieClient } = require("@mollie/api-client");
+    const { createMollieClient } = require("@mollie/api-client")
     const mollieClient = createMollieClient({ apiKey: access_token })
 
     // create payment
-    // const testmode = functions.config().mollie.testmode === "true" || data.placeId === "demo" ? true : false;
-    const testmode = true
-
     let paymentIntent = {
       amount: {
         currency: "EUR",
         value: `${totDecimals.toFixed(2)}`,
       },
       description: `${data.placeId} #${orderDoc.id}`,
-      // redirectUrl: `${functions.config().sitback.baseurl}/orders/${orderDoc.id}`,
-      redirectUrl: `http://localhost:3000/orders/${orderDoc.id}`,
-      // webhookUrl: `${functions.config().mollie.webhook}`,
-      webhookUrl: "https://61c9cfe4344f.eu.ngrok.io/orderbru/europe-west1/webhookMollie",
+      redirectUrl: `${functions.config().portal.baseurl}/orders/${orderDoc.id}?emptyBasket=1`,
+      webhookUrl: `${functions.config().mollie.webhook}`,
       metadata: {
         orderId: orderDoc.id,
       },
-      profileId: customer.profileId,
-      testmode: testmode
+      profileId: mollieData.profileId,
+      testmode: mollieData.testmode
     }
 
     const payment = await mollieClient.payments.create(paymentIntent);
@@ -239,25 +232,24 @@ export const webhookMollie = async (
     const order = doc.data()
 
     const mollieRef = admin.firestore().doc(`places/${order.placeId}/settings/mollie`)
-    const mollieData = await mollieRef.get()
-    if (!mollieData.exists) {
+    const mollieDoc = await mollieRef.get()
+    if (!mollieDoc.exists) {
       console.error("Unable to process payment: private data missing for ", mollieRef)
       response.status(404).send("Unable to process payment: private data missing")
     }
-    const customer = mollieData.data()
-    if (customer === undefined)
+    const mollieData = mollieDoc.data()
+    if (mollieData === undefined)
       throw new Error("Unable to process payment: Mollie settings undefined")
 
     // retrieve customer access token
-    const access_token = await getToken(customer, mollieRef)
+    const access_token = await getToken(mollieData, mollieRef)
 
     // create mollie client instance with customer access token
     const { createMollieClient } = require("@mollie/api-client");
     const mollieClient = createMollieClient({ apiKey: access_token })
 
     // retrieve payment info
-    // const testmode = functions.config().mollie.testmode === "true" || order.slug === "demo" ? true : false;
-    const testmode = true
+    const testmode = mollieData ?? false
     const payment = await mollieClient.payments.get(paymentId, { testmode: testmode });
 
     // update payment info

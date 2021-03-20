@@ -43,6 +43,7 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
   const [loading, setLoading] = React.useState<boolean>(false)
 
   const basket = useStoreState(state => state.basket)
+  const getUserId = useStoreActions(actions => actions.basket.getUserId)
 
   function initOrder() {
     setLoading(true)
@@ -50,9 +51,11 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
   }
 
   function createOrder() {
+    const userId = getUserId(authUser.id)
+
     const order = {
       placeId: basket.place,
-      userId: authUser.id || nanoid(),
+      userId: userId,
       method: basket.method,
       // location: {
       //   type: user.location.type,
@@ -70,7 +73,7 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
         status: "unpaid",
         method: basket.payment
       },
-      progress: "new"
+      progress: "queuing"
       // progress: basket.items.reduce((acc, cur) => {
       //   return {
       //     ...acc,
@@ -119,8 +122,8 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
             setLoading(false)
           } else {
             router.push({
-              pathname: "/order/[orderId]",
-              query: { orderId: result.data }
+              pathname: "/orders/[orderId]",
+              query: { orderId: result.data, emptyBasket: 1 }
             })
           }
           // actions.archiveBasket(result.data)
@@ -137,7 +140,7 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
         .filter(m => methods.includes(m))
         .map(method => <PaymentMethod key={method} method={method} />)}
       <Center>
-        <Button mt="12" disabled={loading || basket.payment === ""} isLoading={loading} onClick={initOrder}>{t('validate')}</Button>
+        <Button mt="12" disabled={loading || basket.payment === ""} isLoading={loading} onClick={initOrder}>{t('common:validate')}</Button>
       </Center>
     </Box>
   )

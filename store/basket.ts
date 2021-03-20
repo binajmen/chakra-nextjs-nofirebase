@@ -1,4 +1,5 @@
 import { Action, action, Thunk, thunk, Computed, computed } from 'easy-peasy'
+import { nanoid } from 'nanoid'
 
 import type { Method, BasketItem } from '@/types/basket'
 
@@ -12,6 +13,7 @@ type State = {
   place: string
   method: Method
   items: BasketItem[]
+  userId: string
   name: string
   email: string
   date: string
@@ -24,16 +26,17 @@ const state: State = {
   place: "",
   method: null,
   items: [],
-  name: "",
-  email: "",
   date: "",
   time: "",
+  payment: "",
+  userId: "",
+  name: "",
+  email: "",
   address: {
     street: "",
     postcode: "",
     city: ""
-  },
-  payment: ""
+  }
 }
 
 type ChangeMethodPayload = {
@@ -53,7 +56,9 @@ type Model = State & {
   setTime: Action<Model, string>
   setAddress: Action<Model, Address>
   setPayment: Action<Model, string>
+  setUserId: Action<Model, string>
 
+  getUserId: Thunk<Model, string | null>
   addItem: Action<Model, BasketItem>
   increaseItem: Action<Model, number>
   decreaseItem: Action<Model, number>
@@ -105,6 +110,28 @@ const model: Model = {
     state.payment = payment
   }),
 
+  setUserId: action((state, userId) => {
+    state.userId = userId
+  }),
+
+  getUserId: thunk((actions, authId, helpers) => {
+    const { getState } = helpers
+
+    if (authId) {
+      console.log("authed", authId)
+      actions.setUserId(authId)
+      return authId
+    } else if (getState().userId !== "") {
+      console.log("already ordered", getState().userId)
+      return getState().userId
+    } else {
+      console.log("first order")
+      const anonymId = nanoid()
+      actions.setUserId(anonymId)
+      return anonymId
+    }
+  }),
+
   addItem: action((state, item) => {
     const index = state.items.findIndex(e => {
       if (e.id === item.id)
@@ -149,7 +176,12 @@ const model: Model = {
   }),
 
   clearBasket: action((state) => {
+    state.place = ""
+    // state.method = null
     state.items = []
+    state.date = ""
+    state.time = ""
+    state.payment = ""
   }),
 
   setMethod: thunk((actions, payload, helpers) => {

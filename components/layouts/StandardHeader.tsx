@@ -4,6 +4,8 @@ import {
   Flex,
   Spacer,
   Image,
+  LinkOverlay,
+  LinkBox,
 } from '@chakra-ui/react'
 
 import Container from '@/layout/Container'
@@ -17,7 +19,11 @@ export default function StandardHeader({ withMethod }: StandardHeaderProps) {
   return (
     <Container p={6}>
       <Flex w="100%" align="center">
-        <Image boxSize="100px" objectFit="contain" src="/logo.svg" alt="Myresto.brussels" />
+        <LinkBox>
+          <LinkOverlay href="/">
+            <Image boxSize="100px" objectFit="contain" src="/logo.svg" alt="Myresto.brussels" />
+          </LinkOverlay>
+        </LinkBox>
         <Spacer />
         <HeaderNav withMethod={withMethod} />
       </Flex>

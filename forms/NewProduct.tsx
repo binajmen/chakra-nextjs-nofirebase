@@ -57,7 +57,8 @@ const defaultValues: Product = {
   tax: 0,
   size: "",
   categoryIds: [],
-  type: "product"
+  type: "product",
+  method: ["now", "collect", "delivery"]
 }
 
 export default function NewProduct({ modal }: NewProductProps) {

@@ -1,10 +1,8 @@
 import * as React from 'react'
 import * as Yup from 'yup'
 import useTranslation from 'next-translate/useTranslation'
-import { useRouter } from 'next/router'
 import { withAuthUser } from 'next-firebase-auth'
-import { Formik, Form, Field, FieldProps } from 'formik'
-import { useDocument, useCollection } from '@nandorojo/swr-firestore'
+import { useDocument } from '@nandorojo/swr-firestore'
 
 import {
   Box,
@@ -32,7 +30,7 @@ const validationSchema = Yup.object().shape({
   name: Yup.string().required().min(2)
 })
 
-function CheckoutNow() {
+function CheckoutPayment() {
   const { t } = useTranslation('checkout')
 
   const method = useStoreState(state => state.basket.method)
@@ -58,4 +56,6 @@ function CheckoutNow() {
   )
 }
 
-export default withAuthUser()(CheckoutNow)
+export default withAuthUser()(CheckoutPayment)
+
+export function getStaticProps() { return { props: {} } }

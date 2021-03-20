@@ -43,7 +43,8 @@ const defaultValues: Category = {
   available: true,
   events: {},
   items: [],
-  modifiers: {}
+  modifiers: {},
+  method: ["now", "collect", "delivery"]
 }
 
 export default function NewCategory({ modal }: NewCategoryProps) {

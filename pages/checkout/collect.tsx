@@ -1,9 +1,10 @@
 import * as React from 'react'
-import { useRouter } from 'next/router'
 import * as Yup from 'yup'
-import { Formik, Form, Field, FieldProps } from 'formik'
 import useTranslation from 'next-translate/useTranslation'
 import dayjs from 'dayjs'
+import { withAuthUser } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
+import { Formik, Form, Field, FieldProps } from 'formik'
 
 import {
   Box,
@@ -63,6 +64,7 @@ function CheckoutCollect() {
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
+            basket.setEmail(values.email)
             basket.setDate(values.date)
             basket.setTime(values.time)
             router.push({
@@ -125,4 +127,6 @@ function CheckoutCollect() {
   )
 }
 
-export default CheckoutCollect
+export default withAuthUser()(CheckoutCollect)
+
+export function getStaticProps() { return { props: {} } }

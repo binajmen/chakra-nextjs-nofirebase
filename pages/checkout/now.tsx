@@ -1,8 +1,9 @@
 import * as React from 'react'
-import { useRouter } from 'next/router'
 import * as Yup from 'yup'
-import { Formik, Form, Field, FieldProps } from 'formik'
 import useTranslation from 'next-translate/useTranslation'
+import { withAuthUser } from 'next-firebase-auth'
+import { useRouter } from 'next/router'
+import { Formik, Form, Field, FieldProps } from 'formik'
 
 import {
   Box,
@@ -86,4 +87,6 @@ function CheckoutNow() {
   )
 }
 
-export default CheckoutNow
+export default withAuthUser()(CheckoutNow)
+
+export function getStaticProps() { return { props: {} } }

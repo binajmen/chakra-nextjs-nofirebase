@@ -1,14 +1,8 @@
 import * as React from 'react'
-import { withAuthUser } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
+import { withAuthUser } from 'next-firebase-auth'
 import { useCollection } from '@nandorojo/swr-firestore'
-
-import type {
-  InferGetServerSidePropsType,
-  GetServerSideProps,
-  GetServerSidePropsContext
-} from 'next'
-import type { Place } from '@/types/place'
+import type { InferGetServerSidePropsType, GetServerSideProps, GetServerSidePropsContext } from 'next'
 
 import { FaArrowRight } from 'react-icons/fa'
 
@@ -18,6 +12,8 @@ import Header from '@/layout/client/Header'
 import Footer from '@/layout/client/Footer'
 import PlacesList from '@/components/PlacesList'
 import ButtonLink from '@/components/atoms/NextButton'
+
+import type { Place } from '@/types/place'
 
 function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common')

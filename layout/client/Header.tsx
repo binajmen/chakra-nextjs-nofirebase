@@ -71,7 +71,7 @@ export default function Header() {
                                 variant="ghost"
                             />} */}
           {!!method && <MethodMenu />}
-          <NextLink href="/user">
+          <NextLink href="/account">
             <Button hidden={isMobile || !isAuthed} leftIcon={<FaUserCog />} textColor="gray.900" colorScheme="primary" >
               {t('menu-account')}
             </Button>

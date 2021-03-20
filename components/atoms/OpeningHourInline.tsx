@@ -29,7 +29,7 @@ export default function TodayOpening({ method, opening }: TodayOpeningProps) {
     return null
 
   return (
-    <HStack>
+    <HStack fontSize="sm">
       <Text>{t(dayjs().format('ddd'))}:</Text>
       {opening[method][today].map((_, index, src) => {
         if (index % 2 === 0 && index + 1 < src.length) {

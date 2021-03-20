@@ -1,3 +1,4 @@
+import firebase from '@/lib/firebase/client'
 
 export type Method = "now" | "collect" | "delivery" | null
 
@@ -21,5 +22,5 @@ export type Order = {
   progress: string
   total: number
   items: BasketItem[]
-  createdAt: Date
+  createdAt: firebase.firestore.Timestamp
 }
