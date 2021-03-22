@@ -89,6 +89,7 @@ export default function Orders() {
     return <Progress size="xs" isIndeterminate />
   }
   else if (error) {
+    console.log(error)
     return <Text>Unable to retrieve your orders at the moment. Please try again later.</Text>
   }
   else if (!userId) {

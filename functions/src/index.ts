@@ -1,5 +1,6 @@
-import * as functions from "firebase-functions";
-
+import * as functions from "firebase-functions"
+// eslint-disable-next-line no-unused-vars
+import * as firebase from "firebase-admin"
 // Firestore Triggers > Products
 
 export const onCreateProduct =
@@ -22,6 +23,12 @@ export const retrieveMollieAccessToken =
       return await (await import("./mollie/index")).retrieveMollieAccessToken(data, context)
     })
 
+export const listMollieProfiles =
+  functions.region("europe-west1")
+    .https.onCall(async (data, context) => {
+      return await (await import("./mollie/index")).listMollieProfiles(data, context)
+    })
+
 export const createOfflineOrder =
   functions.region("europe-west1")
     .https.onCall(async (data, context) => {
@@ -39,4 +46,11 @@ export const webhookMollie =
     .region("europe-west1")
     .https.onRequest(async (request, response) => {
       await (await import("./mollie/index")).webhookMollie(request, response)
+    })
+
+export const onAuthCreateUser =
+  functions
+    .region("europe-west1")
+    .auth.user().onCreate(async (event: firebase.auth.UserRecord) => {
+      await (await import("./onAuthCreateUser")).onAuthCreateUser(event)
     })

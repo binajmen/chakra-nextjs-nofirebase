@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import * as functions from "firebase-functions"
+// eslint-disable-next-line no-unused-vars
 import * as admin from "firebase-admin"
 admin.initializeApp()
 admin.firestore().settings({ ignoreUndefinedProperties: true })
@@ -10,6 +11,7 @@ export const retrieveMollieAccessToken = async (
   _context: functions.https.CallableContext
 ) => {
   try {
+    console.log(data)
     const snap = await admin.firestore().collectionGroup("settings").where("csrf", "==", data.state).get()
 
     // no matching csrf?
@@ -19,7 +21,7 @@ export const retrieveMollieAccessToken = async (
     } else {
       // create mollie private doc ref
       const place = snap.docs[0]
-      const placeRef = admin.firestore().doc(`place/${place.id}/settings/mollie`)
+      const placeRef = admin.firestore().doc(`places/${place.data().id}/settings/mollie`)
 
       // use auth token to retrieve access/refresh token
       // const axios = require("axios")
@@ -30,7 +32,7 @@ export const retrieveMollieAccessToken = async (
         data: {
           grant_type: "authorization_code",
           code: data.code,
-          redirect_uri: `${functions.config().portal.baseurl}/setupMollie`
+          redirect_uri: `${functions.config().mollie.redirecturl}`
         },
         withCredentials: true,
         auth: {
@@ -38,6 +40,8 @@ export const retrieveMollieAccessToken = async (
           password: `${functions.config().mollie.secret}`
         },
       })
+
+      console.log(response.data)
 
       // save response in mollie private
       await placeRef.set({
@@ -55,6 +59,39 @@ export const retrieveMollieAccessToken = async (
     return {
       error: true
     }
+  }
+}
+
+export const listMollieProfiles = async (
+  data: any,
+  // eslint-disable-next-line no-unused-vars
+  _context: functions.https.CallableContext
+) => {
+  try {
+    // TODO: replication of code => refactor in function
+    const mollieRef = admin.firestore().doc(`places/${data.placeId}/settings/mollie`)
+    const mollieDoc = await mollieRef.get()
+    if (!mollieDoc.exists) {
+      throw new Error("Unable to retrieve mollie profiles")
+    }
+    const mollieData = mollieDoc.data()
+
+    const access_token = await getToken(mollieData, mollieRef)
+    console.log(access_token)
+    const axios = require("axios")
+    const response = await axios({
+      method: "get",
+      url: "https://api.mollie.com/v2/profiles",
+      headers: {
+        "Authorization": `Bearer ${access_token}`
+      },
+    })
+
+    console.log(response.data)
+    return response.data
+  } catch (error) {
+    console.error(error)
+    return error
   }
 }
 
@@ -80,7 +117,7 @@ async function getToken(mollieDoc: any, mollieRef: any) {
     data: {
       grant_type: "refresh_token",
       refresh_token: mollieDoc.refresh_token,
-      redirect_uri: `${functions.config().portal.baseurl}/setupMollie`
+      redirect_uri: `${functions.config().mollie.redirecturl}`
     },
     withCredentials: true,
     auth: {
@@ -182,37 +219,6 @@ export const createOnlineOrder = async (
     // response.status(500).send("Create order failed")
   }
 }
-
-// exports.listMollieProfiles = functions
-//   .region("europe-west1")
-//   .https.onCall(async (data, context) => {
-//     try {
-//       // TODO: replication of code => refactor in function
-//       const privateRef = admin.firestore().collection(`businesses/${data.id}/private`).doc("mollie")
-//       const privateData = await privateRef.get()
-//       if (!privateData.exists) {
-//         console.error("Unable to process payment: private data missing for ", privateRef)
-//         response.status(404).send("Unable to process payment: private data missing")
-//       }
-//       const customer = privateData.data()
-
-//       const access_token = await getToken(customer, privateRef)
-
-//       const axios = require("axios")
-//       const response = await axios({
-//         method: "get",
-//         url: "https://api.mollie.com/v2/profiles",
-//         headers: {
-//           "Authorization": `Bearer ${access_token}`
-//         },
-//       })
-
-//       return response.data
-//     } catch (error) {
-//       console.warn("OOps!", error)
-//       return error
-//     }
-//   })
 
 export const webhookMollie = async (
   request: functions.https.Request,

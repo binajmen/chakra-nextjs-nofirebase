@@ -32,9 +32,11 @@ export default function Authentication({ modal }: AuthenticationProps) {
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
       firebase.auth.FacebookAuthProvider.PROVIDER_ID
     ],
-    signInSuccess: () => {
-      modal.onClose()
-      return false
+    callbacks: {
+      signInSuccessWithAuthResult: () => {
+        modal.onClose()
+        return false
+      }
     },
     tosUrl: '/terms-of-service',
     privacyPolicyUrl: '/privacy-policy'
