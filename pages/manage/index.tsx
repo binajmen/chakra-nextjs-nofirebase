@@ -10,9 +10,8 @@ import {
 import { FaArrowRight } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import Wrapper from '@/layout/Wrapper'
-import Header from '@/layout/client/Header'
-import Footer from '@/layout/client/Footer'
+import Layout from '@/components/layout/Layout'
+
 import PlacesList from '@/components/PlacesList'
 import ButtonLink from '@/components/atoms/NextButton'
 
@@ -21,12 +20,11 @@ function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps
   const { t } = useTranslation('common')
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <Header />}
-    // renderFooter={() => <Footer />}
+    <Layout
+      layout="manage"
+      metadata={{ title: "Vos sites" }}
     >
-      <Heading mb={3} size="md">Vos places :</Heading>
+      <Heading mb={3} size="md">Vos sites :</Heading>
       <PlacesList
         places={places}
         buttonRender={(id) => (
@@ -41,7 +39,7 @@ function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps
           >{t('manager:manage')}</ButtonLink>
         )}
       />
-    </Wrapper>
+    </Layout>
   )
 }
 

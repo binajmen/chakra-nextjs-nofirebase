@@ -15,9 +15,30 @@ import {
 
 import { FaFacebook, FaInstagram } from 'react-icons/fa'
 
-import Container from '@/layout/Container'
+import Container from '@/components/layout/Container'
 
-export default function Footer() {
+import type { Place } from '@/types/place'
+import type { Layout } from './Layout'
+
+type HeaderProps = {
+  layout: Layout
+  place?: Place | undefined
+}
+
+export default function Footer(props: HeaderProps) {
+  switch (props.layout) {
+    case "place":
+    // return <PlaceHeader {...props} />
+    case "checkout":
+    case "manage":
+    case "admin":
+    case "default":
+    default:
+      return <DefaultFooter />
+  }
+}
+
+function DefaultFooter() {
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (

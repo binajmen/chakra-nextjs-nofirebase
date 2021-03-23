@@ -8,10 +8,7 @@ import {
 } from '@chakra-ui/react'
 
 import admin from '@/lib/firebase/admin'
-import Wrapper from '@/layout/Wrapper'
-import Header from '@/layout/client/Header'
-import ManageLayout from '@/layout/manager/Manage'
-
+import Layout from '@/components/layout/Layout'
 import SettingsMollie from '@/components/manage/SettingsMollie'
 
 // TODO:
@@ -23,15 +20,12 @@ function SettingsIndex() {
   const placeId = router.query.place as string
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <Header />}
-    // renderFooter={() => <Footer />}
+    <Layout
+      layout="manage"
+      metadata={{ title: "Vos commandes" }}
     >
-      <ManageLayout>
-        <SettingsMollie placeId={placeId} />
-      </ManageLayout>
-    </Wrapper>
+      <SettingsMollie placeId={placeId} />
+    </Layout>
   )
 }
 

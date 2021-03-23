@@ -8,9 +8,8 @@ import { Flex, Box, Heading, Button, Spacer, Text, useToast } from '@chakra-ui/r
 import { FaSave } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import Wrapper from '@/layout/Wrapper'
-import Header from '@/layout/client/Header'
-import ManageLayout from '@/layout/manager/Manage'
+import Layout from '@/components/layout/Layout'
+
 import SwitchOrderType from '@/components/place/SwitchOrderType'
 import Timetable from '@/components/place/Timetable'
 
@@ -70,27 +69,24 @@ function PlaceOpeningHours() {
   }
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <Header />}
-    // renderFooter={() => <Footer />}
+    <Layout
+      layout="manage"
+      metadata={{ title: "Vos commandes" }}
     >
-      <ManageLayout>
-        <Flex>
-          <Heading>{t('opening-hours')}</Heading>
-          <Spacer />
-          <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveChanges}>{t('save')}</Button>
-        </Flex>
+      <Flex>
+        <Heading>{t('opening-hours')}</Heading>
+        <Spacer />
+        <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveChanges}>{t('save')}</Button>
+      </Flex>
 
-        {METHODS.map((method, index) =>
-          <Box key={index} my={3} w="full">
-            <Heading size="md">{t(method)}</Heading>
-            <SwitchOrderType method={method} methods={methods} setMethods={setMethods} />
-            <Timetable method={method} opening={opening} setOpening={setOpening} />
-          </Box>
-        )}
-      </ManageLayout>
-    </Wrapper>
+      {METHODS.map((method, index) =>
+        <Box key={index} my={3} w="full">
+          <Heading size="md">{t(method)}</Heading>
+          <SwitchOrderType method={method} methods={methods} setMethods={setMethods} />
+          <Timetable method={method} opening={opening} setOpening={setOpening} />
+        </Box>
+      )}
+    </Layout>
   )
 }
 

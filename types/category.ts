@@ -1,3 +1,5 @@
+import type { Events } from './event'
+import type { Modifiers } from './modifier'
 
 export type Order = string[]
 
@@ -8,11 +10,10 @@ export type CategoryMeta = {
 export type Category = {
   available: boolean
   name: string
-  desc: string
-  items: string[],
-  // TOFIX: Event and Modifier types
-  events: any,
-  modifiers: any,
+  description: string
+  products: string[],
+  events: Events,
+  modifiers: Modifiers,
   method: string[]
 }
 

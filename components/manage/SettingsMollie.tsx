@@ -116,72 +116,75 @@ export default function SettingsMollie({ placeId }: { placeId: string }) {
     return (<Text>Error..</Text>)
   } else if (mollieInfo) {
     return (
-      <Flex>
-        <Box id="mollie-status">
-          <Heading size="md" mb="3">Current setup status:</Heading>
-          <Table variant="simple" w="auto">
-            <Thead>
-              <Tr>
-                <Th>Mollie</Th>
-                <Th>Status</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              <Tr>
-                <Td>Profile</Td>
-                <Td>{mollieInfo.profileId ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
-              </Tr>
-              <Tr>
-                <Td>Profile ID</Td>
-                <Td>{mollieInfo.profileId ?? "–"}</Td>
-              </Tr>
-              <Tr>
-                <Td>Access token</Td>
-                <Td>{mollieInfo.access_token ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
-              </Tr>
-              <Tr>
-                <Td>Refresh token</Td>
-                <Td>{mollieInfo.refresh_token ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
-              </Tr>
-              <Tr>
-                <Td>Scope</Td>
-                <Td>{mollieInfo.scope ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
-              </Tr>
-              <Tr>
-                <Td>Last update</Td>
-                <Td>{mollieInfo.updatedAt ? new Date(mollieInfo.updatedAt.seconds * 1000).toISOString() : "–"}</Td>
-              </Tr>
-            </Tbody>
-          </Table>
-        </Box>
-        <Box id="mollie-setup" px="6">
-          <Box id="mollie-step-one" mb="6">
-            <HStack mb="3">
-              {mollieInfo.refresh_token && <Icon as={FaCheck} color="green" fontSize="xl" />}
-              <Heading size="md">Step 1 – Connect to mollie</Heading>
-            </HStack>
-            <Button variant="ghost" colorScheme="white" padding="0" onClick={connectToMollie}>
-              <img src="/static/MollieConnect.png" alt="Mollie Connect" style={{ maxHeight: "40px" }} />
-            </Button>
+      <Box>
+        <Heading size="lg" mb="6" borderBottom="4px solid lightgray">Mollie</Heading>
+        <Flex>
+          <Box id="mollie-status">
+            <Heading size="md" mb="3">Current setup status:</Heading>
+            <Table variant="simple" w="auto">
+              <Thead>
+                <Tr>
+                  <Th>Mollie</Th>
+                  <Th>Status</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td>Profile</Td>
+                  <Td>{mollieInfo.profileId ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
+                </Tr>
+                <Tr>
+                  <Td>Profile ID</Td>
+                  <Td>{mollieInfo.profileId ?? "–"}</Td>
+                </Tr>
+                <Tr>
+                  <Td>Access token</Td>
+                  <Td>{mollieInfo.access_token ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
+                </Tr>
+                <Tr>
+                  <Td>Refresh token</Td>
+                  <Td>{mollieInfo.refresh_token ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
+                </Tr>
+                <Tr>
+                  <Td>Scope</Td>
+                  <Td>{mollieInfo.scope ? <Icon as={FaCheck} color="green" /> : <Icon as={FaTimes} color="red" />}</Td>
+                </Tr>
+                <Tr>
+                  <Td>Last update</Td>
+                  <Td>{mollieInfo.updatedAt ? new Date(mollieInfo.updatedAt.seconds * 1000).toISOString() : "–"}</Td>
+                </Tr>
+              </Tbody>
+            </Table>
           </Box>
-          <Box id="mollie-step-two" mb="6">
-            <HStack mb="3">
-              {mollieInfo.profileId && <Icon as={FaCheck} color="green" fontSize="xl" />}
-              <Heading size="md">Step 2 – Select your mollie profile</Heading>
-            </HStack>
-            <Button colorScheme="gray" onClick={retrieveMollieProfiles}>
-              Retrieve your mollie profile(s)
+          <Box id="mollie-setup" px="6">
+            <Box id="mollie-step-one" mb="6">
+              <HStack mb="3">
+                {mollieInfo.refresh_token && <Icon as={FaCheck} color="green" fontSize="xl" />}
+                <Heading size="md">Step 1 – Connect to mollie</Heading>
+              </HStack>
+              <Button variant="ghost" colorScheme="white" padding="0" onClick={connectToMollie}>
+                <img src="/static/MollieConnect.png" alt="Mollie Connect" style={{ maxHeight: "40px" }} />
+              </Button>
+            </Box>
+            <Box id="mollie-step-two" mb="6">
+              <HStack mb="3">
+                {mollieInfo.profileId && <Icon as={FaCheck} color="green" fontSize="xl" />}
+                <Heading size="md">Step 2 – Select your mollie profile</Heading>
+              </HStack>
+              <Button colorScheme="gray" onClick={retrieveMollieProfiles}>
+                Retrieve your mollie profile(s)
             </Button>
-            {profiles &&
-              <VStack mt="6" textAlign="left" spacing="3">
-                {profiles.map((profile: MollieProfile) => (
-                  <Button key={profile.id} onClick={() => selectProfile(profile.id)}>{profile.name} ({profile.id})</Button>
-                ))}
-              </VStack>
-            }
+              {profiles &&
+                <VStack mt="6" textAlign="left" spacing="3">
+                  {profiles.map((profile: MollieProfile) => (
+                    <Button key={profile.id} onClick={() => selectProfile(profile.id)}>{profile.name} ({profile.id})</Button>
+                  ))}
+                </VStack>
+              }
+            </Box>
           </Box>
-        </Box>
-      </Flex>
+        </Flex>
+      </Box>
     )
   } else {
     return null

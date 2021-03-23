@@ -25,7 +25,7 @@ import { FaBars, FaSignInAlt, FaSignOutAlt, FaSitemap, FaShoppingBasket, FaHeart
 
 import { useStoreState } from '@/store/hooks'
 
-import Languages from '@/layout/Languages'
+import Languages from '@/components/atoms/Languages'
 import Authentication from '@/forms/Authentication'
 import Geolocation from '@/components/Geolocation'
 import NextButton from '@/components/atoms/NextButton'

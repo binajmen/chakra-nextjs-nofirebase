@@ -38,9 +38,8 @@ import {
 import { FaCartPlus, FaPlus, FaMinus, FaShoppingBasket } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import Wrapper from '@/layout/Wrapper'
-import PlaceHeader from '@/components/layouts/PlaceHeader'
-import Footer from '@/layout/client/Footer'
+import Layout from '@/components/layout/Layout'
+
 import ProductDrawer from '@/components/ProductDrawer'
 import BasketBar from '@/components/molecules/BasketBar'
 import BasketDrawer from '@/components/organisms/BasketDrawer'
@@ -81,8 +80,6 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       setProduct(null)
   }, [drawer.isOpen])
 
-  console.log(method)
-
   return (
     <>
       <Modal closeOnOverlayClick={false} isOpen={method === null} onClose={() => { }} isCentered>
@@ -98,14 +95,10 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
         </ModalContent>
       </Modal>
 
-      <Wrapper
-        title="Order.brussels"
-        renderHeader={() =>
-          <PlaceHeader
-            place={place!}
-          />
-        }
-        renderFooter={() => null}
+      <Layout
+        layout="place"
+        metadata={{ title: place!.name }}
+        place={place as Place}
       >
         <Box>
           {hasCategories && meta!.order
@@ -158,7 +151,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
         <BasketBar onClick={basketDrawer.onOpen} />
         <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
 
-      </Wrapper >
+      </Layout>
     </>
   )
 }

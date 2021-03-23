@@ -5,9 +5,7 @@ import {
   withAuthUserTokenSSR
 } from 'next-firebase-auth'
 
-import Wrapper from '@/layout/Wrapper'
-import StandardHeader from '@/components/layouts/StandardHeader'
-import Footer from '@/layout/client/Footer'
+import Layout from '@/components/layout/Layout'
 
 import AccountAuthed from '@/components/AccountAuthed'
 import AccountUnauthed from '@/components/AccountUnauthed'
@@ -17,17 +15,16 @@ function UserIndex() {
   const authUser = useAuthUser()
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <StandardHeader />}
-      renderFooter={() => <Footer />}
+    <Layout
+      layout="default"
+      metadata={{ title: "Votre compte" }}
     >
       {authUser.id ? (
         <AccountAuthed />
       ) : (
         <AccountUnauthed />
       )}
-    </Wrapper>
+    </Layout>
   )
 }
 

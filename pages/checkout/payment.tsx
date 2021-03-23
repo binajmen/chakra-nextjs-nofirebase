@@ -18,10 +18,7 @@ import {
 import { useStoreState, useStoreActions } from '@/store/hooks'
 import { useStoreRehydrated } from 'easy-peasy'
 
-import Wrapper from '@/layout/Wrapper'
-import StandardHeader from '@/components/layouts/StandardHeader'
-import Footer from '@/layout/client/Footer'
-import Button from '@/components/atoms/Button'
+import Layout from '@/components/layout/Layout'
 import PaymentMethods from '@/components/molecules/PaymentMethods'
 
 import type { Place } from '@/types/place'
@@ -46,13 +43,12 @@ function CheckoutPayment() {
   const methods = place.payment[method as string]
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <StandardHeader />}
-      renderFooter={() => <Footer />}
+    <Layout
+      layout="checkout"
+      metadata={{ title: "Myresto.brussels" }}
     >
       <PaymentMethods methods={methods} />
-    </Wrapper>
+    </Layout>
   )
 }
 

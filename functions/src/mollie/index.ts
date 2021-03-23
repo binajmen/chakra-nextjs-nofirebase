@@ -255,7 +255,7 @@ export const webhookMollie = async (
     const mollieClient = createMollieClient({ apiKey: access_token })
 
     // retrieve payment info
-    const testmode = mollieData ?? false
+    const testmode = "testmode" in mollieData ? mollieData.testmode : false
     const payment = await mollieClient.payments.get(paymentId, { testmode: testmode });
 
     // update payment info

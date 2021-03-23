@@ -28,9 +28,7 @@ import { useStoreRehydrated } from 'easy-peasy'
 
 import { nextInterval } from '@/helpers/hours'
 
-import Wrapper from '@/layout/Wrapper'
-import StandardHeader from '@/components/layouts/StandardHeader'
-import Footer from '@/layout/client/Footer'
+import Layout from '@/components/layout/Layout'
 import OrderId from '@/components/atoms/OrderId'
 import OrderStatus from '@/components/atoms/OrderStatus'
 import DateField from '@/components/atoms/DateField'
@@ -65,10 +63,9 @@ function OrderDetails() {
   }
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <StandardHeader withMethod={false} />}
-      renderFooter={() => <Footer />}
+    <Layout
+      layout="default"
+      metadata={{ title: "Votre commande" }}
     >
       <Stack direction="column">
         <Center mb="5"><Heading size="md">Votre commande</Heading></Center>
@@ -124,7 +121,7 @@ function OrderDetails() {
           </Collapse>
         </Stack>
       </Stack>
-    </Wrapper>
+    </Layout>
   )
 }
 

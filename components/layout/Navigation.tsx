@@ -13,15 +13,15 @@ import MethodMenu from '@/components/molecules/MethodMenu'
 import LoginModal from '@/components/molecules/LoginModal'
 import MenuDrawer from '@/components/organisms/MenuDrawer'
 
-type HeaverNavProps = {
+type NavigationProps = {
   withCover?: boolean
   withMethod?: boolean
 }
 
-export default function HeaverNav({
+export default function Navigation({
   withCover = false,
   withMethod = true
-}: HeaverNavProps) {
+}: NavigationProps) {
   const { t } = useTranslation('common')
 
   const authUser = useAuthUser()

@@ -10,10 +10,10 @@ import { FaPlus } from 'react-icons/fa'
 import admin from '@/lib/firebase/admin'
 import Layout from '@/components/layout/Layout'
 
-import Categories from '@/components/manage/Categories'
+import Categories from '@/layout/manager/Categories'
 import NewCategory from '@/forms/NewCategory'
 
-function PlaceCategories() {
+function ModifiersIndex() {
   const { t } = useTranslation('common')
   const toast = useToast()
   const modal = useDisclosure()
@@ -23,7 +23,7 @@ function PlaceCategories() {
   return (
     <Layout
       layout="manage"
-      metadata={{ title: "Vos commandes" }}
+      metadata={{ title: "Modifiers" }}
     >
       <Flex mb={6}>
         <Heading>{t('categories')}</Heading>
@@ -40,7 +40,7 @@ function PlaceCategories() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(PlaceCategories)
+})(ModifiersIndex)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,

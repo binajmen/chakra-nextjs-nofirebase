@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { useDocument, useCollection } from '@nandorojo/swr-firestore'
 
 import { Divider, VStack } from '@chakra-ui/react'
-import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaFolderOpen, FaDrumstickBite, FaArrowLeft } from 'react-icons/fa'
+import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaFolderOpen, FaDrumstickBite, FaArrowLeft, FaTasks } from 'react-icons/fa'
 
 import ButtonLink from '@/components/atoms/NextButton'
 
@@ -18,7 +18,8 @@ const items = [
   { label: "opening", pathname: "/manage/[place]/opening", icon: <FaClock /> },
   { label: "categories", pathname: "/manage/[place]/categories", icon: <FaFolderOpen /> },
   // { label: "products", pathname: "/manage/[place]/products", icon: <FaDrumstickBite /> },
-  // { label: "events", pathname: "/manage/[place]/events", icon: <FaRegCalendarCheck /> },
+  { label: "events", pathname: "/manage/[place]/events", icon: <FaRegCalendarCheck /> },
+  { label: "modifiers", pathname: "/manage/[place]/modifiers", icon: <FaTasks /> },
 ]
 
 export default function Menu() {

@@ -20,9 +20,7 @@ import {
 import { useStoreState, useStoreActions } from '@/store/hooks'
 import { useStoreRehydrated } from 'easy-peasy'
 
-import Wrapper from '@/layout/Wrapper'
-import StandardHeader from '@/components/layouts/StandardHeader'
-import Footer from '@/layout/client/Footer'
+import Layout from '@/components/layout/Layout'
 import Button from '@/components/atoms/Button'
 
 
@@ -43,10 +41,9 @@ function CheckoutNow() {
   }
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <StandardHeader withMethod={false} />}
-      renderFooter={() => <Footer />}
+    <Layout
+      layout="checkout"
+      metadata={{ title: "Myresto.brussels" }}
     >
       <Box w={["full", "sm"]} mx="auto">
         <Formik
@@ -83,7 +80,7 @@ function CheckoutNow() {
           )}
         </Formik>
       </Box>
-    </Wrapper>
+    </Layout>
   )
 }
 

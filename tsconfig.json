@@ -20,14 +20,27 @@
     // https://nextjs.org/docs/advanced-features/module-path-aliases
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
-      "@/forms/*": ["forms/*"],
-      "@/helpers/*": ["helpers/*"],
-      "@/hooks/*": ["hooks/*"],
-      "@/layout/*": ["layout/*"],
-      "@/lib/*": ["lib/*"],
-      "@/store/*": ["store/*"],
-      "@/types/*": ["types/*"],
+      "@/components/*": [
+        "components/*"
+      ],
+      "@/forms/*": [
+        "forms/*"
+      ],
+      "@/helpers/*": [
+        "helpers/*"
+      ],
+      "@/hooks/*": [
+        "hooks/*"
+      ],
+      "@/lib/*": [
+        "lib/*"
+      ],
+      "@/store/*": [
+        "store/*"
+      ],
+      "@/types/*": [
+        "types/*"
+      ],
     },
   },
   "include": [

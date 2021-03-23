@@ -7,10 +7,9 @@ import { Flex, Heading, Button, Spacer, useDisclosure } from '@chakra-ui/react'
 import { FaPlus } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import Wrapper from '@/layout/Wrapper'
-import Header from '@/layout/client/Header'
-import ManageLayout from '@/layout/manager/Manage'
-import Products from '@/layout/manager/Products'
+import Layout from '@/components/layout/Layout'
+
+import Products from '@/components/manage/Products'
 import NewProduct from '@/forms/NewProduct'
 
 function PlaceCategoryProducts() {
@@ -18,24 +17,19 @@ function PlaceCategoryProducts() {
   const modal = useDisclosure()
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <Header />}
-    // renderFooter={() => <Footer />}
+    <Layout
+      layout="manage"
+      metadata={{ title: "Vos commandes" }}
     >
-      <ManageLayout>
+      <Flex mb={6}>
+        <Heading>{t('categories')}</Heading>
+        <Spacer />
+        <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('manager:new-product')}</Button>
+        <NewProduct modal={modal} />
+      </Flex>
 
-        <Flex mb={6}>
-          <Heading>{t('categories')}</Heading>
-          <Spacer />
-          <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('manager:new-product')}</Button>
-          <NewProduct modal={modal} />
-        </Flex>
-
-        <Products />
-
-      </ManageLayout>
-    </Wrapper>
+      <Products />
+    </Layout>
   )
 }
 

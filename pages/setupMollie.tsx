@@ -1,33 +1,10 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react'
+import React, { useEffect } from 'react'
 import { useRouter } from 'next/router'
-// import { v4 as uuidv4 } from 'uuid';
-// import axios from 'axios'
 
 import {
   Box,
-  Flex,
-  Stack,
-  Heading,
   Text,
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  Input,
-  IconButton,
-  Switch,
-  VStack,
-  Center,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Icon,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
   Progress,
-  useToast
 } from '@chakra-ui/react'
 
 import firebase from '@/lib/firebase/client'

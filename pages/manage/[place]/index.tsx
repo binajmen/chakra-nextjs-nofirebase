@@ -10,9 +10,8 @@ import {
 
 import admin from '@/lib/firebase/admin'
 import firebase from '@/lib/firebase/client'
-import Wrapper from '@/layout/Wrapper'
-import Header from '@/layout/client/Header'
-import ManageLayout from '@/layout/manager/Manage'
+
+import Layout from '@/components/layout/Layout'
 
 function PlaceIndex() {
   const [data, setData] = React.useState<any>({})
@@ -30,15 +29,12 @@ function PlaceIndex() {
   }, [])
 
   return (
-    <Wrapper
-      title="Order.brussels"
-      renderHeader={() => <Header />}
-    // renderFooter={() => <Footer />}
+    <Layout
+      layout="manage"
+      metadata={{ title: "Vos commandes" }}
     >
-      <ManageLayout>
-        Under construction
-      </ManageLayout>
-    </Wrapper>
+      Under construction
+    </Layout>
   )
 }
 
