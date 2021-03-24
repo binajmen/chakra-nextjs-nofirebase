@@ -32,7 +32,7 @@ import { useStoreState, useStoreActions } from '@/store/hooks'
 import { reorder } from '@/helpers/index'
 
 import type { Category } from '@/types/category'
-import type { Product, Products as ProductsType } from '@/types/product'
+import type { Product } from '@/types/product'
 
 export default function Products() {
   const { t } = useTranslation('common')

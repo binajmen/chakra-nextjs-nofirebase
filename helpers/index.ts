@@ -10,3 +10,14 @@ export function reorder(list: string[], startIndex: number, endIndex: number) {
 
   return result
 }
+
+export function objToArr(obj: any) {
+  return Object.entries(obj).reduce((res, [key, values]: [string, any]) => {
+    return [...res, { ...values, id: key }]
+  }, [] as any[])
+}
+
+export function stripDocument(document: any) {
+  const { exists, hasPendingWrites, __snapshot, ...data } = document
+  return data
+}

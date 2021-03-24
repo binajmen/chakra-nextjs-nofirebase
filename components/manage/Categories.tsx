@@ -1,158 +1,139 @@
 import * as React from 'react'
-import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import { useDocument, Document } from '@nandorojo/swr-firestore'
+import { useRouter } from 'next/router'
+import { fuego, useCollection } from '@nandorojo/swr-firestore'
 
 import {
   Box,
+  Heading,
   Table,
   Thead,
   Tbody,
   Tr,
   Th,
   Td,
-  Icon,
   Switch,
-  Link,
-  IconButton,
-  useDisclosure,
+  Stack,
+  Text,
+  Center,
+  Icon,
   useToast
 } from '@chakra-ui/react'
-import { FaEllipsisV, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaTrash, FaBoxes, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
 
-import EditCategory from '@/forms/EditCategory'
+import { Loading, Error } from '@/components/Suspense'
+import Button from '@/components/atoms/Button'
+import IconButton from '@/components/atoms/IconButton'
 
-import { reorder } from '@/helpers/index'
-
-import type { Category, CategoryMeta } from '@/types/category'
+import type { Category } from '@/types/catalog'
 
 export default function Categories() {
   const { t } = useTranslation('common')
   const toast = useToast()
   const router = useRouter()
-  const place = router.query.place
+  const placeId = router.query.placeId
 
-  const { data: meta, update } = useDocument<CategoryMeta>(`places/${place}/categories/_meta_`)
+  const categories = useCollection<Category>(`places/${placeId}/categories`, { listen: true })
 
-  function onDragEnd(result: any) {
-    if (!result.destination) return
-    if (result.destination.index === result.source.index) return
+  function edit(categoryId: string) {
+    router.push({
+      pathname: "/manage/[placeId]/categories/[categoryId]",
+      query: { placeId, categoryId }
+    })
+  }
 
-    const newOrder = reorder(
-      meta!.order,
-      result.source.index,
-      result.destination.index
+  function remove(categoryId: string) {
+    if (window.confirm()) {
+      fuego.db.doc(`places/${placeId}/categories/${categoryId}`)
+        .delete()
+        .then(() => toast({
+          description: t('manager:changes-saved'),
+          status: "success"
+        }))
+        .catch((error: any) => toast({
+          description: error.message,
+          status: "error"
+        }))
+    }
+  }
+
+  function available(categoryId: string, current: boolean) {
+    fuego.db.doc(`places/${placeId}/categories/${categoryId}`)
+      .update({ available: !current })
+      .then(() => toast({
+        description: t('manager:changes-saved'),
+        status: "success"
+      }))
+      .catch((error: any) => toast({
+        description: error.message,
+        status: "error"
+      }))
+  }
+
+  if (categories.loading) {
+    return <Loading />
+  } else if (categories.error) {
+    return <Error error={categories.error} />
+  } else if (categories.data) {
+    return (
+      <Box>
+        <Heading mb="6">{t('categories')}</Heading>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>{t('manager:available')}</Th>
+              <Th>{t('manager:name')}</Th>
+              <Th>{t('manager:description')}</Th>
+              <Th></Th>
+              <Th w="1"></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {categories.data.map((category) => (
+              <Tr key={category.id} _hover={{ bgColor: 'primary.50' }}>
+                <Td>
+                  <Switch
+                    isChecked={category.available}
+                    onChange={() => available(category.id, category.available)} />
+                </Td>
+                <Td>{category.name}</Td>
+                <Td>{category.description}</Td>
+                <Td>
+                  <Stack direction="row" spacing="2">
+                    {category.products.length && <Icon as={FaBoxes} />}
+                    {category.events?.order?.length && <Icon as={FaRegCalendarCheck} />}
+                    {category.modifiers?.order?.length && <Icon as={FaTasks} />}
+                  </Stack>
+                </Td>
+                <Td>
+                  <Stack direction="row" spacing="2">
+                    <Center>
+                      <Button
+                        aria-label="edit"
+                        leftIcon={<FaEdit />}
+                        size="sm"
+                        onClick={() => edit(category.id)}
+                      >
+                        {t('edit')}
+                      </Button>
+                    </Center>
+                    <IconButton
+                      aria-label="remove"
+                      icon={<FaTrash />}
+                      size="sm"
+                      onClick={() => remove(category.id)}
+                      colorScheme="red"
+                      color="tomato"
+                      variant="ghost" />
+                  </Stack>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      </Box>
     )
-
-    updateMeta(newOrder)
   }
 
-  function updateMeta(order: string[]) {
-    return update({ order })!
-      .then(() => toast({
-        description: t('manager:changes-saved'),
-        status: "success"
-      }))
-      .catch((error) => toast({
-        description: error.message,
-        status: "error"
-      }))
-  }
-
-  function deleteFromMeta(categoryId: string) {
-    const newOrder = meta!.order.filter(id => id !== categoryId)
-    return updateMeta(newOrder)
-  }
-
-  console.log(meta)
-
-  return (
-    <Box>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
-          {provided => (
-            <Table variant="simple" ref={provided.innerRef}>
-              <Thead>
-                <Tr>
-                  <Th></Th>
-                  <Th>{t('manager:available')}</Th>
-                  <Th>{t('manager:name')}</Th>
-                  <Th>{t('manager:description')}</Th>
-                  <Th></Th>
-                </Tr>
-              </Thead>
-              <Tbody >
-                {meta?.order.map((categoryId, index) => (
-                  <CategoryRow key={categoryId}
-                    categoryId={categoryId}
-                    deleteFromMeta={deleteFromMeta}
-                    index={index}
-                  />
-                ))}
-                {provided.placeholder}
-              </Tbody>
-            </Table>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </Box>
-  )
-}
-
-type CategoryRowProps = {
-  categoryId: string
-  deleteFromMeta: (order: string) => Promise<string | number | undefined>
-  index: number
-}
-
-function CategoryRow({ categoryId, deleteFromMeta, index }: CategoryRowProps) {
-  const { t } = useTranslation('common')
-  const modal = useDisclosure()
-  const toast = useToast()
-  const router = useRouter()
-  const place = router.query.place
-
-  const { data: category, update, deleteDocument } = useDocument<Category>(`places/${place}/categories/${categoryId}`)
-
-  function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
-    update({ available: !category?.available })!
-      .then(() => toast({
-        description: t('manager:changes-saved'),
-        status: "success"
-      }))
-      .catch((error) => toast({
-        description: error.message,
-        status: "error"
-      }))
-  }
-
-  function onDelete(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    deleteFromMeta(categoryId)
-      .then(() => deleteDocument())
-  }
-
-  return (
-    <Draggable draggableId={categoryId} index={index}>
-      {provided => (
-        <Tr ref={provided.innerRef} {...provided.draggableProps} _hover={{ bgColor: 'primary.50' }}>
-          <Td {...provided.dragHandleProps}><Icon as={FaEllipsisV} /></Td>
-          <Td><Switch isChecked={category?.available} onChange={updateAvailability} /></Td>
-          <Td>
-            <Link onClick={modal.onOpen}>{category?.name}</Link>
-            <EditCategory modal={modal} categoryId={categoryId} />
-          </Td>
-          <Td>{category?.desc}</Td>
-          <Td>
-            <IconButton aria-label="delete"
-              colorScheme="gray"
-              variant="ghost"
-              icon={<FaTrash />}
-              onClick={onDelete}
-            />
-          </Td>
-        </Tr>
-      )}
-    </Draggable>
-  )
+  return null
 }

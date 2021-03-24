@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { useDocument, useCollection } from '@nandorojo/swr-firestore'
 
 import { Divider, VStack } from '@chakra-ui/react'
-import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaFolderOpen, FaDrumstickBite, FaArrowLeft, FaTasks } from 'react-icons/fa'
+import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaBookOpen, FaFolderOpen, FaDrumstickBite, FaArrowLeft, FaTasks } from 'react-icons/fa'
 
 import ButtonLink from '@/components/atoms/NextButton'
 
@@ -13,20 +13,21 @@ import type { Categories, Category, CategoryMeta } from '@/types/category'
 import { useStoreState } from '@/store/hooks'
 
 const items = [
-  { label: "general", pathname: "/manage/[place]/", icon: <FaBuilding /> },
-  { label: "settings", pathname: "/manage/[place]/settings", icon: <FaCog /> },
-  { label: "opening", pathname: "/manage/[place]/opening", icon: <FaClock /> },
-  { label: "categories", pathname: "/manage/[place]/categories", icon: <FaFolderOpen /> },
-  // { label: "products", pathname: "/manage/[place]/products", icon: <FaDrumstickBite /> },
-  { label: "events", pathname: "/manage/[place]/events", icon: <FaRegCalendarCheck /> },
-  { label: "modifiers", pathname: "/manage/[place]/modifiers", icon: <FaTasks /> },
+  { label: "general", pathname: "/manage/[placeId]/", icon: <FaBuilding /> },
+  { label: "settings", pathname: "/manage/[placeId]/settings", icon: <FaCog /> },
+  { label: "opening", pathname: "/manage/[placeId]/opening", icon: <FaClock /> },
+  { label: "catalogs", pathname: "/manage/[placeId]/catalogs", icon: <FaBookOpen /> },
+  { label: "categories", pathname: "/manage/[placeId]/categories", icon: <FaFolderOpen /> },
+  // { label: "products", pathname: "/manage/[placeId]/products", icon: <FaDrumstickBite /> },
+  { label: "events", pathname: "/manage/[placeId]/events", icon: <FaRegCalendarCheck /> },
+  { label: "modifiers", pathname: "/manage/[placeId]/modifiers", icon: <FaTasks /> },
 ]
 
 export default function Menu() {
   const { t } = useTranslation('common')
   const router = useRouter()
   const pathname = router.pathname
-  const place = router.query.place
+  const placeId = router.query.placeId
 
   const split = pathname.split('/')
   const active = split[3] === undefined ? 'general' : split[3]
@@ -39,14 +40,14 @@ export default function Menu() {
           <React.Fragment key={index}>
             <ButtonLink
               pathname={item.pathname}
-              query={{ place }}
+              query={{ placeId }}
               leftIcon={item.icon}
               color="gray.900"
               variant={isActive ? 'solid' : 'ghost'}
               colorScheme={isActive ? 'primary' : 'gray'}
               justifyContent="left"
             >{t(item.label)}</ButtonLink>
-            {isActive && item.label === 'categories' && <CategoriesMenu />}
+            {/* {isActive && item.label === 'categories' && <CategoriesMenu />} */}
           </React.Fragment>
         )
       })}
@@ -62,32 +63,32 @@ export default function Menu() {
   )
 }
 
-function CategoriesMenu() {
-  const router = useRouter()
-  const place = router.query.place
+// function CategoriesMenu() {
+//   const router = useRouter()
+//   const place = router.query.place
 
-  const { data: catArr } = useCollection<Category>(`places/${place}/categories`, { listen: true })
-  const { data: meta } = useDocument<CategoryMeta>(`places/${place}/categories/_meta_`)
-  const categories: Categories = catArr?.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {}) ?? {}
+//   const { data: catArr } = useCollection<Category>(`places/${place}/categories`, { listen: true })
+//   const { data: meta } = useDocument<CategoryMeta>(`places/${place}/categories/_meta_`)
+//   const categories: Categories = catArr?.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {}) ?? {}
 
-  if (meta?.order.length && catArr?.length) {
-    return (
-      <React.Fragment>
-        {meta?.order.map(catId => (
-          <ButtonLink key={catId}
-            pathname="/manage/[place]/categories/[catId]"
-            query={{ place, catId }}
-            color="gray.900"
-            variant='ghost'
-            colorScheme='gray'
-            justifyContent="right"
-            fontStyle="italic"
-            pl={10}
-          >{categories[catId].name}</ButtonLink>
-        ))}
-      </React.Fragment>
-    )
-  } else {
-    return null
-  }
-}
+//   if (meta?.order.length && catArr?.length) {
+//     return (
+//       <React.Fragment>
+//         {meta?.order.map(catId => (
+//           <ButtonLink key={catId}
+//             pathname="/manage/[placeId]/categories/[catId]"
+//             query={{ place, catId }}
+//             color="gray.900"
+//             variant='ghost'
+//             colorScheme='gray'
+//             justifyContent="right"
+//             fontStyle="italic"
+//             pl={10}
+//           >{categories[catId].name}</ButtonLink>
+//         ))}
+//       </React.Fragment>
+//     )
+//   } else {
+//     return null
+//   }
+// }

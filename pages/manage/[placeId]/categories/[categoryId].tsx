@@ -1,34 +1,19 @@
 import * as React from 'react'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import { resetServerContext } from 'react-beautiful-dnd'
-import useTranslation from 'next-translate/useTranslation'
-
-import { Flex, Heading, Button, Spacer, useDisclosure } from '@chakra-ui/react'
-import { FaPlus } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
+
 import Layout from '@/components/layout/Layout'
+import CategoryEdit from '@/components/manage/CategoryEdit'
 
-import Products from '@/components/manage/Products'
-import NewProduct from '@/forms/NewProduct'
-
-function PlaceCategoryProducts() {
-  const { t } = useTranslation('common')
-  const modal = useDisclosure()
-
+function CategoryEditPage() {
   return (
     <Layout
       layout="manage"
-      metadata={{ title: "Vos commandes" }}
+      metadata={{ title: "Methods" }}
     >
-      <Flex mb={6}>
-        <Heading>{t('categories')}</Heading>
-        <Spacer />
-        <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('manager:new-product')}</Button>
-        <NewProduct modal={modal} />
-      </Flex>
-
-      <Products />
+      <CategoryEdit />
     </Layout>
   )
 }
@@ -36,7 +21,7 @@ function PlaceCategoryProducts() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(PlaceCategoryProducts)
+})(CategoryEditPage)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
@@ -44,7 +29,7 @@ export const getServerSideProps = withAuthUserSSR({
   resetServerContext()
   try {
     // retrieve place id
-    const { place } = query
+    const { placeId } = query
 
     // retrieve roles for the current user
     const doc = await admin.firestore()
@@ -53,7 +38,7 @@ export const getServerSideProps = withAuthUserSSR({
       .get()
 
     // if no roles or no roles for the requested place, 404
-    if (!doc.exists || !doc.data()!.places?.includes(place)) return { notFound: true }
+    if (!doc.exists || !doc.data()!.places?.includes(placeId)) return { notFound: true }
 
     // else
     return { props: {} }

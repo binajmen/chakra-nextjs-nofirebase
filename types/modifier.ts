@@ -11,19 +11,22 @@ export type ModifierProducts = {
 }
 
 export type Modifier = {
+  // info
   name: string
-  longName: string
   description: string
+  code: string
   min: number
   max: number
   products: ModifierProducts
-  plu: string
+  // where is it used ?
   categoryIds: string[]
   productIds: string[]
 }
 
 export type Modifiers = {
+  // order of appearance
   order: string[]
+  // copy of the modifiers
   modifier: {
     [index: string]: Modifier
   }

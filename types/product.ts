@@ -1,16 +1,23 @@
+import type { Events } from './event'
+import type { Modifiers } from './modifier'
 
 export type Product = {
-  id: string
   available: boolean
+  type: "product" | "combo" | "choice" | string
+  code: string
+  method: string[] // "now", "collect", "delivery"
   name: string
-  longName: string
-  desc: string
+  description: string
   price: number
   tax: number
-  size: string
+  events: Events
+  modifiers: Modifiers
+  // copy references:
   categoryIds: string[]
-  type: string
-  method: string[]
+  modifierIds: string[]
+
+
+  
   // "choiceIds": [],
   // "comboIds": [],
   // "modifierIds": [],

@@ -14,7 +14,7 @@ export type Category = {
   products: string[],
   events: Events,
   modifiers: Modifiers,
-  method: string[]
+  methods: string[]
 }
 
 export type Categories = {

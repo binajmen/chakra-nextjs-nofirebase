@@ -15,13 +15,14 @@ import Timetable from '@/components/place/Timetable'
 
 import type { Place, OpeningHours } from '@/types/place'
 
-const METHODS = ['now', 'collect', 'delivery']
+// const METHODS = ['now', 'collect', 'delivery']
+const METHODS = ['collect', 'delivery']
 
 function PlaceOpeningHours() {
   const { t } = useTranslation('common')
   const toast = useToast()
   const router = useRouter()
-  const placeId = router.query.place
+  const placeId = router.query.placeId
 
   const { data: place, update } = useDocument<Place>(`places/${placeId}`)
 
@@ -33,7 +34,7 @@ function PlaceOpeningHours() {
       setOpening(place.opening)
       setMethods(place.methods)
     }
-  }, [place])
+  }, [placeId])
 
   function saveChanges() {
     try {

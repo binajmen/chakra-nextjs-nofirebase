@@ -34,7 +34,7 @@ function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps
             colorScheme="primary"
             variant="ghost"
             rightIcon={<FaArrowRight />}
-            pathname="/manage/[place]"
+            pathname="/manage/[placeId]"
             query={{ place: id }}
           >{t('manager:manage')}</ButtonLink>
         )}
