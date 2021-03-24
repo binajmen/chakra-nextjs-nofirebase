@@ -2,8 +2,7 @@ import * as React from 'react'
 import * as Yup from 'yup'
 import useTranslation from 'next-translate/useTranslation'
 import { useRouter } from 'next/router'
-import { useDocument, useCollection, Document } from '@nandorojo/swr-firestore'
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
+import { useDocument, useCollection } from '@nandorojo/swr-firestore'
 import { Formik, Form, Field, FieldProps } from 'formik'
 
 import {
@@ -12,42 +11,26 @@ import {
   Center,
   Heading,
   Text,
-  Icon,
   FormControl,
   FormLabel,
   FormErrorMessage,
   Input,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  Alert,
-  AlertIcon,
   useToast,
   useDisclosure,
-  UseDisclosureProps
 } from '@chakra-ui/react'
-import { FaEllipsisV, FaTrash, FaEdit, FaPlus } from 'react-icons/fa'
+import { FaSave, FaPlus } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
 import Button from '@/components/atoms/Button'
-import IconButton from '@/components/atoms/IconButton'
+import List from './List'
+import SelectionModal from './SelectionModal'
 
-import { reorder, objToArr, stripDocument } from '@/helpers/index'
+import { stripDocument } from '@/helpers/index'
 
 import type { Category, Product, Event, Modifier } from '@/types/catalog'
 
 export default function CatalogEdit() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('admin')
   const productsModal = useDisclosure()
   const eventsModal = useDisclosure()
   const modifiersModal = useDisclosure()
@@ -67,7 +50,7 @@ export default function CatalogEdit() {
   } else if (category.data && products.data) {
     return (
       <Box>
-        <Heading mb="6">{t('manager:category')} – {category.data.name}</Heading>
+        <Heading mb="6">{t('category')} – {category.data.name}</Heading>
         <Formik
           initialValues={category.data}
           validationSchema={Yup.object({
@@ -82,7 +65,7 @@ export default function CatalogEdit() {
 
             category.update({ name, description, products, events, modifiers })!
               .then(() => toast({
-                description: t('manager:changes-saved'),
+                description: t('changes-saved'),
                 status: "success"
               }))
               .catch((error) => toast({
@@ -99,7 +82,7 @@ export default function CatalogEdit() {
                 <Field name="name">
                   {({ field, form, meta }: FieldProps) => (
                     <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                      <FormLabel htmlFor="name">{t('manager:name')}</FormLabel>
+                      <FormLabel htmlFor="name">{t('name')}</FormLabel>
                       <Input {...field} id="name" placeholder="" />
                       <FormErrorMessage>{form.errors.name}</FormErrorMessage>
                     </FormControl>
@@ -108,7 +91,7 @@ export default function CatalogEdit() {
                 <Field name="description">
                   {({ field, form, meta }: FieldProps) => (
                     <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                      <FormLabel htmlFor="description">{t('manager:description')}</FormLabel>
+                      <FormLabel htmlFor="description">{t('description')}</FormLabel>
                       <Input {...field} id="description" placeholder="" />
                       <FormErrorMessage>{form.errors.description}</FormErrorMessage>
                     </FormControl>
@@ -119,7 +102,7 @@ export default function CatalogEdit() {
                     <FormControl isInvalid={!!meta.error && !!meta.touched}>
                       <FormLabel htmlFor="description">
                         <Stack direction="row" spacing="6">
-                          <Center><Text>{t('manager:products')}</Text></Center>
+                          <Center><Text>{t('products')}</Text></Center>
                           <Button
                             leftIcon={<FaPlus />}
                             size="sm"
@@ -131,7 +114,10 @@ export default function CatalogEdit() {
                       <List
                         itemIds={field.value ?? []}
                         items={products.data ?? []}
-                        keys={["name", "description"]}
+                        keys={["name", "description", "price"]}
+                        transform={{
+                          "price": (value) => `${value / 100}€`
+                        }}
                         onRemove={(itemId) => {
                           form.setFieldValue("products", field.value.filter((id: string) => id !== itemId))
                         }}
@@ -164,7 +150,7 @@ export default function CatalogEdit() {
                     <FormControl isInvalid={!!meta.error && !!meta.touched}>
                       <FormLabel htmlFor="description">
                         <Stack direction="row" spacing="6">
-                          <Center><Text>{t('manager:events')}</Text></Center>
+                          <Center><Text>{t('events')}</Text></Center>
                           <Button
                             leftIcon={<FaPlus />}
                             size="sm"
@@ -220,7 +206,7 @@ export default function CatalogEdit() {
                     <FormControl isInvalid={!!meta.error && !!meta.touched}>
                       <FormLabel htmlFor="description">
                         <Stack direction="row" spacing="6">
-                          <Center><Text>{t('manager:modifiers')}</Text></Center>
+                          <Center><Text>{t('modifiers')}</Text></Center>
                           <Button
                             leftIcon={<FaPlus />}
                             size="sm"
@@ -279,7 +265,7 @@ export default function CatalogEdit() {
                   )}
                 </Field>
                 <Center>
-                  <Button type="submit" isLoading={props.isSubmitting}>{t('save')}</Button>
+                  <Button type="submit" leftIcon={<FaSave />} isLoading={props.isSubmitting}>{t('save')}</Button>
                 </Center>
               </Stack>
             </Form>
@@ -291,194 +277,4 @@ export default function CatalogEdit() {
   }
 
   return null
-}
-
-type ListProps = {
-  itemIds: string[]
-  items: any[] | object
-  price?: { [index: string]: number }
-  editPrice?: (itemId: string, price: number) => void
-  keys: string[]
-  onRemove: (itemId: string) => void
-  onReorder: (itemIds: string[]) => void
-  editPath: {
-    pathname: string,
-    queryId: string
-  }
-}
-
-function List({ itemIds, items, keys, onRemove, onReorder, editPath, price, editPrice }: ListProps) {
-  const { t } = useTranslation('common')
-  const router = useRouter()
-  const placeId = router.query.placeId
-
-  const list = React.useMemo(() => {
-    const itemsArr = Array.isArray(items) ? items : objToArr(items)
-    return itemIds.map(id => itemsArr.find(i => i.id === id))
-      .filter(item => item !== undefined)
-  }, [itemIds, items])
-
-  function remove(itemId: string) {
-    onRemove(itemId)
-  }
-
-  function onDragEnd(result: any) {
-    if (!result.destination) return
-    if (result.destination.index === result.source.index) return
-
-    const newOrder = reorder(
-      itemIds,
-      result.source.index,
-      result.destination.index
-    )
-
-    onReorder(newOrder)
-  }
-
-  function edit(itemId: string) {
-    if (window.confirm('You will lose all the changes')) {
-      const { pathname, queryId } = editPath
-      router.push({
-        pathname,
-        query: { placeId, [queryId]: itemId }
-      })
-    }
-  }
-
-  if (list.length) {
-    return (
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
-          {provided => (
-            <Table variant="simple" ref={provided.innerRef}>
-              <Thead>
-                <Tr>
-                  <Th w="1"></Th>
-                  {keys.map(key => (
-                    <Th key={key}>{t(`manager:${key}`)}</Th>
-                  ))}
-                  {price && <Th>{t(`manager:price`)}</Th>}
-                  <Th w="1"></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {list.map((item, index) => (
-                  <Draggable key={item!.id} draggableId={item!.id} index={index}>
-                    {provided => (
-                      <Tr ref={provided.innerRef} {...provided.draggableProps} _hover={{ bgColor: 'primary.50' }}>
-                        <Td {...provided.dragHandleProps}><Icon as={FaEllipsisV} /></Td>
-                        {keys.map(key => (
-                          <Td key={key}>
-                            {item[key]}
-                          </Td>
-                        ))}
-                        {price &&
-                          <Td>
-                            {price[item!.id] / 100}€
-                          </Td>
-                        }
-                        <Td>
-                          <Stack direction="row" spacing="2">
-                            <Center>
-                              <Button
-                                aria-label="edit"
-                                leftIcon={<FaEdit />}
-                                size="sm"
-                                onClick={() => edit(item!.id)}
-                              >
-                                {t('edit')}
-                              </Button>
-                            </Center>
-                            <IconButton
-                              aria-label="remove"
-                              icon={<FaTrash />}
-                              size="sm"
-                              onClick={() => remove(item!.id)}
-                              colorScheme="red"
-                              color="tomato"
-                              variant="ghost" />
-                          </Stack>
-                        </Td>
-                      </Tr>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
-              </Tbody>
-            </Table>
-          )}
-        </Droppable>
-      </DragDropContext>
-    )
-  } else {
-    return (
-      <Alert status="warning" colorScheme="gray" borderRadius="lg">
-        <AlertIcon />
-        Aucun élément sélectionné.
-      </Alert>
-    )
-  }
-}
-
-type SelectionModalProps = {
-  modal: UseDisclosureProps
-  title: string
-  selected: string[]
-  items: any[]
-  keys: string[]
-  transform?: { [index: string]: (value: any) => any }
-  add: (item: any) => void
-}
-
-function SelectionModal({ modal, title, selected, items, keys, transform = {}, add }: SelectionModalProps) {
-  const { t } = useTranslation('common')
-
-  const list = React.useMemo(() => {
-    return items.filter(i => !selected.includes(i.id))
-  }, [items, selected])
-
-  return (
-    <Modal onClose={modal.onClose!} size="4xl" isOpen={modal.isOpen!}>
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>{title}</ModalHeader>
-        <ModalCloseButton />
-        <ModalBody>
-          <Table variant="simple">
-            <Thead>
-              <Tr>
-                {keys.map(key => (
-                  <Th key={key}>{t(`manager:${key}`)}</Th>
-                ))}
-                <Th w="1"></Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {list.map(item => (
-                <Tr key={item.id} _hover={{ bgColor: 'primary.50' }}>
-                  {keys.map(key => (
-                    <Td key={key}>
-                      {key in transform ? transform[key](item[key]) : item[key]}
-                    </Td>
-                  ))}
-                  <Td>
-                    <Button
-                      leftIcon={<FaPlus />}
-                      size="xs"
-                      onClick={() => add(item)}
-                    >
-                      {t('add')}
-                    </Button>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        </ModalBody>
-        <ModalFooter>
-          <Button onClick={modal.onClose}>Close</Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
-  )
 }

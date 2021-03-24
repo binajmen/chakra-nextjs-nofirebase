@@ -57,7 +57,7 @@ function PlaceOpeningHours() {
 
       update({ opening, methods })!
         .then(() => toast({
-          description: t('manager:changes-saved'),
+          description: t('admin:changes-saved'),
           status: "success"
         }))
         .catch((error) => { throw new Error(error) })

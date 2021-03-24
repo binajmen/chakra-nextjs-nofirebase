@@ -62,9 +62,9 @@ export {}
 //                             <Thead>
 //                                 <Tr>
 //                                     <Th></Th>
-//                                     <Th>{t('manager:available')}</Th>
-//                                     <Th>{t('manager:name')}</Th>
-//                                     <Th>{t('manager:description')}</Th>
+//                                     <Th>{t('admin:available')}</Th>
+//                                     <Th>{t('admin:name')}</Th>
+//                                     <Th>{t('admin:description')}</Th>
 //                                     <Th></Th>
 //                                 </Tr>
 //                             </Thead>

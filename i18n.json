@@ -10,7 +10,7 @@
       "common"
     ],
     "rgx:^/manage": [
-      "manager"
+      "admin"
     ],
     "rgx:^/checkout": [
       "checkout"

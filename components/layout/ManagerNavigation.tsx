@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation'
 import { useDocument, useCollection } from '@nandorojo/swr-firestore'
 
 import { Divider, VStack } from '@chakra-ui/react'
-import { FaCog, FaBuilding, FaClock, FaRegCalendarCheck, FaBookOpen, FaFolderOpen, FaDrumstickBite, FaArrowLeft, FaTasks } from 'react-icons/fa'
+import { FaBuilding, FaCog, FaClock, FaBookOpen, FaFolderOpen, FaBoxes, FaRegCalendarCheck, FaTasks, FaArrowLeft } from 'react-icons/fa'
 
 import ButtonLink from '@/components/atoms/NextButton'
 
@@ -18,13 +18,13 @@ const items = [
   { label: "opening", pathname: "/manage/[placeId]/opening", icon: <FaClock /> },
   { label: "catalogs", pathname: "/manage/[placeId]/catalogs", icon: <FaBookOpen /> },
   { label: "categories", pathname: "/manage/[placeId]/categories", icon: <FaFolderOpen /> },
-  // { label: "products", pathname: "/manage/[placeId]/products", icon: <FaDrumstickBite /> },
+  { label: "inventory", pathname: "/manage/[placeId]/inventory", icon: <FaBoxes /> },
   { label: "events", pathname: "/manage/[placeId]/events", icon: <FaRegCalendarCheck /> },
   { label: "modifiers", pathname: "/manage/[placeId]/modifiers", icon: <FaTasks /> },
 ]
 
 export default function Menu() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('admin')
   const router = useRouter()
   const pathname = router.pathname
   const placeId = router.query.placeId

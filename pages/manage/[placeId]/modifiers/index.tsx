@@ -28,7 +28,7 @@ function ModifiersIndex() {
       <Flex mb={6}>
         <Heading>{t('categories')}</Heading>
         <Spacer />
-        <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('manager:new-category')}</Button>
+        <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('admin:new-category')}</Button>
         <NewCategory modal={modal} />
       </Flex>
 

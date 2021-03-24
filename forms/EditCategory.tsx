@@ -55,7 +55,7 @@ export default function EditCategory({ modal, categoryId }: EditCategoryProps) {
         onSubmit={(values) => {
           update(values)!
             .then(() => toast({
-              description: t('manager:changes-saved'),
+              description: t('admin:changes-saved'),
               status: "success"
             }))
             .catch((error) => toast({
@@ -77,7 +77,7 @@ export default function EditCategory({ modal, categoryId }: EditCategoryProps) {
                   <Field name="name">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                        <FormLabel htmlFor="name">{t('manager:name')}</FormLabel>
+                        <FormLabel htmlFor="name">{t('admin:name')}</FormLabel>
                         <Input {...field} id="name" placeholder="" />
                         <FormErrorMessage>{form.errors.name}</FormErrorMessage>
                       </FormControl>
@@ -86,7 +86,7 @@ export default function EditCategory({ modal, categoryId }: EditCategoryProps) {
                   <Field name="desc">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                        <FormLabel htmlFor="desc">{t('manager:description')}</FormLabel>
+                        <FormLabel htmlFor="desc">{t('admin:description')}</FormLabel>
                         <Input {...field} id="desc" placeholder="" />
                         <FormErrorMessage>{form.errors.desc}</FormErrorMessage>
                       </FormControl>

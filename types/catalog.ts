@@ -64,11 +64,11 @@ export type Products = {
 export type Event = {
   name: string
   description: string
-  days: number[]
+  days: string[]
   start: string
   end: string
   type: EventType
-  value: boolean | number
+  value: number
   // copy refs
   categoryIds: string[]
   productIds: string[]

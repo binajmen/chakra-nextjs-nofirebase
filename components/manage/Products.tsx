@@ -55,7 +55,7 @@ export default function Products() {
 
     update({ items: newOrder })!
       .then(() => toast({
-        description: t('manager:changes-saved'),
+        description: t('admin:changes-saved'),
         status: "success"
       }))
       .catch((error) => toast({
@@ -77,10 +77,10 @@ export default function Products() {
               <Thead>
                 <Tr>
                   <Th></Th>
-                  <Th>{t('manager:available')}</Th>
-                  <Th>{t('manager:name')}</Th>
-                  <Th>{t('manager:description')}</Th>
-                  <Th>{t('manager:price')}</Th>
+                  <Th>{t('admin:available')}</Th>
+                  <Th>{t('admin:name')}</Th>
+                  <Th>{t('admin:description')}</Th>
+                  <Th>{t('admin:price')}</Th>
                   <Th></Th>
                 </Tr>
               </Thead>
@@ -122,7 +122,7 @@ function ProductRow({ categoryId, productId, deleteFromCategory, index }: Produc
   function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
     update({ available: !product!.available })!
       .then(() => toast({
-        description: t('manager:changes-saved'),
+        description: t('admin:changes-saved'),
         status: "success"
       }))
   }

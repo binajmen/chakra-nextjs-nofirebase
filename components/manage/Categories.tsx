@@ -14,7 +14,6 @@ import {
   Td,
   Switch,
   Stack,
-  Text,
   Center,
   Icon,
   useToast
@@ -47,7 +46,7 @@ export default function Categories() {
       fuego.db.doc(`places/${placeId}/categories/${categoryId}`)
         .delete()
         .then(() => toast({
-          description: t('manager:changes-saved'),
+          description: t('admin:changes-saved'),
           status: "success"
         }))
         .catch((error: any) => toast({
@@ -61,7 +60,7 @@ export default function Categories() {
     fuego.db.doc(`places/${placeId}/categories/${categoryId}`)
       .update({ available: !current })
       .then(() => toast({
-        description: t('manager:changes-saved'),
+        description: t('admin:changes-saved'),
         status: "success"
       }))
       .catch((error: any) => toast({
@@ -81,9 +80,9 @@ export default function Categories() {
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>{t('manager:available')}</Th>
-              <Th>{t('manager:name')}</Th>
-              <Th>{t('manager:description')}</Th>
+              <Th>{t('admin:available')}</Th>
+              <Th>{t('admin:name')}</Th>
+              <Th>{t('admin:description')}</Th>
               <Th></Th>
               <Th w="1"></Th>
             </Tr>

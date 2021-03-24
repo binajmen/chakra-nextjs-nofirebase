@@ -56,7 +56,7 @@ function PlaceCard({ place }: PlaceCardProps) {
                     colorScheme="primary"
                     pathname="/place/[placeId]"
                     query={{ placeId: place.id }}
-                >{t('manager:manage')}</ButtonLink>
+                >{t('admin:manage')}</ButtonLink>
             </Box>
         </Box>
     )

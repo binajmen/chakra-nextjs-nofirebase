@@ -87,7 +87,7 @@ export default function NewProduct({ modal }: NewProductProps) {
           fuego.db.doc(`places/${place}/products/${genId}`)
             .set(product, { merge: true })
             .then(() => toast({
-              description: t('manager:changes-saved'),
+              description: t('admin:changes-saved'),
               status: "success"
             }))
             .then(() => updateCategory({ items: [...category!.items, genId] }))
@@ -111,7 +111,7 @@ export default function NewProduct({ modal }: NewProductProps) {
                   <Field name="name">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                        <FormLabel htmlFor="name">{t('manager:name')}</FormLabel>
+                        <FormLabel htmlFor="name">{t('admin:name')}</FormLabel>
                         <Input {...field} id="name" placeholder="" />
                         <FormErrorMessage>{form.errors.name}</FormErrorMessage>
                       </FormControl>
@@ -120,7 +120,7 @@ export default function NewProduct({ modal }: NewProductProps) {
                   <Field name="longName">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                        <FormLabel htmlFor="longName">{t('manager:longName')}</FormLabel>
+                        <FormLabel htmlFor="longName">{t('admin:longName')}</FormLabel>
                         <Input {...field} id="longName" placeholder="" />
                         <FormErrorMessage>{form.errors.longName}</FormErrorMessage>
                       </FormControl>
@@ -129,7 +129,7 @@ export default function NewProduct({ modal }: NewProductProps) {
                   <Field name="desc">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                        <FormLabel htmlFor="desc">{t('manager:description')}</FormLabel>
+                        <FormLabel htmlFor="desc">{t('admin:description')}</FormLabel>
                         <Input {...field} id="desc" placeholder="" />
                         <FormErrorMessage>{form.errors.desc}</FormErrorMessage>
                       </FormControl>
@@ -140,7 +140,7 @@ export default function NewProduct({ modal }: NewProductProps) {
                       <CentsPriceField
                         {...formikProps}
                         id="price"
-                        label={t('manager:price')}
+                        label={t('admin:price')}
                         helperText="100 = 1€"
                       />
                     )}
@@ -148,7 +148,7 @@ export default function NewProduct({ modal }: NewProductProps) {
                   <Field name="tax">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                        <FormLabel htmlFor="tax">{t('manager:tax')}</FormLabel>
+                        <FormLabel htmlFor="tax">{t('admin:tax')}</FormLabel>
                         <Input {...field} id="tax" placeholder="6, 12, 21" />
                         <FormErrorMessage>{form.errors.tax}</FormErrorMessage>
                       </FormControl>
@@ -157,7 +157,7 @@ export default function NewProduct({ modal }: NewProductProps) {
                   <Field name="size">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched}>
-                        <FormLabel htmlFor="size">{t('manager:size')}</FormLabel>
+                        <FormLabel htmlFor="size">{t('admin:size')}</FormLabel>
                         <Input {...field} id="size" placeholder="25cl, bouteille, ..." />
                         <FormErrorMessage>{form.errors.size}</FormErrorMessage>
                       </FormControl>

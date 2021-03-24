@@ -15,8 +15,8 @@ import {
 } from '@chakra-ui/react'
 import { FaEdit } from 'react-icons/fa'
 
+import Button from '@/components/atoms/Button'
 import { Loading, Error } from '@/components/Suspense'
-import IconButton from '@/components/atoms/IconButton'
 
 import type { Catalog } from '@/types/catalog'
 
@@ -46,8 +46,8 @@ export default function Catalogs() {
           <Thead>
             <Tr>
               <Th>{t('catalog')}</Th>
-              <Th>{t('manager:name')}</Th>
-              <Th>{t('manager:description')}</Th>
+              <Th>{t('admin:name')}</Th>
+              <Th>{t('admin:description')}</Th>
               <Th w="1">{t('categories')}</Th>
               <Th w="1"></Th>
             </Tr>
@@ -60,7 +60,14 @@ export default function Catalogs() {
                 <Td>{catalog.description}</Td>
                 <Td>{catalog.categories.length}</Td>
                 <Td>
-                  <IconButton aria-label="edit" icon={<FaEdit />} onClick={() => edit(catalog.id)} />
+                  <Button
+                    aria-label="edit"
+                    leftIcon={<FaEdit />}
+                    size="sm"
+                    onClick={() => edit(catalog.id)}
+                  >
+                    {t('edit')}
+                  </Button>
                 </Td>
               </Tr>
             ))}
