@@ -120,7 +120,7 @@ export const onDeleteProduct = async (
   // categories
   const remCategory = data.categoryIds.map(categoryId => {
     return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
-      .update({ items: FieldValue.arrayUnion(productId) })
+      .update({ products: FieldValue.arrayUnion(productId) })
   })
 
   Promise.all([updEvents, updModifiers, remModifiers, remCategory])

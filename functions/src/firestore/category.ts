@@ -13,25 +13,23 @@ export const onCreateCategory = async (
   const { placeId, categoryId } = context.params
   const data = snapshot.data() as Category
 
-  if (data) {
-    const events = data.events.order.map(eventId => {
-      return admin.firestore().doc(`places/${placeId}/events/${eventId}`)
-        .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
-    })
+  const events = data.events.order.map(eventId => {
+    return admin.firestore().doc(`places/${placeId}/events/${eventId}`)
+      .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
+  })
 
-    const modifiers = data.modifiers.order.map(modifierId => {
-      return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
-        .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
-    })
+  const modifiers = data.modifiers.order.map(modifierId => {
+    return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
+      .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
+  })
 
-    const products = data.products.map(productId => {
-      return admin.firestore().doc(`places/${placeId}/products/${productId}`)
-        .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
-    })
+  const products = data.products.map(productId => {
+    return admin.firestore().doc(`places/${placeId}/products/${productId}`)
+      .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
+  })
 
-    Promise.all([events, modifiers, products])
-      .catch(error => console.error(error))
-  }
+  Promise.all([events, modifiers, products])
+    .catch(error => console.error(error))
 
   return null
 }
@@ -117,7 +115,12 @@ export const onDeleteCategory = async (
       .update({ categoryIds: FieldValue.arrayRemove(categoryId) })
   })
 
-  Promise.all([remEvents, remModifiers, remProducts])
+  const remCatalogs = data.catalogIds.map(catalogId => {
+    return admin.firestore().doc(`places/${placeId}/catalogs/${catalogId}`)
+      .update({ categories: FieldValue.arrayRemove(categoryId) })
+  })
+
+  Promise.all([remEvents, remModifiers, remProducts, remCatalogs])
     .catch(error => console.error(error))
 
   return null

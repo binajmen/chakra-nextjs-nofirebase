@@ -41,7 +41,8 @@ const initialValues: Category = {
   modifiers: {
     order: [],
     modifier: {}
-  }
+  },
+  catalogIds: []
 }
 
 type CategoryFormProps = {
@@ -79,11 +80,12 @@ export default function CategoryForm({ category, save }: CategoryFormProps) {
             products: Yup.array().of(Yup.string())
             // events
             // modifiers
+            // catalogIds
           })}
           onSubmit={(values, actions) => {
-            const { available, name, description, products, events, modifiers } = values
+            const { available, name, description, products, events, modifiers, catalogIds } = values
 
-            save({ available, name, description, products, events, modifiers })!
+            save({ available, name, description, products, events, modifiers, catalogIds })!
               .then(() => toast({
                 description: t('changes-saved'),
                 status: "success"

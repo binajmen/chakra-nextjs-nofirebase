@@ -3,6 +3,31 @@ import * as functions from "firebase-functions"
 import * as firebase from "firebase-admin"
 
 /**
+ * Firestore Triggers – Catalog
+ */
+
+export const onCreateCatalog =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/catalogs/{catalogId}")
+    .onCreate(async (snapshot, context) => {
+      await (await import("./firestore/catalog")).onCreateCatalog(snapshot, context)
+    })
+
+export const onUpdateCatalog =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/catalogs/{catalogId}")
+    .onUpdate(async (change, context) => {
+      await (await import("./firestore/catalog")).onUpdateCatalog(change, context)
+    })
+
+export const onDeleteCatalog =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/catalogs/{catalogId}")
+    .onDelete(async (snapshot, context) => {
+      await (await import("./firestore/catalog")).onDeleteCatalog(snapshot, context)
+    })
+
+/**
  * Firestore Triggers – Category
  */
 
@@ -38,12 +63,66 @@ export const onCreateProduct =
       await (await import("./firestore/product")).onCreateProduct(snapshot, context)
     })
 
+export const onUpdateProduct =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/products/{productId}")
+    .onUpdate(async (change, context) => {
+      await (await import("./firestore/product")).onUpdateProduct(change, context)
+    })
+
 export const onDeleteProduct =
   functions.region("europe-west1")
     .firestore.document("places/{placeId}/products/{productId}")
     .onDelete(async (snapshot, context) => {
       await (await import("./firestore/product")).onDeleteProduct(snapshot, context)
     })
+
+/**
+* Firestore Triggers – Event
+*/
+
+export const onUpdateEvent =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/events/{eventId}")
+    .onUpdate(async (change, context) => {
+      await (await import("./firestore/event")).onUpdateEvent(change, context)
+    })
+
+export const onDeleteEvent =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/events/{eventId}")
+    .onDelete(async (snapshot, context) => {
+      await (await import("./firestore/event")).onDeleteEvent(snapshot, context)
+    })
+
+/**
+* Firestore Triggers – Modifier
+*/
+
+export const onCreateModifier =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/modifiers/{modifierId}")
+    .onCreate(async (snapshot, context) => {
+      await (await import("./firestore/modifier")).onCreateModifier(snapshot, context)
+    })
+
+export const onUpdateModifier =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/modifiers/{modifierId}")
+    .onUpdate(async (change, context) => {
+      await (await import("./firestore/modifier")).onUpdateModifier(change, context)
+    })
+
+export const onDeleteModifier =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/modifiers/{modifierId}")
+    .onDelete(async (snapshot, context) => {
+      await (await import("./firestore/modifier")).onDeleteModifier(snapshot, context)
+    })
+
+/**
+* Mollie
+*/
 
 export const retrieveMollieAccessToken =
   functions.region("europe-west1")
@@ -75,6 +154,10 @@ export const webhookMollie =
     .https.onRequest(async (request, response) => {
       await (await import("./mollie/index")).webhookMollie(request, response)
     })
+
+/**
+* Auth
+*/
 
 export const onAuthCreateUser =
   functions
