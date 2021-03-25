@@ -64,8 +64,13 @@ export default function CatalogEdit() {
                 description: error.message,
                 status: "error"
               }))
-              
+
             actions.setSubmitting(false)
+
+            router.push({
+              pathname: "/manage/[placeId]/catalogs",
+              query: { placeId }
+            })
           }}
         >
           {(props) => (

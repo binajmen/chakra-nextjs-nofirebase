@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react'
 import { FaEdit } from 'react-icons/fa'
 
-import Button from '@/components/atoms/Button'
+import NextButton from '@/components/atoms/NextButton'
 import { Loading, Error } from '@/components/Suspense'
 
 import type { Catalog } from '@/types/catalog'
@@ -26,13 +26,6 @@ export default function Catalogs() {
   const placeId = router.query.placeId
 
   const catalogs = useCollection<Catalog>(`places/${placeId}/catalogs`)
-
-  function edit(catalogId: string) {
-    router.push({
-      pathname: "/manage/[placeId]/catalogs/[catalogId]",
-      query: { placeId, catalogId }
-    })
-  }
 
   if (catalogs.loading) {
     return <Loading />
@@ -60,14 +53,15 @@ export default function Catalogs() {
                 <Td>{catalog.description}</Td>
                 <Td>{catalog.categories.length}</Td>
                 <Td>
-                  <Button
+                  <NextButton
                     aria-label="edit"
                     leftIcon={<FaEdit />}
                     size="sm"
-                    onClick={() => edit(catalog.id)}
+                    pathname="/manage/[placeId]/catalogs/[catalogId]"
+                    query={{ placeId, catalogId: catalog.id }}
                   >
                     {t('edit')}
-                  </Button>
+                  </NextButton>
                 </Td>
               </Tr>
             ))}
