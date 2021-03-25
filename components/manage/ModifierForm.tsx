@@ -109,7 +109,7 @@ export default function ModifierForm({ modifier, save }: ModifierFormProps) {
           actions.setSubmitting(false)
 
           router.push({
-            pathname: "/manage/[placeId]/events",
+            pathname: "/manage/[placeId]/modifiers",
             query: { placeId }
           })
         }}

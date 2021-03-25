@@ -5,6 +5,7 @@ import { fuego, useCollection } from '@nandorojo/swr-firestore'
 
 import {
   Box,
+  Flex,
   Heading,
   Table,
   Thead,
@@ -18,10 +19,10 @@ import {
   Icon,
   useToast
 } from '@chakra-ui/react'
-import { FaEdit, FaTrash, FaBoxes, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
+import { FaEdit, FaPlus, FaTrash, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
-import Button from '@/components/atoms/Button'
+import NextButton from '@/components/atoms/NextButton'
 import IconButton from '@/components/atoms/IconButton'
 
 import type { Product } from '@/types/catalog'
@@ -33,13 +34,6 @@ export default function Products() {
   const placeId = router.query.placeId
 
   const products = useCollection<Product>(`places/${placeId}/products`, { listen: true })
-
-  function edit(productId: string) {
-    router.push({
-      pathname: "/manage/[placeId]/products/[productId]",
-      query: { placeId, productId }
-    })
-  }
 
   function remove(productId: string) {
     if (window.confirm()) {
@@ -76,7 +70,17 @@ export default function Products() {
   } else if (products.data) {
     return (
       <Box>
-        <Heading mb="6">{t('products')}</Heading>
+        <Flex justify="space-between">
+          <Heading mb="6">{t('products')}</Heading>
+          <NextButton
+            aria-label="add"
+            leftIcon={<FaPlus />}
+            pathname="/manage/[placeId]/products/new"
+            query={{ placeId }}
+          >
+            {t('add')}
+          </NextButton>
+        </Flex>
         <Table variant="simple">
           <Thead>
             <Tr>
@@ -108,14 +112,15 @@ export default function Products() {
                   <Td>
                     <Stack direction="row" spacing="2">
                       <Center>
-                        <Button
+                        <NextButton
                           aria-label="edit"
                           leftIcon={<FaEdit />}
                           size="sm"
-                          onClick={() => edit(product.id)}
+                          pathname="/manage/[placeId]/products/[productId]"
+                          query={{ placeId, productId: product.id }}
                         >
                           {t('edit')}
-                        </Button>
+                        </NextButton>
                       </Center>
                       <IconButton
                         aria-label="remove"

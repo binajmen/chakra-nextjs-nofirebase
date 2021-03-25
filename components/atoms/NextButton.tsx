@@ -1,7 +1,9 @@
 import * as React from 'react'
 import NextLink from 'next/link'
 
-import { Button, ButtonProps } from '@chakra-ui/react'
+import { ButtonProps } from '@chakra-ui/react'
+
+import Button from './Button'
 
 type NextButtonProps = ButtonProps & {
   pathname: string
@@ -13,12 +15,7 @@ export default function NextButton(props: NextButtonProps) {
 
   return (
     <NextLink href={{ pathname, query }}>
-      <Button
-        color="gray.900"
-        colorScheme="primary"
-        variant="solid"
-        {...buttonProps}
-      >
+      <Button {...buttonProps}>
         {children}
       </Button>
     </NextLink>

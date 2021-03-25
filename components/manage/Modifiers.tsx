@@ -22,7 +22,7 @@ import {
 import { FaEdit, FaPlus, FaTrash, FaEye, FaEyeSlash, FaTag, FaQuestion } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
-import Button from '@/components/atoms/Button'
+import NextButton from '@/components/atoms/NextButton'
 import IconButton from '@/components/atoms/IconButton'
 
 import type { Modifier } from '@/types/catalog'
@@ -34,20 +34,6 @@ export default function Modifiers() {
   const placeId = router.query.placeId
 
   const modifiers = useCollection<Modifier>(`places/${placeId}/modifiers`, { listen: true })
-
-  function add() {
-    router.push({
-      pathname: "/manage/[placeId]/modifiers/new",
-      query: { placeId }
-    })
-  }
-
-  function edit(modifierId: string) {
-    router.push({
-      pathname: "/manage/[placeId]/modifiers/[modifierId]",
-      query: { placeId, modifierId }
-    })
-  }
 
   function remove(modifierId: string) {
     if (window.confirm()) {
@@ -73,7 +59,14 @@ export default function Modifiers() {
       <Box>
         <Flex justify="space-between">
           <Heading mb="6">{t('modifiers')}</Heading>
-          <Button leftIcon={<FaPlus />} onClick={add}>{t('add')}</Button>
+          <NextButton
+            aria-label="add"
+            leftIcon={<FaPlus />}
+            pathname="/manage/[placeId]/modifiers/new"
+            query={{ placeId }}
+          >
+            {t('add')}
+          </NextButton>
         </Flex>
         <Table variant="simple">
           <Thead>
@@ -95,14 +88,15 @@ export default function Modifiers() {
                 <Td>
                   <Stack direction="row" spacing="2">
                     <Center>
-                      <Button
+                      <NextButton
                         aria-label="edit"
                         leftIcon={<FaEdit />}
                         size="sm"
-                        onClick={() => edit(modifier.id)}
+                        pathname="/manage/[placeId]/modifiers/[modifierId]"
+                        query={{ placeId, modifierId: modifier.id }}
                       >
                         {t('edit')}
-                      </Button>
+                      </NextButton>
                     </Center>
                     <IconButton
                       aria-label="remove"

@@ -1,27 +1,56 @@
 import * as React from 'react'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import { resetServerContext } from 'react-beautiful-dnd'
+import { useRouter } from 'next/router'
+import { useDocument } from '@nandorojo/swr-firestore'
 
 import admin from '@/lib/firebase/admin'
 
 import Layout from '@/components/layout/Layout'
-import ProductEdit from '@/components/manage/ProductEdit'
+import ProductForm from '@/components/manage/ProductForm'
+import { Loading, Error } from '@/components/Suspense'
 
-function ProductEditPage() {
+import type { Product } from '@/types/catalog'
+
+function ProductEdit() {
   return (
     <Layout
       layout="manage"
       metadata={{ title: "Methods" }}
     >
-      <ProductEdit />
+      <Content />
     </Layout>
   )
+}
+
+function Content() {
+  const router = useRouter()
+  const { placeId, productId } = router.query
+
+  const product = useDocument<Product>(`places/${placeId}/products/${productId}`)
+
+  if (product.loading) {
+    return <Loading />
+  } else if (product.error) {
+    return <Error error={product.error} />
+  } else if (product.data) {
+    return (
+      <ProductForm
+        product={product.data}
+        save={({ ...values }) => {
+          return product.update(values)
+        }}
+      />
+    )
+  } else {
+    return null
+  }
 }
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(ProductEditPage)
+})(ProductEdit)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,

@@ -22,7 +22,7 @@ import {
 import { FaEdit, FaPlus, FaTrash, FaBoxes, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
-import Button from '@/components/atoms/Button'
+import NextButton from '@/components/atoms/NextButton'
 import IconButton from '@/components/atoms/IconButton'
 
 import type { Category } from '@/types/catalog'
@@ -34,20 +34,6 @@ export default function Categories() {
   const placeId = router.query.placeId
 
   const categories = useCollection<Category>(`places/${placeId}/categories`, { listen: true })
-
-  function add() {
-    router.push({
-      pathname: "/manage/[placeId]/categories/new",
-      query: { placeId }
-    })
-  }
-
-  function edit(categoryId: string) {
-    router.push({
-      pathname: "/manage/[placeId]/categories/[categoryId]",
-      query: { placeId, categoryId }
-    })
-  }
 
   function remove(categoryId: string) {
     if (window.confirm()) {
@@ -86,7 +72,14 @@ export default function Categories() {
       <Box>
         <Flex justify="space-between">
           <Heading mb="6">{t('categories')}</Heading>
-          <Button leftIcon={<FaPlus />} onClick={add}>{t('add')}</Button>
+          <NextButton
+            aria-label="add"
+            leftIcon={<FaPlus />}
+            pathname="/manage/[placeId]/categories/new"
+            query={{ placeId }}
+          >
+            {t('add')}
+          </NextButton>
         </Flex>
         <Table variant="simple">
           <Thead>
@@ -118,14 +111,15 @@ export default function Categories() {
                 <Td>
                   <Stack direction="row" spacing="2">
                     <Center>
-                      <Button
+                      <NextButton
                         aria-label="edit"
                         leftIcon={<FaEdit />}
                         size="sm"
-                        onClick={() => edit(category.id)}
+                        pathname="/manage/[placeId]/categories/[categoryId]"
+                        query={{ placeId, categoryId: category.id }}
                       >
                         {t('edit')}
-                      </Button>
+                      </NextButton>
                     </Center>
                     <IconButton
                       aria-label="remove"

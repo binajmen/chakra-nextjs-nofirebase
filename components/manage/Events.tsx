@@ -22,7 +22,7 @@ import {
 import { FaEdit, FaPlus, FaTrash, FaRegEye, FaRegEyeSlash, FaTag, FaQuestion } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
-import Button from '@/components/atoms/Button'
+import NextButton from '@/components/atoms/NextButton'
 import IconButton from '@/components/atoms/IconButton'
 
 import type { Event } from '@/types/catalog'
@@ -34,20 +34,6 @@ export default function Events() {
   const placeId = router.query.placeId
 
   const events = useCollection<Event>(`places/${placeId}/events`, { listen: true })
-
-  function add() {
-    router.push({
-      pathname: "/manage/[placeId]/events/new",
-      query: { placeId }
-    })
-  }
-
-  function edit(eventId: string) {
-    router.push({
-      pathname: "/manage/[placeId]/events/[eventId]",
-      query: { placeId, eventId }
-    })
-  }
 
   function remove(eventId: string) {
     if (window.confirm()) {
@@ -73,7 +59,14 @@ export default function Events() {
       <Box>
         <Flex justify="space-between">
           <Heading mb="6">{t('events')}</Heading>
-          <Button leftIcon={<FaPlus />} onClick={add}>{t('add')}</Button>
+          <NextButton
+            aria-label="add"
+            leftIcon={<FaPlus />}
+            pathname="/manage/[placeId]/events/new"
+            query={{ placeId }}
+          >
+            {t('add')}
+          </NextButton>
         </Flex>
         <Table variant="simple">
           <Thead>
@@ -108,14 +101,15 @@ export default function Events() {
                   <Td>
                     <Stack direction="row" spacing="2">
                       <Center>
-                        <Button
+                        <NextButton
                           aria-label="edit"
                           leftIcon={<FaEdit />}
                           size="sm"
-                          onClick={() => edit(event.id)}
+                          pathname="/manage/[placeId]/events/[eventId]"
+                          query={{ placeId, eventId: event.id }}
                         >
                           {t('edit')}
-                        </Button>
+                        </NextButton>
                       </Center>
                       <IconButton
                         aria-label="remove"

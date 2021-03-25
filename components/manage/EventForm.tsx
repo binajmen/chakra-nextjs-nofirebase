@@ -26,9 +26,9 @@ import Button from '@/components/atoms/Button'
 import CentsPriceField from '@/components/atoms/CentsPriceField'
 import WeekdaysField from '@/components/atoms/WeekdaysField'
 
-import type { Event } from '@/types/catalog'
-
 import { DAYS } from '@/helpers/constants'
+
+import type { Event } from '@/types/catalog'
 
 const initialValues: Event = {
   name: "",
@@ -88,7 +88,7 @@ export default function EventForm({ event, save }: EventFormProps) {
           actions.setSubmitting(false)
 
           router.push({
-            pathname: "/manage/[placeId]/modifiers",
+            pathname: "/manage/[placeId]/events",
             query: { placeId }
           })
         }}

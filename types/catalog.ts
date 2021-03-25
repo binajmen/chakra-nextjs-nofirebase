@@ -40,7 +40,6 @@ export type Product = {
   description: string
   price: number
   tax: number
-  size: string
   tags: string[]
   events: Events
   modifiers: Modifiers
