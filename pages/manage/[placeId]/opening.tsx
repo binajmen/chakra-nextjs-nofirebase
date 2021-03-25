@@ -8,15 +8,14 @@ import { Flex, Box, Heading, Button, Spacer, Text, useToast } from '@chakra-ui/r
 import { FaSave } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import Layout from '@/components/layout/Layout'
 
+import Layout from '@/components/layout/Layout'
 import SwitchOrderType from '@/components/place/SwitchOrderType'
 import Timetable from '@/components/place/Timetable'
 
 import type { Place, OpeningHours } from '@/types/place'
 
-// const METHODS = ['now', 'collect', 'delivery']
-const METHODS = ['collect', 'delivery']
+import { METHODS } from "@/helpers/constants"
 
 function PlaceOpeningHours() {
   const { t } = useTranslation('common')
@@ -33,8 +32,9 @@ function PlaceOpeningHours() {
     if (place) {
       setOpening(place.opening)
       setMethods(place.methods)
+      console.log(place)
     }
-  }, [placeId])
+  }, [place])
 
   function saveChanges() {
     try {
@@ -101,7 +101,7 @@ export const getServerSideProps = withAuthUserSSR({
 })(async ({ query, AuthUser }) => {
   try {
     // retrieve place id
-    const { place } = query
+    const { placeId } = query
 
     // retrieve roles for the current user
     const doc = await admin.firestore()
@@ -110,7 +110,7 @@ export const getServerSideProps = withAuthUserSSR({
       .get()
 
     // if no roles or no roles for the requested place, 404
-    if (!doc.exists || !doc.data()!.places?.includes(place)) return { notFound: true }
+    if (!doc.exists || !doc.data()!.places?.includes(placeId)) return { notFound: true }
 
     // else
     return { props: {} }

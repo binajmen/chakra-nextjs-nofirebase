@@ -1,121 +1,130 @@
-// eslint-disable-next-line no-unused-vars
 import * as functions from "firebase-functions"
 import * as admin from "firebase-admin"
 admin.initializeApp()
 
+import type { Product } from "./types"
+
+const FieldValue = admin.firestore.FieldValue
+
 export const onCreateProduct = async (
-  // eslint-disable-next-line no-unused-vars
   snapshot: functions.firestore.DocumentSnapshot,
-  // eslint-disable-next-line no-unused-vars
   context: functions.EventContext
 ) => {
-  // const { placeId, productId } = context.params
-  // const data = snapshot.data()!
+  const { placeId, productId } = context.params
+  const data = snapshot.data() as Product
 
-  // if (data.type !== "product") return null
+  if (data.type !== "product") return null
 
-  // // - add ref to associated events
-  // // const events = Object.keys(data.events).map(event => {
-  // //     return global.db.doc(`businesses/${merchant}/events/${event}`)
-  // //         .update({ productIds: FieldValue.arrayUnion(product) })
-  // // })
+  const events = data.events.order.map(eventId => {
+    return admin.firestore().doc(`places/${placeId}/events/${eventId}`)
+      .update({ productIds: FieldValue.arrayUnion(productId) })
+  })
 
-  // // - add ref to associated modifiers
-  // // const modifiers = Object.keys(data.modifiers).map(modifier => {
-  // //     return global.db.doc(`businesses/${merchant}/modifiers/${modifier}`)
-  // //         .update({ productIds: FieldValue.arrayUnion(product) })
-  // // })
+  const modifiers = data.modifiers.order.map(modifierId => {
+    return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
+      .update({ productIds: FieldValue.arrayUnion(productId) })
+  })
 
-  // // - add ref to associated category
-  // const categories = data.categoryIds.map((categoryId: string) => {
-  //     console.log("adding", productId, "to", categoryId)
-  //     return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
-  //         .update({ items: admin.firestore.FieldValue.arrayUnion(productId) })
-  // })
+  Promise.all([events, modifiers])
+    .catch(error => console.error(error))
 
-  // // if (Object.keys(data.siblings).length !== 0) {
-  // //     var siblings = Object.keys(data.siblings).map(sibling => {
-  // //         return global.db.doc(`businesses/${merchant}/products/${sibling}`)
-  // //             .update({ [`siblings.${product}`]: data.price })
-  // //     })
-  // // }
+  return null
+}
 
-  // // Promise.all([events, modifiers, categories, siblings])
-  // Promise.all([categories])
-  //     .catch(error => console.error(error))
+export const onUpdateProduct = async (
+  change: functions.Change<functions.firestore.QueryDocumentSnapshot>,
+  context: functions.EventContext
+) => {
+  const { placeId, productId } = context.params
+  const before = change.before.data() as Product
+  const after = change.after.data() as Product
+
+  // not a product or avoid update looping when 
+  if (before.type !== "product" ||
+    before.categoryIds.length !== after.categoryIds.length ||
+    before.modifierIds.length !== after.modifierIds.length) {
+    return null
+  }
+
+  // events
+  const remEvents = before.events.order
+    .filter(e => !after.events.order.includes(e))
+    .map(eventId => {
+      return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
+        .update({ productIds: FieldValue.arrayRemove(productId) })
+    })
+
+  const addEvents = after.events.order
+    .filter(e => !before.events.order.includes(e))
+    .map(eventId => {
+      return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
+        .update({ productIds: FieldValue.arrayUnion(productId) })
+    })
+
+  // modifiers
+  const remModifiers = before.modifiers.order
+    .filter(e => !after.modifiers.order.includes(e))
+    .map(modifierId => {
+      return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
+        .update({ productIds: FieldValue.arrayRemove(productId) })
+    })
+
+  const addModifiers = after.modifiers.order
+    .filter(e => !before.modifiers.order.includes(e))
+    .map(modifierId => {
+      return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
+        .update({ productIds: FieldValue.arrayUnion(productId) })
+    })
+
+  const updModifiers = after.modifierIds.map(modifier => {
+    return admin.firestore().doc(`places/${placeId}/modifiers/${modifier}`)
+      .update({ [`products.product.${productId}`]: after })
+  })
+
+  Promise.all([remEvents, addEvents, remModifiers, addModifiers, updModifiers])
+    .catch(error => console.error(error))
 
   return null
 }
 
 export const onDeleteProduct = async (
-  // eslint-disable-next-line no-unused-vars
   snapshot: functions.firestore.DocumentSnapshot,
-  // eslint-disable-next-line no-unused-vars
   context: functions.EventContext
 ) => {
-  // const { placeId, productId } = context.params
-  // const data = snapshot.data()!
+  const { placeId, productId } = context.params
+  const data = snapshot.data() as Product
 
-  // if (data.type !== "product") return null
+  if (data.type !== "product") return null
 
-  // // - remove ref from events
-  // // const updateEvents = Object.keys(data.events).map(event => {
-  // //     return global.db.doc(`businesses/${merchant}/events/${event}/`)
-  // //         .update({ productIds: FieldValue.arrayRemove(product) })
-  // // })
+  // events
+  const updEvents = data.events.order.map(eventId => {
+    return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
+      .update({ productIds: FieldValue.arrayRemove(productId) })
+  })
 
-  // // - remove ref from modifiers
-  // // const updateModifiers = Object.keys(data.modifiers).map(modifier => {
-  // //     return global.db.doc(`businesses/${merchant}/modifiers/${modifier}`)
-  // //         .update({ productIds: FieldValue.arrayRemove(product) })
-  // // })
+  // modifiers
+  const updModifiers = data.modifiers.order.map(modifierId => {
+    return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
+      .update({ productIds: FieldValue.arrayRemove(productId) })
+  })
 
-  // // const removeFromModifiers = data.modifierIds.map(modifier => {
-  // //     return global.global.db.doc(`businesses/${merchant}/modifiers/${modifier}`)
-  // //         .update({
-  // //             ["products.o"]: FieldValue.arrayRemove(product),
-  // //             [`products.p.${product}`]: FieldValue.delete(),
-  // //             [`products.r.${product}`]: FieldValue.delete(),
-  // //         })
-  // // })
+  const remModifiers = data.modifierIds.map(modifierId => {
+    return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
+      .update({
+        ['products.order']: FieldValue.arrayRemove(productId),
+        [`products.product.${productId}`]: FieldValue.delete(),
+        [`products.price.${productId}`]: FieldValue.delete(),
+      })
+  })
 
-  // // const removeFromCombos = data.comboIds.map(combo => {
-  // //     return global.global.db.doc(`businesses/${merchant}/products/${combo}`)
-  // //         .update({
-  // //             ["products.o"]: FieldValue.arrayRemove(product),
-  // //             [`products.p.${product}`]: FieldValue.delete(),
-  // //         })
-  // // })
+  // categories
+  const remCategory = data.categoryIds.map(categoryId => {
+    return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
+      .update({ items: FieldValue.arrayUnion(productId) })
+  })
 
-  // // const removeFromChoices = data.choiceIds.map(choice => {
-  // //     return global.global.db.doc(`businesses/${merchant}/products/${choice}`)
-  // //         .update({
-  // //             ["products.o"]: FieldValue.arrayRemove(product),
-  // //             [`products.c.${product}`]: FieldValue.delete(),
-  // //         })
-  // // })
-
-  // // - remove ref from categories
-  // const removeFromCategory = data.categoryIds.map((categoryId: string) => {
-  //     return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
-  //         .update({ items: admin.firestore.FieldValue.arrayRemove(productId) })
-  // })
-
-  // // if (Object.keys(data.siblings).length !== 0) {
-  // //     var removeFromSiblings = Object.keys(data.siblings).map(sibling => {
-  // //         return global.db.doc(`businesses/${merchant}/products/${sibling}`)
-  // //             .update({ [`siblings.${product}`]: FieldValue.delete() })
-  // //     })
-  // // }
-
-  // // Promise.all([
-  // //     updateEvents, updateModifiers,
-  // //     removeFromModifiers, removeFromCombos, removeFromChoices,
-  // //     removeFromCategory, removeFromSiblings,
-  // // ]).catch(error => console.error(error))
-
-  // Promise.all([removeFromCategory])
-  //     .catch(error => console.error(error))
+  Promise.all([updEvents, updModifiers, remModifiers, remCategory])
+    .catch(error => console.error(error))
 
   return null
 }

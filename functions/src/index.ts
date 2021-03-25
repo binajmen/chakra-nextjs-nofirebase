@@ -1,7 +1,35 @@
 import * as functions from "firebase-functions"
 // eslint-disable-next-line no-unused-vars
 import * as firebase from "firebase-admin"
-// Firestore Triggers > Products
+
+/**
+ * Firestore Triggers – Category
+ */
+
+export const onCreateCategory =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/categories/{categoryId}")
+    .onCreate(async (snapshot, context) => {
+      await (await import("./firestore/category")).onCreateCategory(snapshot, context)
+    })
+
+export const onUpdateCategory =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/categories/{categoryId}")
+    .onUpdate(async (change, context) => {
+      await (await import("./firestore/category")).onUpdateCategory(change, context)
+    })
+
+export const onDeleteCategory =
+  functions.region("europe-west1")
+    .firestore.document("places/{placeId}/categories/{categoryId}")
+    .onDelete(async (snapshot, context) => {
+      await (await import("./firestore/category")).onDeleteCategory(snapshot, context)
+    })
+
+/**
+* Firestore Triggers – Product
+*/
 
 export const onCreateProduct =
   functions.region("europe-west1")
