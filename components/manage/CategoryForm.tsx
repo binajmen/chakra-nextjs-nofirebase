@@ -29,31 +29,51 @@ import { stripDocument } from '@/helpers/index'
 
 import type { Category, Product, Event, Modifier } from '@/types/catalog'
 
-export default function CatalogEdit() {
+const initialValues: Category = {
+  available: true,
+  name: "",
+  description: "",
+  products: [],
+  events: {
+    order: [],
+    event: {}
+  },
+  modifiers: {
+    order: [],
+    modifier: {}
+  }
+}
+
+type CategoryFormProps = {
+  category?: Category
+  save: (category: Category) => Promise<any> | null
+}
+
+export default function CategoryForm({ category, save }: CategoryFormProps) {
   const { t } = useTranslation('admin')
   const productsModal = useDisclosure()
   const eventsModal = useDisclosure()
   const modifiersModal = useDisclosure()
   const toast = useToast()
   const router = useRouter()
-  const { placeId, categoryId } = router.query
+  const { placeId } = router.query
 
-  const category = useDocument<Category>(`places/${placeId}/categories/${categoryId}`)
   const products = useCollection<Product>(`places/${placeId}/products`)
   const events = useCollection<Event>(eventsModal.isOpen ? `places/${placeId}/events` : null)
   const modifiers = useCollection<Modifier>(modifiersModal.isOpen ? `places/${placeId}/modifiers` : null)
 
-  if (category.loading || products.loading) {
+  if (products.loading) {
     return <Loading />
-  } else if (category.error || products.error) {
-    return <Error error={category.error ?? products.error} />
-  } else if (category.data && products.data) {
+  } else if (products.error) {
+    return <Error error={products.error} />
+  } else if (products.data) {
     return (
       <Box>
-        <Heading mb="6">{t('category')} – {category.data.name}</Heading>
+        <Heading mb="6">{t('category')} – {category ? category.name : t('new')}</Heading>
         <Formik
-          initialValues={category.data}
+          initialValues={category ? category : initialValues}
           validationSchema={Yup.object({
+            // available
             name: Yup.string().required(),
             description: Yup.string().required(),
             products: Yup.array().of(Yup.string())
@@ -61,9 +81,9 @@ export default function CatalogEdit() {
             // modifiers
           })}
           onSubmit={(values, actions) => {
-            const { name, description, products, events, modifiers } = values
+            const { available, name, description, products, events, modifiers } = values
 
-            category.update({ name, description, products, events, modifiers })!
+            save({ available, name, description, products, events, modifiers })!
               .then(() => toast({
                 description: t('changes-saved'),
                 status: "success"
@@ -74,6 +94,11 @@ export default function CatalogEdit() {
               }))
 
             actions.setSubmitting(false)
+
+            router.push({
+              pathname: "/manage/[placeId]/categories",
+              query: { placeId }
+            })
           }}
         >
           {(props) => (
@@ -268,7 +293,6 @@ export default function CatalogEdit() {
             </Form>
           )}
         </Formik>
-
       </Box>
     )
   }

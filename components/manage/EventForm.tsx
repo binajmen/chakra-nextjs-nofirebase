@@ -55,9 +55,9 @@ export default function EventForm({ event, save }: EventFormProps) {
 
   return (
     <Box>
-      <Heading mb="6">{t('event')} – {!event ? t('common:new') : event.name}</Heading>
+      <Heading mb="6">{t('event')} – {event ? event.name : t('common:new')}</Heading>
       <Formik
-        initialValues={!event ? initialValues : event}
+        initialValues={event ? event : initialValues}
         validationSchema={Yup.object({
           name: Yup.string().required(),
           description: Yup.string().required(),

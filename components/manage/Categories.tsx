@@ -5,6 +5,7 @@ import { fuego, useCollection } from '@nandorojo/swr-firestore'
 
 import {
   Box,
+  Flex,
   Heading,
   Table,
   Thead,
@@ -18,7 +19,7 @@ import {
   Icon,
   useToast
 } from '@chakra-ui/react'
-import { FaEdit, FaTrash, FaBoxes, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
+import { FaEdit, FaPlus, FaTrash, FaBoxes, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
 import Button from '@/components/atoms/Button'
@@ -33,6 +34,13 @@ export default function Categories() {
   const placeId = router.query.placeId
 
   const categories = useCollection<Category>(`places/${placeId}/categories`, { listen: true })
+
+  function add() {
+    router.push({
+      pathname: "/manage/[placeId]/categories/new",
+      query: { placeId }
+    })
+  }
 
   function edit(categoryId: string) {
     router.push({
@@ -76,7 +84,10 @@ export default function Categories() {
   } else if (categories.data) {
     return (
       <Box>
-        <Heading mb="6">{t('categories')}</Heading>
+        <Flex justify="space-between">
+          <Heading mb="6">{t('categories')}</Heading>
+          <Button leftIcon={<FaPlus />} onClick={add}>{t('add')}</Button>
+        </Flex>
         <Table variant="simple">
           <Thead>
             <Tr>
