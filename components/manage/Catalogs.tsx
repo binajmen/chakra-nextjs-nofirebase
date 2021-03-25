@@ -21,7 +21,7 @@ import { Loading, Error } from '@/components/Suspense'
 import type { Catalog } from '@/types/catalog'
 
 export default function Catalogs() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('admin')
   const router = useRouter()
   const placeId = router.query.placeId
 
@@ -46,8 +46,8 @@ export default function Catalogs() {
           <Thead>
             <Tr>
               <Th>{t('catalog')}</Th>
-              <Th>{t('admin:name')}</Th>
-              <Th>{t('admin:description')}</Th>
+              <Th>{t('name')}</Th>
+              <Th>{t('description')}</Th>
               <Th w="1">{t('categories')}</Th>
               <Th w="1"></Th>
             </Tr>
@@ -55,7 +55,7 @@ export default function Catalogs() {
           <Tbody>
             {catalogs.data.map((catalog) => (
               <Tr key={catalog.name} _hover={{ bgColor: 'primary.50' }}>
-                <Td>{t(catalog.id)}</Td>
+                <Td>{t(`common:${catalog.id}`)}</Td>
                 <Td>{catalog.name}</Td>
                 <Td>{catalog.description}</Td>
                 <Td>{catalog.categories.length}</Td>

@@ -4,15 +4,15 @@ import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import admin from '@/lib/firebase/admin'
 
 import Layout from '@/components/layout/Layout'
-import Events from '@/components/manage/Events'
+import Products from '@/components/manage/Products'
 
-function EventsIndex() {
+function CatalogsIndex() {
   return (
     <Layout
       layout="manage"
       metadata={{ title: "Methods" }}
     >
-      <Events />
+      <Products />
     </Layout>
   )
 }
@@ -20,7 +20,7 @@ function EventsIndex() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(EventsIndex)
+})(CatalogsIndex)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,

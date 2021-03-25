@@ -27,7 +27,7 @@ import IconButton from '@/components/atoms/IconButton'
 import type { Category } from '@/types/catalog'
 
 export default function Categories() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('admin')
   const toast = useToast()
   const router = useRouter()
   const placeId = router.query.placeId
@@ -46,7 +46,7 @@ export default function Categories() {
       fuego.db.doc(`places/${placeId}/categories/${categoryId}`)
         .delete()
         .then(() => toast({
-          description: t('admin:changes-saved'),
+          description: t('changes-saved'),
           status: "success"
         }))
         .catch((error: any) => toast({
@@ -60,7 +60,7 @@ export default function Categories() {
     fuego.db.doc(`places/${placeId}/categories/${categoryId}`)
       .update({ available: !current })
       .then(() => toast({
-        description: t('admin:changes-saved'),
+        description: t('changes-saved'),
         status: "success"
       }))
       .catch((error: any) => toast({
@@ -80,9 +80,9 @@ export default function Categories() {
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>{t('admin:available')}</Th>
-              <Th>{t('admin:name')}</Th>
-              <Th>{t('admin:description')}</Th>
+              <Th w="1">{t('available')}</Th>
+              <Th>{t('name')}</Th>
+              <Th>{t('description')}</Th>
               <Th></Th>
               <Th w="1"></Th>
             </Tr>
@@ -90,7 +90,7 @@ export default function Categories() {
           <Tbody>
             {categories.data.map((category) => (
               <Tr key={category.id} _hover={{ bgColor: 'primary.50' }}>
-                <Td>
+                <Td textAlign="center">
                   <Switch
                     isChecked={category.available}
                     onChange={() => available(category.id, category.available)} />

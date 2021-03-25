@@ -1,30 +1,61 @@
 import * as React from 'react'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { resetServerContext } from 'react-beautiful-dnd'
+import { useRouter } from 'next/router'
+import { useDocument } from '@nandorojo/swr-firestore'
 
 import admin from '@/lib/firebase/admin'
 
 import Layout from '@/components/layout/Layout'
-import Events from '@/components/manage/Events'
+import ModifierForm from '@/components/manage/ModifierForm'
+import { Loading, Error } from '@/components/Suspense'
 
-function EventsIndex() {
+import type { Modifier } from '@/types/catalog'
+
+function ModifierEdit() {
   return (
     <Layout
       layout="manage"
-      metadata={{ title: "Methods" }}
+      metadata={{ title: "Options" }}
     >
-      <Events />
+      <Content />
     </Layout>
   )
+}
+
+function Content() {
+  const router = useRouter()
+  const { placeId, modifierId } = router.query
+
+  const modifier = useDocument<Modifier>(`places/${placeId}/modifiers/${modifierId}`)
+
+  if (modifier.loading) {
+    return <Loading />
+  } else if (modifier.error) {
+    return <Error error={modifier.error} />
+  } else if (modifier.data) {
+    return (
+      <ModifierForm
+        modifier={modifier.data}
+        save={({ ...values }) => {
+          return modifier.update(values)
+        }}
+      />
+    )
+  } else {
+    return null
+  }
 }
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(EventsIndex)
+})(ModifierEdit)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
+  resetServerContext()
   try {
     // retrieve place id
     const { placeId } = query

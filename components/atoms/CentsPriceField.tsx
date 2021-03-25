@@ -1,29 +1,23 @@
 import * as React from 'react'
-import { FieldProps } from 'formik'
 
 import {
-  FormControl,
-  FormLabel,
-  FormErrorMessage,
-  FormHelperText,
   Input,
   InputGroup,
-  InputRightAddon
+  InputRightAddon,
+  InputProps
 } from '@chakra-ui/react'
 
-export type PriceFieldProps = FieldProps & {
+export type CentsPriceFieldProps = InputProps & {
+  name: string
+  value: any
   id: string
-  label: string
-  placeholder?: string
-  helperText?: string
+  onPrice: (value: number) => void
   currency?: string
 }
 
-export default function CentsPriceField({
-  field, form, meta, // Formik FieldProps
-  id, label, placeholder, helperText, currency = "€" // Component Props
-}: PriceFieldProps) {
-  const [state, setState] = React.useState<string>(`${field.value / 100}`)
+export default function CentsPriceField(props: CentsPriceFieldProps) {
+  const { name, value, id, onPrice, currency = "€", ...inputProps } = props
+  const [state, setState] = React.useState<string>(`${value / 100}`)
 
   function onChange(event: React.ChangeEvent<HTMLInputElement>) {
     if (/^[0-9]*$/g.test(event.target.value))
@@ -34,30 +28,25 @@ export default function CentsPriceField({
     if (state === "0")
       setState("")
     else
-      setState(field.value)
+      setState(value)
   }
 
   function onBlur() {
     const parsed = Number.parseInt(state || "0", 10)
 
     if (!Number.isNaN(parsed)) {
-      form.setFieldValue(id, parsed)
+      onPrice(parsed)
       setState(`${parsed / 100}`)
     } else { // not a number or empty
-      form.setFieldValue(id, 0)
+      onPrice(0)
       setState("0")
     }
   }
 
   return (
-    <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-      <FormLabel htmlFor={id}>{label}</FormLabel>
-      <InputGroup size="sm">
-        <Input {...field} value={state} onChange={onChange} onFocus={onFocus} onBlur={onBlur} id={id} placeholder={placeholder ?? ""} />
-        <InputRightAddon children={currency} />
-      </InputGroup>
-      {!!helperText && <FormHelperText>{helperText}</FormHelperText>}
-      <FormErrorMessage>{form.errors[id]}</FormErrorMessage>
-    </FormControl>
+    <InputGroup {...inputProps}>
+      <Input name={name} id={id} value={state} onChange={onChange} onFocus={onFocus} onBlur={onBlur} />
+      <InputRightAddon children={currency} />
+    </InputGroup>
   )
 }

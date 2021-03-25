@@ -1,18 +1,30 @@
 import * as React from 'react'
+import { useRouter } from 'next/router'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 import admin from '@/lib/firebase/admin'
+import firebase from '@/lib/firebase/client'
 
 import Layout from '@/components/layout/Layout'
-import Events from '@/components/manage/Events'
+import ModifierForm from '@/components/manage/ModifierForm'
 
-function EventsIndex() {
+function ModifierNew() {
+  const router = useRouter()
+  const placeId = router.query.placeId
+
   return (
     <Layout
       layout="manage"
       metadata={{ title: "Methods" }}
     >
-      <Events />
+      <ModifierForm
+        save={({ ...values }) => {
+          return firebase.firestore()
+            .collection(`places/${placeId}/modifiers`)
+            .add(values)
+        }}
+      />
     </Layout>
   )
 }
@@ -20,11 +32,12 @@ function EventsIndex() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(EventsIndex)
+})(ModifierNew)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
+  resetServerContext()
   try {
     // retrieve place id
     const { placeId } = query

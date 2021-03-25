@@ -28,7 +28,7 @@ import { Loading, Error } from '@/components/Suspense'
 import type { Catalog, Category } from '@/types/catalog'
 
 export default function CatalogEdit() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('admin')
   const toast = useToast()
   const categoriesModal = useDisclosure()
   const router = useRouter()
@@ -54,15 +54,17 @@ export default function CatalogEdit() {
           })}
           onSubmit={(values, actions) => {
             const { name, description, categories } = values
+
             catalog.update({ name, description, categories })!
               .then(() => toast({
-                description: t('admin:changes-saved'),
+                description: t('changes-saved'),
                 status: "success"
               }))
               .catch((error) => toast({
                 description: error.message,
                 status: "error"
               }))
+              
             actions.setSubmitting(false)
           }}
         >
@@ -72,7 +74,7 @@ export default function CatalogEdit() {
                 <Field name="name">
                   {({ field, form, meta }: FieldProps) => (
                     <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                      <FormLabel htmlFor="name">{t('admin:name')}</FormLabel>
+                      <FormLabel htmlFor="name">{t('name')}</FormLabel>
                       <Input {...field} id="name" placeholder="" />
                       <FormErrorMessage>{form.errors.name}</FormErrorMessage>
                     </FormControl>
@@ -81,7 +83,7 @@ export default function CatalogEdit() {
                 <Field name="description">
                   {({ field, form, meta }: FieldProps) => (
                     <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                      <FormLabel htmlFor="description">{t('admin:description')}</FormLabel>
+                      <FormLabel htmlFor="description">{t('description')}</FormLabel>
                       <Input {...field} id="description" placeholder="" />
                       <FormErrorMessage>{form.errors.description}</FormErrorMessage>
                     </FormControl>

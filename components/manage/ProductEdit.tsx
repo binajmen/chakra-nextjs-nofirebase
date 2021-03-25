@@ -13,8 +13,11 @@ import {
   Text,
   FormControl,
   FormLabel,
+  FormHelperText,
   FormErrorMessage,
   Input,
+  InputGroup,
+  InputRightAddon,
   useToast,
   useDisclosure,
 } from '@chakra-ui/react'
@@ -22,12 +25,15 @@ import { FaSave, FaPlus } from 'react-icons/fa'
 
 import { Loading, Error } from '@/components/Suspense'
 import Button from '@/components/atoms/Button'
+import CentsPriceField from '@/components/atoms/CentsPriceField'
+import TagsField from '@/components/atoms/TagsField'
 import List from './List'
 import SelectionModal from './SelectionModal'
 
 import { stripDocument } from '@/helpers/index'
+import { TAGS } from '@/helpers/constants'
 
-import type { Category, Product, Event, Modifier } from '@/types/catalog'
+import type { Product, Event, Modifier } from '@/types/catalog'
 
 export default function CatalogEdit() {
   const { t } = useTranslation('admin')
@@ -36,34 +42,38 @@ export default function CatalogEdit() {
   const modifiersModal = useDisclosure()
   const toast = useToast()
   const router = useRouter()
-  const { placeId, categoryId } = router.query
+  const { placeId, productId } = router.query
 
-  const category = useDocument<Category>(`places/${placeId}/categories/${categoryId}`)
+  const product = useDocument<Product>(`places/${placeId}/products/${productId}`)
   const products = useCollection<Product>(`places/${placeId}/products`)
   const events = useCollection<Event>(eventsModal.isOpen ? `places/${placeId}/events` : null)
   const modifiers = useCollection<Modifier>(modifiersModal.isOpen ? `places/${placeId}/modifiers` : null)
 
-  if (category.loading || products.loading) {
+  if (product.loading || products.loading) {
     return <Loading />
-  } else if (category.error || products.error) {
-    return <Error error={category.error ?? products.error} />
-  } else if (category.data && products.data) {
+  } else if (product.error || products.error) {
+    return <Error error={product.error ?? products.error} />
+  } else if (product.data && products.data) {
     return (
       <Box>
-        <Heading mb="6">{t('category')} – {category.data.name}</Heading>
+        <Heading mb="6">{t('product')} – {product.data.name}</Heading>
         <Formik
-          initialValues={category.data}
+          initialValues={product.data}
           validationSchema={Yup.object({
             name: Yup.string().required(),
             description: Yup.string().required(),
-            products: Yup.array().of(Yup.string())
+            // code: Yup.string(),
+            price: Yup.number().required().min(0),
+            tax: Yup.number().required().min(0),
+            tags: Yup.array().of(Yup.string().oneOf(TAGS)),
             // events
             // modifiers
           })}
           onSubmit={(values, actions) => {
-            const { name, description, products, events, modifiers } = values
+            console.log(values)
+            const { name, description, price, tax, tags, events, modifiers } = values
 
-            category.update({ name, description, products, events, modifiers })!
+            product.update({ name, description, price, tax, tags, events, modifiers })!
               .then(() => toast({
                 description: t('changes-saved'),
                 status: "success"
@@ -97,51 +107,55 @@ export default function CatalogEdit() {
                     </FormControl>
                   )}
                 </Field>
-                <Field name="products">
+                {/* <Field name="code">
                   {({ field, form, meta }: FieldProps) => (
                     <FormControl isInvalid={!!meta.error && !!meta.touched}>
-                      <FormLabel htmlFor="description">
-                        <Stack direction="row" spacing="6">
-                          <Center><Text>{t('products')}</Text></Center>
-                          <Button
-                            leftIcon={<FaPlus />}
-                            size="sm"
-                            onClick={productsModal.onOpen}>
-                            {t('add')}
-                          </Button>
-                        </Stack>
-                      </FormLabel>
-                      <List
-                        itemIds={field.value ?? []}
-                        items={products.data ?? []}
-                        keys={["name", "description", "price"]}
-                        transform={{
-                          "price": (value) => `${value / 100}€`
-                        }}
-                        onRemove={(itemId) => {
-                          form.setFieldValue("products", field.value.filter((id: string) => id !== itemId))
-                        }}
-                        onReorder={(itemIds) => {
-                          form.setFieldValue("products", itemIds)
-                        }}
-                        editPath={{
-                          pathname: "/manage/[placeId]/products/[productId]",
-                          queryId: "productId"
+                      <FormLabel htmlFor="code">{t('code')}</FormLabel>
+                      <Input {...field} id="code" placeholder="" />
+                      <FormErrorMessage>{form.errors.code}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field> */}
+                <Stack direction="row">
+                  <Field name="price">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="price">{t('price')}</FormLabel>
+                        <CentsPriceField
+                          {...field}
+                          id="price"
+                          onPrice={(value) => {
+                            form.setFieldValue("price", value)
+                          }} />
+                        <FormHelperText>100 = 1€</FormHelperText>
+                        <FormErrorMessage>{form.errors.price}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="tax">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="tax">{t('tax')}</FormLabel>
+                        <InputGroup>
+                          <Input {...field} id="name" placeholder="" />
+                          <InputRightAddon children="%" />
+                        </InputGroup>
+                        <FormErrorMessage>{form.errors.tax}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
+                </Stack>
+                <Field name="tags">
+                  {({ field, form, meta }: FieldProps) => (
+                    <FormControl isInvalid={!!meta.error && !!meta.touched}>
+                      <FormLabel htmlFor="tags">{t('tags')}</FormLabel>
+                      <TagsField
+                        tags={field.value}
+                        onTag={(tags) => {
+                          form.setFieldValue("tags", tags)
                         }}
                       />
-                      <SelectionModal
-                        modal={productsModal}
-                        title="Ajout de produits"
-                        selected={field.value}
-                        items={products.data!}
-                        keys={["name", "description", "price"]}
-                        transform={{
-                          "price": (value) => `${value / 100}€`
-                        }}
-                        add={(item) => {
-                          form.setFieldValue("products", [...field.value, item.id])
-                        }} />
-                      <FormErrorMessage>{form.errors.description}</FormErrorMessage>
+                      <FormErrorMessage>{form.errors.tags}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>

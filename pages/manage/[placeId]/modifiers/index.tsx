@@ -1,38 +1,18 @@
 import * as React from 'react'
-import { useRouter } from 'next/router'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
-import { resetServerContext } from 'react-beautiful-dnd'
-import useTranslation from 'next-translate/useTranslation'
-
-import { Flex, Heading, Button, Spacer, useToast, useDisclosure } from '@chakra-ui/react'
-import { FaPlus } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
-import Layout from '@/components/layout/Layout'
 
-import Categories from '@/layout/manager/Categories'
-import NewCategory from '@/forms/NewCategory'
+import Layout from '@/components/layout/Layout'
+import Modifiers from '@/components/manage/Modifiers'
 
 function ModifiersIndex() {
-  const { t } = useTranslation('common')
-  const toast = useToast()
-  const modal = useDisclosure()
-  const router = useRouter()
-  const place = router.query.place
-
   return (
     <Layout
       layout="manage"
-      metadata={{ title: "Modifiers" }}
+      metadata={{ title: "Options" }}
     >
-      <Flex mb={6}>
-        <Heading>{t('categories')}</Heading>
-        <Spacer />
-        <Button leftIcon={<FaPlus />} color="gray.900" colorScheme="primary" onClick={modal.onOpen}>{t('admin:new-category')}</Button>
-        <NewCategory modal={modal} />
-      </Flex>
-
-      <Categories />
+      <Modifiers />
     </Layout>
   )
 }
@@ -45,10 +25,9 @@ export default withAuthUser({
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
-  resetServerContext()
   try {
     // retrieve place id
-    const { place } = query
+    const { placeId } = query
 
     // retrieve roles for the current user
     const doc = await admin.firestore()
@@ -57,7 +36,7 @@ export const getServerSideProps = withAuthUserSSR({
       .get()
 
     // if no roles or no roles for the requested place, 404
-    if (!doc.exists || !doc.data()!.places?.includes(place)) return { notFound: true }
+    if (!doc.exists || !doc.data()!.places?.includes(placeId)) return { notFound: true }
 
     // else
     return { props: {} }

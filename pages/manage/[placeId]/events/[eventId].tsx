@@ -1,27 +1,56 @@
 import * as React from 'react'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
 import { resetServerContext } from 'react-beautiful-dnd'
+import { useRouter } from 'next/router'
+import { useDocument } from '@nandorojo/swr-firestore'
 
 import admin from '@/lib/firebase/admin'
 
 import Layout from '@/components/layout/Layout'
-import EventEdit from '@/components/manage/EventEdit'
+import EventForm from '@/components/manage/EventForm'
+import { Loading, Error } from '@/components/Suspense'
 
-function CategoryEditPage() {
+import type { Event } from '@/types/catalog'
+
+function EventEdit() {
   return (
     <Layout
       layout="manage"
       metadata={{ title: "Methods" }}
     >
-      <EventEdit />
+      <Content />
     </Layout>
   )
+}
+
+function Content() {
+  const router = useRouter()
+  const { placeId, eventId } = router.query
+
+  const event = useDocument<Event>(`places/${placeId}/events/${eventId}`)
+
+  if (event.loading) {
+    return <Loading />
+  } else if (event.error) {
+    return <Error error={event.error} />
+  } else if (event.data) {
+    return (
+      <EventForm
+        event={event.data}
+        save={({ ...values }) => {
+          return event.update(values)
+        }}
+      />
+    )
+  } else {
+    return null
+  }
 }
 
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(CategoryEditPage)
+})(EventEdit)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,

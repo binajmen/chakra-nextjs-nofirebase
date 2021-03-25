@@ -1,18 +1,19 @@
 import * as React from 'react'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 import admin from '@/lib/firebase/admin'
 
 import Layout from '@/components/layout/Layout'
-import Events from '@/components/manage/Events'
+import ProductEdit from '@/components/manage/ProductEdit'
 
-function EventsIndex() {
+function ProductEditPage() {
   return (
     <Layout
       layout="manage"
       metadata={{ title: "Methods" }}
     >
-      <Events />
+      <ProductEdit />
     </Layout>
   )
 }
@@ -20,11 +21,12 @@ function EventsIndex() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(EventsIndex)
+})(ProductEditPage)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
+  resetServerContext()
   try {
     // retrieve place id
     const { placeId } = query

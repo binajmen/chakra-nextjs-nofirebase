@@ -21,6 +21,7 @@ import { FaEllipsisV, FaTrash, FaEdit } from 'react-icons/fa'
 
 import Button from '@/components/atoms/Button'
 import IconButton from '@/components/atoms/IconButton'
+import CentsPriceField from '@/components/atoms/CentsPriceField'
 
 import { reorder, objToArr } from '@/helpers/index'
 
@@ -28,7 +29,7 @@ type ListProps = {
   itemIds: string[]
   items: any[] | object
   price?: { [index: string]: number }
-  editPrice?: (itemId: string, price: number) => void
+  onPrice?: (itemId: string, price: number) => void
   keys: string[]
   transform?: { [index: string]: (value: any) => any }
   onRemove: (itemId: string) => void
@@ -39,7 +40,7 @@ type ListProps = {
   }
 }
 
-export default function List({ itemIds, items, keys, transform, onRemove, onReorder, editPath, price, editPrice }: ListProps) {
+export default function List({ itemIds, items, keys, transform, onRemove, onReorder, editPath, price, onPrice }: ListProps) {
   const { t } = useTranslation('admin')
   const router = useRouter()
   const placeId = router.query.placeId
@@ -49,10 +50,6 @@ export default function List({ itemIds, items, keys, transform, onRemove, onReor
     return itemIds.map(id => itemsArr.find(i => i.id === id))
       .filter(item => item !== undefined)
   }, [itemIds, items])
-
-  function remove(itemId: string) {
-    onRemove(itemId)
-  }
 
   function onDragEnd(result: any) {
     if (!result.destination) return
@@ -107,8 +104,16 @@ export default function List({ itemIds, items, keys, transform, onRemove, onReor
                           ))}
                           {price &&
                             <Td>
-                              {price[item!.id] / 100}€
-                          </Td>
+                              <CentsPriceField
+                                w="128px"
+                                name="price"
+                                id="price"
+                                value={price[item!.id]}
+                                onPrice={(value) => {
+                                  onPrice && onPrice(item!.id, value)
+                                }}
+                              />
+                            </Td>
                           }
                           <Td>
                             <Stack direction="row" spacing="2">
@@ -126,7 +131,7 @@ export default function List({ itemIds, items, keys, transform, onRemove, onReor
                                 aria-label="remove"
                                 icon={<FaTrash />}
                                 size="sm"
-                                onClick={() => remove(item!.id)}
+                                onClick={() => onRemove(item!.id)}
                                 colorScheme="red"
                                 color="tomato"
                                 variant="ghost" />

@@ -1,161 +1,139 @@
 import * as React from 'react'
-import NextLink from 'next/link'
-import { useRouter } from 'next/router'
-import produce from 'immer'
 import useTranslation from 'next-translate/useTranslation'
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
-import { useDocument, useCollection } from '@nandorojo/swr-firestore'
+import { useRouter } from 'next/router'
+import { fuego, useCollection } from '@nandorojo/swr-firestore'
 
 import {
   Box,
+  Heading,
   Table,
   Thead,
   Tbody,
-  Tfoot,
   Tr,
   Th,
   Td,
-  TableCaption,
-  Icon,
   Switch,
-  Link,
-  IconButton,
-  useToast,
-  useDisclosure
+  Stack,
+  Center,
+  Icon,
+  useToast
 } from '@chakra-ui/react'
-import { FaEllipsisV, FaTrash, FaArrowsAltV } from 'react-icons/fa'
+import { FaEdit, FaTrash, FaBoxes, FaRegCalendarCheck, FaTasks } from 'react-icons/fa'
 
-import EditProduct from '@/forms/EditProduct'
+import { Loading, Error } from '@/components/Suspense'
+import Button from '@/components/atoms/Button'
+import IconButton from '@/components/atoms/IconButton'
 
-import { useStoreState, useStoreActions } from '@/store/hooks'
-
-import { reorder } from '@/helpers/index'
-
-import type { Category } from '@/types/category'
-import type { Product } from '@/types/product'
+import type { Product } from '@/types/catalog'
 
 export default function Products() {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation('admin')
   const toast = useToast()
   const router = useRouter()
-  const placeId = router.query.place
-  const categoryId = router.query.category as string
+  const placeId = router.query.placeId
 
-  const { data: category, update } = useDocument<Category>(`places/${placeId}/categories/${categoryId}`)
+  const products = useCollection<Product>(`places/${placeId}/products`, { listen: true })
 
-  function onDragEnd(result: any) {
-    if (!result.destination) return
-    if (result.destination.index === result.source.index) return
+  function edit(productId: string) {
+    router.push({
+      pathname: "/manage/[placeId]/products/[productId]",
+      query: { placeId, productId }
+    })
+  }
 
-    const newOrder = reorder(
-      category!.items,
-      result.source.index,
-      result.destination.index
-    )
+  function remove(productId: string) {
+    if (window.confirm()) {
+      fuego.db.doc(`places/${placeId}/products/${productId}`)
+        .delete()
+        .then(() => toast({
+          description: t('changes-saved'),
+          status: "success"
+        }))
+        .catch((error: any) => toast({
+          description: error.message,
+          status: "error"
+        }))
+    }
+  }
 
-    update({ items: newOrder })!
+  function available(productId: string, current: boolean) {
+    fuego.db.doc(`places/${placeId}/products/${productId}`)
+      .update({ available: !current })
       .then(() => toast({
-        description: t('admin:changes-saved'),
+        description: t('changes-saved'),
         status: "success"
       }))
-      .catch((error) => toast({
+      .catch((error: any) => toast({
         description: error.message,
         status: "error"
       }))
   }
 
-  function deleteFromCategory(id: string) {
-    return update({ items: category!.items.filter(i => i !== id) })
-  }
-
-  return (
-    <Box>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <Droppable droppableId="droppable">
-          {provided => (
-            <Table variant="simple" ref={provided.innerRef}>
-              <Thead>
-                <Tr>
-                  <Th></Th>
-                  <Th>{t('admin:available')}</Th>
-                  <Th>{t('admin:name')}</Th>
-                  <Th>{t('admin:description')}</Th>
-                  <Th>{t('admin:price')}</Th>
-                  <Th></Th>
+  if (products.loading) {
+    return <Loading />
+  } else if (products.error) {
+    return <Error error={products.error} />
+  } else if (products.data) {
+    return (
+      <Box>
+        <Heading mb="6">{t('products')}</Heading>
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th w="1">{t('available')}</Th>
+              <Th>{t('name')}</Th>
+              <Th>{t('description')}</Th>
+              <Th></Th>
+              <Th w="1"></Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {products.data
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((product) => (
+                <Tr key={product.id} _hover={{ bgColor: 'primary.50' }}>
+                  <Td textAlign="center">
+                    <Switch
+                      isChecked={product.available}
+                      onChange={() => available(product.id, product.available)} />
+                  </Td>
+                  <Td>{product.name}</Td>
+                  <Td>{product.description}</Td>
+                  <Td>
+                    <Stack direction="row" spacing="2">
+                      {product.events?.order?.length && <Icon as={FaRegCalendarCheck} />}
+                      {product.modifiers?.order?.length && <Icon as={FaTasks} />}
+                    </Stack>
+                  </Td>
+                  <Td>
+                    <Stack direction="row" spacing="2">
+                      <Center>
+                        <Button
+                          aria-label="edit"
+                          leftIcon={<FaEdit />}
+                          size="sm"
+                          onClick={() => edit(product.id)}
+                        >
+                          {t('edit')}
+                        </Button>
+                      </Center>
+                      <IconButton
+                        aria-label="remove"
+                        icon={<FaTrash />}
+                        size="sm"
+                        onClick={() => remove(product.id)}
+                        colorScheme="red"
+                        color="tomato"
+                        variant="ghost" />
+                    </Stack>
+                  </Td>
                 </Tr>
-              </Thead>
-              <Tbody>
-                {category?.items.map((productId, index) => (
-                  <ProductRow key={productId}
-                    categoryId={categoryId}
-                    productId={productId}
-                    deleteFromCategory={deleteFromCategory}
-                    index={index}
-                  />
-                ))}
-                {provided.placeholder}
-              </Tbody>
-            </Table>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </Box>
-  )
-}
-
-type ProductRowProps = {
-  categoryId: string
-  productId: string
-  deleteFromCategory: (id: string) => Promise<void> | null
-  index: number
-}
-
-function ProductRow({ categoryId, productId, deleteFromCategory, index }: ProductRowProps) {
-  const { t } = useTranslation()
-  const toast = useToast()
-  const modal = useDisclosure()
-  const router = useRouter()
-  const placeId = router.query.place as string
-
-  const { data: product, update, deleteDocument } = useDocument<Product>(`places/${placeId}/products/${productId}`)
-
-  function updateAvailability(event: React.ChangeEvent<HTMLInputElement>) {
-    update({ available: !product!.available })!
-      .then(() => toast({
-        description: t('admin:changes-saved'),
-        status: "success"
-      }))
+              ))}
+          </Tbody>
+        </Table>
+      </Box>
+    )
   }
 
-  function onDelete(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    deleteFromCategory(productId)!
-      .then(() => deleteDocument())
-  }
-
-  if (!product || !product.exists) return null
-
-  return (
-    <Draggable draggableId={productId} index={index}>
-      {provided => (
-        <Tr ref={provided.innerRef} {...provided.draggableProps} _hover={{ bgColor: 'primary.50' }}>
-          <Td {...provided.dragHandleProps}><Icon as={FaEllipsisV} /></Td>
-          <Td><Switch isChecked={product.available} onChange={updateAvailability} /></Td>
-          <Td>
-            <Link onClick={modal.onOpen}>{product.name}</Link>
-            <EditProduct modal={modal} productId={productId} />
-          </Td>
-          <Td>{product.desc}</Td>
-          <Td>{product.price / 100}€</Td>
-          <Td>
-            <IconButton aria-label="delete"
-              colorScheme="gray"
-              variant="ghost"
-              icon={<FaTrash />}
-              onClick={onDelete}
-            />
-          </Td>
-        </Tr>
-      )}
-    </Draggable>
-  )
+  return null
 }

@@ -18,7 +18,7 @@ const items = [
   { label: "opening", pathname: "/manage/[placeId]/opening", icon: <FaClock /> },
   { label: "catalogs", pathname: "/manage/[placeId]/catalogs", icon: <FaBookOpen /> },
   { label: "categories", pathname: "/manage/[placeId]/categories", icon: <FaFolderOpen /> },
-  { label: "inventory", pathname: "/manage/[placeId]/inventory", icon: <FaBoxes /> },
+  { label: "products", pathname: "/manage/[placeId]/products", icon: <FaBoxes /> },
   { label: "events", pathname: "/manage/[placeId]/events", icon: <FaRegCalendarCheck /> },
   { label: "modifiers", pathname: "/manage/[placeId]/modifiers", icon: <FaTasks /> },
 ]

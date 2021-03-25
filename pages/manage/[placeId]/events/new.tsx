@@ -1,18 +1,30 @@
 import * as React from 'react'
+import { useRouter } from 'next/router'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { resetServerContext } from 'react-beautiful-dnd'
 
 import admin from '@/lib/firebase/admin'
+import firebase from '@/lib/firebase/client'
 
 import Layout from '@/components/layout/Layout'
-import Events from '@/components/manage/Events'
+import EventForm from '@/components/manage/EventForm'
 
-function EventsIndex() {
+function EventNew() {
+  const router = useRouter()
+  const placeId = router.query.placeId
+
   return (
     <Layout
       layout="manage"
       metadata={{ title: "Methods" }}
     >
-      <Events />
+      <EventForm
+        save={({ ...values }) => {
+          return firebase.firestore()
+            .collection(`places/${placeId}/events`)
+            .add(values)
+        }}
+      />
     </Layout>
   )
 }
@@ -20,11 +32,12 @@ function EventsIndex() {
 export default withAuthUser({
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
-})(EventsIndex)
+})(EventNew)
 
 export const getServerSideProps = withAuthUserSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
+  resetServerContext()
   try {
     // retrieve place id
     const { placeId } = query
