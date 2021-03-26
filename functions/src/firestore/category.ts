@@ -1,7 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import * as functions from "firebase-functions"
 import * as admin from "firebase-admin"
 admin.initializeApp()
 
+// eslint-disable-next-line no-unused-vars
 import type { Category } from "./types"
 
 const FieldValue = admin.firestore.FieldValue
@@ -13,12 +15,12 @@ export const onCreateCategory = async (
   const { placeId, categoryId } = context.params
   const data = snapshot.data() as Category
 
-  const events = data.events.order.map(eventId => {
+  const events = data.events.order?.map(eventId => {
     return admin.firestore().doc(`places/${placeId}/events/${eventId}`)
       .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
   })
 
-  const modifiers = data.modifiers.order.map(modifierId => {
+  const modifiers = data.modifiers.order?.map(modifierId => {
     return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
       .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
   })
@@ -43,45 +45,39 @@ export const onUpdateCategory = async (
   const after = change.after.data() as Category
 
   // events
-  const remEvents = before.events.order
-    .filter(e => !after.events.order.includes(e))
+  const remEvents = before.events.order?.filter(e => !after.events.order.includes(e))
     .map(eventId => {
       return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
         .update({ categoryIds: FieldValue.arrayRemove(categoryId) })
     })
 
-  const addEvents = after.events.order
-    .filter(e => !before.events.order.includes(e))
+  const addEvents = after.events.order?.filter(e => !before.events.order.includes(e))
     .map(eventId => {
       return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
         .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
     })
 
   // modifiers
-  const remModifiers = before.modifiers.order
-    .filter(e => !after.modifiers.order.includes(e))
+  const remModifiers = before.modifiers.order?.filter(e => !after.modifiers.order.includes(e))
     .map(modifierId => {
       return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
         .update({ categoryIds: FieldValue.arrayRemove(categoryId) })
     })
 
-  const addModifiers = after.modifiers.order
-    .filter(e => !before.modifiers.order.includes(e))
+  const addModifiers = after.modifiers.order?.filter(e => !before.modifiers.order.includes(e))
     .map(modifierId => {
       return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
         .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
     })
 
   // products
-  const remProducts = before.products
-    .filter(e => !after.products.includes(e))
+  const remProducts = before.products.filter(e => !after.products.includes(e))
     .map(productId => {
       return admin.firestore().doc(`places/${placeId}/products/${productId}/`)
         .update({ categoryIds: FieldValue.arrayRemove(categoryId) })
     })
 
-  const addProducts = after.products
-    .filter(e => !before.products.includes(e))
+  const addProducts = after.products.filter(e => !before.products.includes(e))
     .map(productId => {
       return admin.firestore().doc(`places/${placeId}/products/${productId}/`)
         .update({ categoryIds: FieldValue.arrayUnion(categoryId) })
@@ -100,12 +96,12 @@ export const onDeleteCategory = async (
   const { placeId, categoryId } = context.params
   const data = snapshot.data() as Category
 
-  const remEvents = data.events.order.map(eventId => {
+  const remEvents = data.events.order?.map(eventId => {
     return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
       .update({ categoryIds: FieldValue.arrayRemove(categoryId) })
   })
 
-  const remModifiers = data.modifiers.order.map(modifierId => {
+  const remModifiers = data.modifiers.order?.map(modifierId => {
     return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
       .update({ categoryIds: FieldValue.arrayRemove(categoryId) })
   })

@@ -73,10 +73,10 @@ export default function MethodMenu() {
         </MenuButton>
         <MenuList>
           <MenuOptionGroup value={method as string} type="radio">
-            <MenuItemOption value="now" onClick={() => _setMethod('now')}>
+            {/* <MenuItemOption value="now" onClick={() => _setMethod('now')}>
               <Icon as={FaChair} mr={3} />
               <Text as="span">{t('now')}</Text>
-            </MenuItemOption>
+            </MenuItemOption> */}
             <MenuItemOption value="collect" onClick={() => _setMethod('collect')}>
               <Icon as={FaWalking} mr={3} />
               <Text as="span">{t('collect')}</Text>

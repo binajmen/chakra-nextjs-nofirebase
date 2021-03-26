@@ -1,7 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import * as functions from "firebase-functions"
 import * as admin from "firebase-admin"
 admin.initializeApp()
 
+// eslint-disable-next-line no-unused-vars
 import type { Event } from "./types"
 
 const FieldValue = admin.firestore.FieldValue
@@ -49,7 +51,7 @@ export const onDeleteEvent = async (
   const categories = data.categoryIds.map(categoryId => {
     return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
       .update({
-        ['events.order']: FieldValue.arrayRemove(eventId),
+        ["events.order"]: FieldValue.arrayRemove(eventId),
         [`events.event.${eventId}`]: FieldValue.delete()
       })
   })
@@ -58,7 +60,7 @@ export const onDeleteEvent = async (
   const products = data.productIds.map(productId => {
     return admin.firestore().doc(`places/${placeId}/products/${productId}`)
       .update({
-        ['events.order']: FieldValue.arrayRemove(eventId),
+        ["events.order"]: FieldValue.arrayRemove(eventId),
         [`events.event.${eventId}`]: FieldValue.delete()
       })
   })

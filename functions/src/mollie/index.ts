@@ -11,7 +11,6 @@ export const retrieveMollieAccessToken = async (
   _context: functions.https.CallableContext
 ) => {
   try {
-    console.log(data)
     const snap = await admin.firestore().collectionGroup("settings").where("csrf", "==", data.state).get()
 
     // no matching csrf?

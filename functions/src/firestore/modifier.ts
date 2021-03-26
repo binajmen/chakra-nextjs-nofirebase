@@ -1,7 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import * as functions from "firebase-functions"
 import * as admin from "firebase-admin"
 admin.initializeApp()
 
+// eslint-disable-next-line no-unused-vars
 import type { Modifier } from "./types"
 
 const FieldValue = admin.firestore.FieldValue
@@ -14,9 +16,9 @@ export const onCreateModifier = async (
   const data = snapshot.data() as Modifier
 
   // update linked products as options
-  const products = data.products.order.map(productId => {
+  const products = data.products.order?.map(productId => {
     return admin.firestore().doc(`places/${placeId}/products/${productId}`)
-      .update({ [`modifierIds`]: FieldValue.arrayUnion(modifierId) })
+      .update({ modifierIds: FieldValue.arrayUnion(modifierId) })
   })
 
   Promise.all([products])
@@ -52,15 +54,13 @@ export const onUpdateModifier = async (
   })
 
   // update linked products added/removed as options
-  const remOptions = before.products.order
-    .filter(e => !after.products.order.includes(e))
+  const remOptions = before.products.order?.filter(e => !after.products.order.includes(e))
     .map(productId => {
       return admin.firestore().doc(`places/${placeId}/products/${productId}/`)
         .update({ modifierIds: FieldValue.arrayRemove(modifierId) })
     })
 
-  const addOptions = after.products.order
-    .filter(e => !before.products.order.includes(e))
+  const addOptions = after.products.order?.filter(e => !before.products.order.includes(e))
     .map(productId => {
       return admin.firestore().doc(`places/${placeId}/products/${productId}/`)
         .update({ modifierIds: FieldValue.arrayUnion(modifierId) })
@@ -83,7 +83,7 @@ export const onDeleteModifier = async (
   const categories = data.categoryIds.map(categoryId => {
     return admin.firestore().doc(`places/${placeId}/categories/${categoryId}`)
       .update({
-        ['modifiers.order']: FieldValue.arrayRemove(modifierId),
+        ["modifiers.order"]: FieldValue.arrayRemove(modifierId),
         [`modifiers.modifier.${modifierId}`]: FieldValue.delete()
       })
   })
@@ -92,13 +92,13 @@ export const onDeleteModifier = async (
   const products = data.productIds.map(productId => {
     return admin.firestore().doc(`places/${placeId}/products/${productId}`)
       .update({
-        ['modifiers.order']: FieldValue.arrayRemove(modifierId),
+        ["modifiers.order"]: FieldValue.arrayRemove(modifierId),
         [`modifiers.modifier.${modifierId}`]: FieldValue.delete()
       })
   })
 
   // remove linked products as options
-  const options = data.products.order.map(productId => {
+  const options = data.products.order?.map(productId => {
     return admin.firestore().doc(`places/${placeId}/products/${productId}/`)
       .update({ modifierIds: FieldValue.arrayRemove(modifierId) })
   })

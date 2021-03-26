@@ -87,7 +87,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
         <ModalContent>
           <ModalHeader>{t('order-type')}</ModalHeader>
           <ModalBody>
-            <SelectMethod />
+            <Center><SelectMethod /></Center>
           </ModalBody>
           <ModalFooter>
             <Text>Veuillez sélectionner un type de commande pour obtenir le menu adéquat.</Text>

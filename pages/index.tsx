@@ -29,7 +29,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
             variant="ghost"
             rightIcon={<FaArrowRight />}
             pathname="/place/[placeId]"
-            query={{ place: id }}
+            query={{ placeId: id }}
           >{t('visit')}</ButtonLink>
         )}
       />

@@ -3,9 +3,8 @@ import * as functions from "firebase-functions"
 import * as firebase from "firebase-admin"
 
 /**
- * Firestore Triggers – Catalog
+ * Firestore Triggers – Catalog
  */
-
 export const onCreateCatalog =
   functions.region("europe-west1")
     .firestore.document("places/{placeId}/catalogs/{catalogId}")
@@ -28,9 +27,8 @@ export const onDeleteCatalog =
     })
 
 /**
- * Firestore Triggers – Category
+ * Firestore Triggers – Category
  */
-
 export const onCreateCategory =
   functions.region("europe-west1")
     .firestore.document("places/{placeId}/categories/{categoryId}")
@@ -53,9 +51,8 @@ export const onDeleteCategory =
     })
 
 /**
-* Firestore Triggers – Product
+* Firestore Triggers – Product
 */
-
 export const onCreateProduct =
   functions.region("europe-west1")
     .firestore.document("places/{placeId}/products/{productId}")
@@ -80,7 +77,6 @@ export const onDeleteProduct =
 /**
 * Firestore Triggers – Event
 */
-
 export const onUpdateEvent =
   functions.region("europe-west1")
     .firestore.document("places/{placeId}/events/{eventId}")
@@ -96,9 +92,8 @@ export const onDeleteEvent =
     })
 
 /**
-* Firestore Triggers – Modifier
+* Firestore Triggers – Modifier
 */
-
 export const onCreateModifier =
   functions.region("europe-west1")
     .firestore.document("places/{placeId}/modifiers/{modifierId}")
@@ -123,7 +118,6 @@ export const onDeleteModifier =
 /**
 * Mollie
 */
-
 export const retrieveMollieAccessToken =
   functions.region("europe-west1")
     .https.onCall(async (data, context) => {
@@ -158,7 +152,6 @@ export const webhookMollie =
 /**
 * Auth
 */
-
 export const onAuthCreateUser =
   functions
     .region("europe-west1")

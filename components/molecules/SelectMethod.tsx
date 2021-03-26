@@ -25,7 +25,7 @@ import { useStoreState, useStoreActions } from '@/store/hooks'
 import type { Method } from '@/store/session'
 
 const methods = [
-  { label: 'now', icon: <FaChair /> },
+  // { label: 'now', icon: <FaChair /> },
   { label: 'collect', icon: <FaWalking /> },
   { label: 'delivery', icon: <FaBicycle /> },
 ]

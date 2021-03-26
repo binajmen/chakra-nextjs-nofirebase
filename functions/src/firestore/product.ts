@@ -1,7 +1,9 @@
+// eslint-disable-next-line no-unused-vars
 import * as functions from "firebase-functions"
 import * as admin from "firebase-admin"
 admin.initializeApp()
 
+// eslint-disable-next-line no-unused-vars
 import type { Product } from "./types"
 
 const FieldValue = admin.firestore.FieldValue
@@ -15,12 +17,12 @@ export const onCreateProduct = async (
 
   if (data.type !== "product") return null
 
-  const events = data.events.order.map(eventId => {
+  const events = data.events.order?.map(eventId => {
     return admin.firestore().doc(`places/${placeId}/events/${eventId}`)
       .update({ productIds: FieldValue.arrayUnion(productId) })
   })
 
-  const modifiers = data.modifiers.order.map(modifierId => {
+  const modifiers = data.modifiers.order?.map(modifierId => {
     return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
       .update({ productIds: FieldValue.arrayUnion(productId) })
   })
@@ -47,30 +49,26 @@ export const onUpdateProduct = async (
   }
 
   // events
-  const remEvents = before.events.order
-    .filter(e => !after.events.order.includes(e))
+  const remEvents = before.events.order?.filter(e => !after.events.order.includes(e))
     .map(eventId => {
       return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
         .update({ productIds: FieldValue.arrayRemove(productId) })
     })
 
-  const addEvents = after.events.order
-    .filter(e => !before.events.order.includes(e))
+  const addEvents = after.events.order?.filter(e => !before.events.order.includes(e))
     .map(eventId => {
       return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
         .update({ productIds: FieldValue.arrayUnion(productId) })
     })
 
   // modifiers
-  const remModifiers = before.modifiers.order
-    .filter(e => !after.modifiers.order.includes(e))
+  const remModifiers = before.modifiers.order?.filter(e => !after.modifiers.order.includes(e))
     .map(modifierId => {
       return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
         .update({ productIds: FieldValue.arrayRemove(productId) })
     })
 
-  const addModifiers = after.modifiers.order
-    .filter(e => !before.modifiers.order.includes(e))
+  const addModifiers = after.modifiers.order?.filter(e => !before.modifiers.order.includes(e))
     .map(modifierId => {
       return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}/`)
         .update({ productIds: FieldValue.arrayUnion(productId) })
@@ -97,13 +95,13 @@ export const onDeleteProduct = async (
   if (data.type !== "product") return null
 
   // events
-  const updEvents = data.events.order.map(eventId => {
+  const updEvents = data.events.order?.map(eventId => {
     return admin.firestore().doc(`places/${placeId}/events/${eventId}/`)
       .update({ productIds: FieldValue.arrayRemove(productId) })
   })
 
   // modifiers
-  const updModifiers = data.modifiers.order.map(modifierId => {
+  const updModifiers = data.modifiers.order?.map(modifierId => {
     return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
       .update({ productIds: FieldValue.arrayRemove(productId) })
   })
@@ -111,7 +109,7 @@ export const onDeleteProduct = async (
   const remModifiers = data.modifierIds.map(modifierId => {
     return admin.firestore().doc(`places/${placeId}/modifiers/${modifierId}`)
       .update({
-        ['products.order']: FieldValue.arrayRemove(productId),
+        ["products.order"]: FieldValue.arrayRemove(productId),
         [`products.product.${productId}`]: FieldValue.delete(),
         [`products.price.${productId}`]: FieldValue.delete(),
       })
