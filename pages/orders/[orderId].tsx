@@ -83,7 +83,7 @@ function OrderDetails() {
           <Heading size="md">Articles</Heading>
           {order!.items.map(item => (
             <Flex justify="space-between">
-              <Text>{item.quantity} x {item.longName}</Text>
+              <Text>{item.quantity} x {item.name}</Text>
               <Text>{item.total / 100}€</Text>
             </Flex>
           ))}

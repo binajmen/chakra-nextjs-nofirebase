@@ -111,7 +111,7 @@ export default function Orders() {
               <Box mt="3" p="2" border="1px solid" borderColor="gray.100" borderRadius="lg" boxShadow="sm">
                 {order.items.map(item => (
                   <Flex key={item.id} justify="space-between" mb="1">
-                    <Text>{item.quantity} x {item.longName}</Text>
+                    <Text>{item.quantity} x {item.name}</Text>
                     <Text>{item.total / 100}€</Text>
                   </Flex>
                 ))}

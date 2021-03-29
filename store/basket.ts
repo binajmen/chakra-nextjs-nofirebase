@@ -192,16 +192,17 @@ const model: Model = {
 
     if (isConfirmed) {
       // remove items that doesn't belong in new method
-      items.forEach((item, index) => {
-        if (!item.method.includes(method))
-          actions.deleteItem(index)
-      })
+      // items.forEach((item, index) => {
+      //   if (!item.method.includes(method))
+      //     actions.deleteItem(index)
+      // })
 
       actions._setMethod(method as Method)
       return true
     } else if (currentMethod !== method) {
       // every items belongs in the new method
-      const isOk = items.every(item => item.method.includes(method))
+      // const isOk = items.every(item => item.method.includes(method))
+      const isOk = true
 
       if (isOk) {
         actions._setMethod(method as Method)

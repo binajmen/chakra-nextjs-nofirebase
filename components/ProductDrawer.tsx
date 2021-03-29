@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
-import type { Product } from '@/types/product'
+import type { WithID, Product } from '@/types/catalog'
 import type { BasketItem } from '@/types/basket'
 
 import {
@@ -28,7 +28,7 @@ import { useStoreState, useStoreActions } from '@/store/hooks'
 import AlertDialog from '@/components/molecules/AlertDialog'
 
 type ProductDrawerProps = {
-  product: Product | null
+  product: WithID<Product> | null
   isOpen: boolean
   onClose: () => void
 }
@@ -73,15 +73,14 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
     if (product) {
       let item: BasketItem = {
         id: product.id,
+        name: product.name,
         // devices: product.devices,
-        longName: product.longName,
         // ...(product.event && { event: product.event }),
         price: product.price,
         tax: product.tax,
         quantity: quantity,
         subtotal: product.price,
         total: product.price * quantity,
-        method: product.method
         // choices: [],
         // options: [],
       }
@@ -132,7 +131,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
 
             <DrawerBody>
               <Stack spacing="24px">
-                <Box>{product.desc}</Box>
+                <Box>{product.description}</Box>
               </Stack>
             </DrawerBody>
 

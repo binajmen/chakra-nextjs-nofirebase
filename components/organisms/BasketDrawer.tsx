@@ -115,7 +115,7 @@ function BasketItem({ item, index }: BasketItemProps) {
         <Flex w="full" alignItems="center" py="2">
           <Icon as={modify.isOpen ? FaChevronUp : FaChevronDown} mr="2" />
           <LinkOverlay w="full" onClick={modify.onToggle}>
-            <Text w="full">{item.quantity} x {item.longName}</Text>
+            <Text w="full">{item.quantity} x {item.name}</Text>
           </LinkOverlay>
           <Text size="md">{item.total / 100}€</Text>
         </Flex>

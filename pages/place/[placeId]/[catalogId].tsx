@@ -10,10 +10,6 @@ import type {
   GetServerSidePropsContext
 } from 'next'
 
-import type { Place } from '@/types/place'
-import type { Category, CategoryMeta, Categories } from '@/types/category'
-import type { Product, Products } from '@/types/product'
-
 import {
   Flex,
   Box,
@@ -47,12 +43,15 @@ import SelectMethod from '@/components/molecules/SelectMethod'
 
 import { useStoreState } from '@/store/hooks'
 
-function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
+import type { Place } from '@/types/place'
+import type { WithID, Catalog, Category, Categories, Product, Products } from '@/types/catalog'
+
+function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common')
   const drawer = useDisclosure()
   const basketDrawer = useDisclosure()
   const router = useRouter()
-  const placeId = router.query.placeId
+  const { placeId, catalogId } = router.query
 
   const method = useStoreState(state => state.basket.method)
   const basketSize = useStoreState(state => state.basket.size)
@@ -60,12 +59,15 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [product, setProduct] = React.useState<Product | null>(null)
 
   const { data: place } = useDocument<Place>(`places/${placeId}`, { initialData: props.place })
-  const { data: meta } = useDocument<CategoryMeta>(`places/${placeId}/categories/_meta_`, { initialData: props.meta })
-  const { data: _categories } = useCollection<Category>(`places/${placeId}/categories`, {}, { initialData: props.categories })
+  const { data: catalog } = useDocument<Catalog>(`places/${placeId}/catalogs/${catalogId}`, { initialData: props.catalog })
+  const { data: _categories } = useCollection<Category>(
+    `places/${placeId}/categories`, {
+    where: ["catalogIds", "array-contains", catalogId]
+  }, { initialData: props.categories })
   const { data: _products } = useCollection<Product>(`places/${placeId}/products`, {}, { initialData: props.products })
 
-  const hasCategories = meta && meta.order.length > 0 && _categories && _categories.length > 0
-  const categories: Categories = _categories!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
+  const hasCategories = catalog && catalog.categories.length > 0 && _categories && _categories.length > 0
+  // const categories: Categories = _categories!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
 
   const hasProducts = _products && _products.length > 0
   const products: Products = _products!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
@@ -101,26 +103,22 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
         place={place as Place}
       >
         <Box>
-          {hasCategories && meta!.order
-            .filter(c => categories[c].available)
-            .filter(c => method === null || categories[c].method.includes(method))
-            .map(catId => (
-              <Box mb="6" key={catId}>
+          {hasCategories && _categories!.filter(c => c.available)
+            .map(category => (
+              <Box mb="6" key={category.id}>
                 <Heading
                   mb="3" pb="1"
                   borderBottomWidth={["1px", "1px", "0"]}
                   borderBottomColor="lightgray"
-                >{categories[catId].name}</Heading>
+                >{category.name}</Heading>
                 <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
-                  {hasProducts && categories[catId].items
-                    .filter(p => products[p].available)
-                    .filter(p => method === null || products[p].method.includes(method))
+                  {hasProducts && category.products.filter(p => products[p]?.available)
                     .map((prodId) => (
                       <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
                         <Box m="auto 0" w="full">
                           <Stack direction="column">
                             <Heading size="md">{products[prodId].name}</Heading>
-                            <Text>{products[prodId].desc}</Text>
+                            <Text>{products[prodId].description}</Text>
                           </Stack>
                         </Box>
                         {/* <Spacer /> */}
@@ -147,7 +145,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
             ))}
         </Box>
 
-        <ProductDrawer product={product} onClose={drawer.onClose} isOpen={drawer.isOpen} />
+        <ProductDrawer product={product as WithID<Product>} onClose={drawer.onClose} isOpen={drawer.isOpen} />
         <BasketBar onClick={basketDrawer.onOpen} />
         <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
 
@@ -156,35 +154,43 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   )
 }
 
-export default withAuthUser<InferGetServerSidePropsType<typeof getServerSideProps>>()(Index)
+export default withAuthUser<InferGetServerSidePropsType<typeof getServerSideProps>>()(PlaceCatalog)
 
 export const getServerSideProps: GetServerSideProps = async ({ query }: GetServerSidePropsContext) => {
   try {
-    const placeId = query.placeId
+    const { placeId, catalogId } = query
 
     const place = await admin.firestore().doc(`places/${placeId}`).get()
     if (!place.exists)
       return { notFound: true }
 
-    const _categories = await admin.firestore().collection(`places/${placeId}/categories`).get()
+    const catalog = await admin.firestore().doc(`places/${placeId}/catalogs/${catalogId}`).get()
+    if (!catalog.exists)
+      return { notFound: true }
+
+    const _categories = await admin.firestore().collection(`places/${placeId}/categories`)
+      .where("catalogIds", "array-contains", catalogId)
+      .get()
     if (_categories.empty)
       return { notFound: true }
 
-    const meta = _categories.docs.find(doc => doc.id === "_meta_")
-    if (!meta?.exists)
-      return { notFound: true }
+    const categories = _categories.docs.map(doc => ({ ...doc.data() as Category, id: doc.id }))
+    const productIds = categories.reduce((acc, cur) => ([...acc, ...cur.products]), [] as string[])
 
-    const categories = _categories.docs.filter(doc => doc.id !== "_meta_").map(doc => ({ ...doc.data(), id: doc.id }))
+    const _products = productIds.map(productId => {
+      return admin.firestore().doc(`places/${placeId}/products/${productId}`).get()
+    })
 
-    const _products = await admin.firestore().collection(`places/${placeId}/products`).get()
-    if (_products.empty)
-      return { notFound: true }
-    const products = _products.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+    const __products = await Promise.all(_products)
+
+    const products = __products.reduce((acc, doc) => {
+      return doc.exists ? [...acc, { ...doc.data(), id: doc.id }] : acc
+    }, [] as any[])
 
     return {
       props: {
         place: place.data(),
-        meta: meta.data(),
+        catalog: catalog.data(),
         categories: categories,
         products: products
       }
