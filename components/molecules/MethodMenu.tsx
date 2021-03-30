@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
 import {
@@ -27,6 +28,8 @@ const icons: { [index: string]: IconType } = {
 
 export default function MethodMenu() {
   const { t } = useTranslation('common')
+  const router = useRouter()
+  const placeId = router.query.placeId
   const isMobile = useBreakpointValue({ base: true, md: false })
   const [newMethod, setNewMethod] = React.useState<string>("")
 
@@ -34,15 +37,17 @@ export default function MethodMenu() {
   const setMethod = useStoreActions(actions => actions.basket.setMethod)
   const isRehydrated = useStoreRehydrated()
 
-  function _setMethod(method: string) {
-    const isDone = setMethod({ method })
-    if (!isDone) {
-      setNewMethod(method)
+  function onMethod(newMethod: string) {
+    if (method !== newMethod) {
+      setNewMethod(newMethod)
     }
   }
 
   function confirmMethod() {
-    setMethod({ method: newMethod, isConfirmed: true })
+    router.push({
+      pathname: "/place/[placeId]/[catalogId]",
+      query: { placeId, catalogId: newMethod }
+    })
     setNewMethod("")
   }
 
@@ -77,11 +82,11 @@ export default function MethodMenu() {
               <Icon as={FaChair} mr={3} />
               <Text as="span">{t('now')}</Text>
             </MenuItemOption> */}
-            <MenuItemOption value="collect" onClick={() => _setMethod('collect')}>
+            <MenuItemOption value="collect" onClick={() => onMethod('collect')}>
               <Icon as={FaWalking} mr={3} />
               <Text as="span">{t('collect')}</Text>
             </MenuItemOption>
-            <MenuItemOption value="delivery" onClick={() => _setMethod('delivery')}>
+            <MenuItemOption value="delivery" onClick={() => onMethod('delivery')}>
               <Icon as={FaBicycle} mr={3} />
               <Text as="span">{t('delivery')}</Text>
             </MenuItemOption>
@@ -90,8 +95,8 @@ export default function MethodMenu() {
       </Menu>
 
       <AlertDialog
-        header="Produits incompatibles avec le type de commande"
-        body="Certains produits dans votre panier ne sont pas compatibles avec le type de commande que vous venez de sélectionner. En confirmant votre choix, ces produits seront retirés de votre panier."
+        header="Votre panier va être vidé !"
+        body="En changeant le mode de commande, vous allez être redirigé vers le menu adéquat."
         isOpen={newMethod !== ""}
         onCancel={() => setNewMethod("")}
         onConfirm={confirmMethod}

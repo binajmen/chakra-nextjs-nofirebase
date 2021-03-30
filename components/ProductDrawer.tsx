@@ -1,11 +1,10 @@
 import * as React from 'react'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
-import type { WithID, Product } from '@/types/catalog'
-import type { BasketItem } from '@/types/basket'
-
 import {
+  Flex,
   Box,
   Heading,
   Stack,
@@ -21,11 +20,16 @@ import {
   useDisclosure,
   HStack,
   VStack,
+  Icon,
+  Text
 } from '@chakra-ui/react'
-import { FaPlus, FaMinus } from 'react-icons/fa'
+import { FaPlus, FaMinus, FaRegSquare, FaCheckSquare, FaRegCircle, FaCheckCircle } from 'react-icons/fa'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
 import AlertDialog from '@/components/molecules/AlertDialog'
+
+import type { WithID, Modifiers as ModifiersType, Modifier as ModifierType, Product } from '@/types/catalog'
+import type { BasketItem } from '@/types/basket'
 
 type ProductDrawerProps = {
   product: WithID<Product> | null
@@ -39,6 +43,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
   const alert = useDisclosure()
   const router = useRouter()
   const place = router.query.placeId as string
+  const [innerHeight, setH] = React.useState<number>(typeof window !== "undefined" ? window.innerHeight : 100)
 
   const basketPlace = useStoreState(state => state.basket.place)
   const basket = useStoreActions(actions => actions.basket)
@@ -117,21 +122,44 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
     }
   }
 
+  function windowResizeHandler() {
+    if (window !== undefined) {
+      setH(window.innerHeight)
+    }
+  }
+
+  React.useEffect(() => {
+    if (window !== undefined) {
+      window.addEventListener('resize', windowResizeHandler)
+      return () => {
+        window.removeEventListener('resize', windowResizeHandler)
+      }
+    }
+  }, [])
+
   if (!product) {
     return null
   } else {
     return (
-      <Drawer placement="bottom" onClose={dismiss} isOpen={isOpen}>
+      <Drawer placement="bottom" onClose={dismiss} isOpen={isOpen} scrollBehavior="outside">
         <DrawerOverlay>
-          <DrawerContent>
-            <DrawerCloseButton />
+          <DrawerContent maxH={innerHeight}>
+            {product.imageUrl &&
+              <Box position="relative" h="200px" maxH="25vh" w="full">
+                <Image src={product.imageUrl} alt={product.description} layout="fill" objectFit="cover" />
+              </Box>
+            }
+
+            <DrawerCloseButton bgColor={product.imageUrl ? "white" : ""} />
+
             <DrawerHeader>
               {product.name}
             </DrawerHeader>
 
             <DrawerBody>
-              <Stack spacing="24px">
+              <Stack spacing="6">
                 <Box>{product.description}</Box>
+                <Modifiers modifiers={product.modifiers} />
               </Stack>
             </DrawerBody>
 
@@ -162,4 +190,67 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
       </Drawer>
     )
   }
+}
+
+type ModifiersProps = {
+  modifiers: ModifiersType
+}
+
+function Modifiers({ modifiers }: ModifiersProps) {
+  if ("order" in modifiers) {
+    return (
+      <React.Fragment>
+        {modifiers.order.map(id =>
+          <Modifier key={id} modifier={modifiers.modifier[id]} />
+        )}
+      </React.Fragment>
+    )
+  } else {
+    return null
+  }
+}
+
+type ModifierProps = {
+  modifier: ModifierType
+}
+
+function Modifier({ modifier }: ModifierProps) {
+  const isMultiple = modifier.min < modifier.max
+
+  return (
+    <Box>
+      <Heading size="md" borderBottom="1px solid lightgray" mb="3">{modifier.name}</Heading>
+      <Stack direction="column">
+        {modifier.products.order.map(id =>
+          <Option key={id}
+            product={modifier.products.product[id]}
+            price={modifier.products.price[id]}
+            isSelected={true}
+            isMultiple={modifier.max === 3}
+          />
+        )}
+      </Stack>
+    </Box>
+  )
+}
+
+type OptionProps = {
+  product: Product
+  price: number
+  isSelected: boolean
+  isMultiple: boolean
+}
+
+function Option({ product, price, isSelected, isMultiple }: OptionProps) {
+  const icon = isSelected ? (isMultiple ? FaCheckCircle : FaCheckSquare) : (isMultiple ? FaRegCircle : FaRegSquare)
+
+  return (
+    <Flex justify="space-between" py="1" onClick={() => { }}>
+      <Flex alignItems="center">
+        <Icon as={icon} boxSize="6" color={isSelected ? "green.300" : "lightgray"} mr="3" />
+        <Text>{product.name}</Text>
+      </Flex>
+      <Text>{price / 100}€</Text>
+    </Flex>
+  )
 }

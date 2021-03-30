@@ -10,8 +10,8 @@ import { FaSave } from 'react-icons/fa'
 import admin from '@/lib/firebase/admin'
 
 import Layout from '@/components/layout/Layout'
-import SwitchOrderType from '@/components/place/SwitchOrderType'
-import Timetable from '@/components/place/Timetable'
+import SwitchOrderType from '@/components/manage/SwitchOrderType'
+import Timetable from '@/components/manage/Timetable'
 
 import type { Place, OpeningHours } from '@/types/place'
 
@@ -72,7 +72,7 @@ function PlaceOpeningHours() {
   return (
     <Layout
       layout="manage"
-      metadata={{ title: "Vos commandes" }}
+      metadata={{ title: t('opening-hours') }}
     >
       <Flex>
         <Heading>{t('opening-hours')}</Heading>

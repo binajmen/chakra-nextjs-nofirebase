@@ -39,9 +39,9 @@ import Layout from '@/components/layout/Layout'
 import ProductDrawer from '@/components/ProductDrawer'
 import BasketBar from '@/components/molecules/BasketBar'
 import BasketDrawer from '@/components/organisms/BasketDrawer'
-import SelectMethod from '@/components/molecules/SelectMethod'
 
-import { useStoreState } from '@/store/hooks'
+import { useStoreState, useStoreActions } from '@/store/hooks'
+import { useStoreRehydrated } from 'easy-peasy'
 
 import type { Place } from '@/types/place'
 import type { WithID, Catalog, Category, Categories, Product, Products } from '@/types/catalog'
@@ -56,6 +56,8 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
   const method = useStoreState(state => state.basket.method)
   const basketSize = useStoreState(state => state.basket.size)
   const total = useStoreState(state => state.basket.total)
+  const setMethod = useStoreActions(actions => actions.basket.setMethod)
+  const isRehydrated = useStoreRehydrated()
   const [product, setProduct] = React.useState<Product | null>(null)
 
   const { data: place } = useDocument<Place>(`places/${placeId}`, { initialData: props.place })
@@ -73,6 +75,12 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
   const products: Products = _products!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
 
   React.useEffect(() => {
+    if (isRehydrated) {
+      setMethod(catalogId as string)
+    }
+  }, [isRehydrated, catalogId])
+
+  React.useEffect(() => {
     if (product)
       drawer.onToggle()
   }, [product])
@@ -83,74 +91,60 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
   }, [drawer.isOpen])
 
   return (
-    <>
-      <Modal closeOnOverlayClick={false} isOpen={method === null} onClose={() => { }} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>{t('order-type')}</ModalHeader>
-          <ModalBody>
-            <Center><SelectMethod /></Center>
-          </ModalBody>
-          <ModalFooter>
-            <Text>Veuillez sélectionner un type de commande pour obtenir le menu adéquat.</Text>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+    <Layout
+      layout="place"
+      metadata={{ title: place!.name }}
+      place={place as Place}
+    >
+      <Box>
+        {hasCategories && _categories!.filter(c => c.available)
+          .map(category => (
+            <Box mb="6" key={category.id}>
+              <Heading
+                mb="6" pb="1"
+                borderBottomWidth={["1px", "1px", "0"]}
+                borderBottomColor="lightgray"
+              >{category.name}</Heading>
+              <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
+                {hasProducts && category.products.filter(p => products[p]?.available)
+                  .map((prodId) => (
+                    <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
+                      <Box m="auto 0" w="full">
+                        <Stack direction="column">
+                          <Heading size="md">{products[prodId].name}</Heading>
+                          <Text>{products[prodId].description}</Text>
+                        </Stack>
+                      </Box>
+                      {/* <Spacer /> */}
+                      <Box pl="3">
+                        <Center h="100%">
+                          {products[prodId].price / 100}€
+                        </Center>
+                      </Box>
+                      <Box pl="3">
+                        <Center h="100%">
+                          <IconButton
+                            color="gray.900"
+                            colorScheme="primary"
+                            aria-label="Add to cart"
+                            size="sm"
+                            onClick={() => setProduct(products[prodId])}
+                            icon={<FaPlus />}
+                          />
+                        </Center>
+                      </Box>
+                    </Flex>
+                  ))}
+              </SimpleGrid>
+            </Box>
+          ))}
+      </Box>
 
-      <Layout
-        layout="place"
-        metadata={{ title: place!.name }}
-        place={place as Place}
-      >
-        <Box>
-          {hasCategories && _categories!.filter(c => c.available)
-            .map(category => (
-              <Box mb="6" key={category.id}>
-                <Heading
-                  mb="3" pb="1"
-                  borderBottomWidth={["1px", "1px", "0"]}
-                  borderBottomColor="lightgray"
-                >{category.name}</Heading>
-                <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
-                  {hasProducts && category.products.filter(p => products[p]?.available)
-                    .map((prodId) => (
-                      <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
-                        <Box m="auto 0" w="full">
-                          <Stack direction="column">
-                            <Heading size="md">{products[prodId].name}</Heading>
-                            <Text>{products[prodId].description}</Text>
-                          </Stack>
-                        </Box>
-                        {/* <Spacer /> */}
-                        <Box pl="3">
-                          <Center h="100%">
-                            {products[prodId].price / 100}€
-                    </Center>
-                        </Box>
-                        <Box pl="3">
-                          <Center h="100%">
-                            <IconButton
-                              color="gray.900"
-                              colorScheme="primary"
-                              aria-label="Add to cart"
-                              onClick={() => setProduct(products[prodId])}
-                              icon={<FaPlus />}
-                            />
-                          </Center>
-                        </Box>
-                      </Flex>
-                    ))}
-                </SimpleGrid>
-              </Box>
-            ))}
-        </Box>
+      <ProductDrawer product={product as WithID<Product>} onClose={drawer.onClose} isOpen={drawer.isOpen} />
+      <BasketBar onClick={basketDrawer.onOpen} />
+      <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
 
-        <ProductDrawer product={product as WithID<Product>} onClose={drawer.onClose} isOpen={drawer.isOpen} />
-        <BasketBar onClick={basketDrawer.onOpen} />
-        <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
-
-      </Layout>
-    </>
+    </Layout>
   )
 }
 

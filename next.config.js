@@ -1,6 +1,10 @@
 const nextTranslate = require('next-translate')
 
-module.exports = nextTranslate()
+module.exports = nextTranslate({
+  images: {
+    domains: ['firebasestorage.googleapis.com'],
+  },
+})
 
 // https://github.com/vinissimus/next-translate#add-next-translate-plugin
 

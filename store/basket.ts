@@ -64,7 +64,7 @@ type Model = State & {
   decreaseItem: Action<Model, number>
   deleteItem: Action<Model, number>
   clearBasket: Action<Model>
-  setMethod: Thunk<Model, ChangeMethodPayload>
+  setMethod: Thunk<Model, string>
 }
 
 const model: Model = {
@@ -184,35 +184,37 @@ const model: Model = {
     state.payment = ""
   }),
 
-  setMethod: thunk((actions, payload, helpers) => {
-    const { getState } = helpers
-    const currentMethod = getState().method
-    const items = getState().items
-    const { method, isConfirmed = false } = payload
+  setMethod: thunk((actions, method, helpers) => {
+    actions.clearBasket()
+    actions._setMethod(method as Method)
+    // const { getState } = helpers
+    // const currentMethod = getState().method
+    // const items = getState().items
+    // const { method, isConfirmed = false } = payload
 
-    if (isConfirmed) {
-      // remove items that doesn't belong in new method
-      // items.forEach((item, index) => {
-      //   if (!item.method.includes(method))
-      //     actions.deleteItem(index)
-      // })
+    // if (isConfirmed) {
+    //   // remove items that doesn't belong in new method
+    //   // items.forEach((item, index) => {
+    //   //   if (!item.method.includes(method))
+    //   //     actions.deleteItem(index)
+    //   // })
 
-      actions._setMethod(method as Method)
-      return true
-    } else if (currentMethod !== method) {
-      // every items belongs in the new method
-      // const isOk = items.every(item => item.method.includes(method))
-      const isOk = true
+    //   actions._setMethod(method as Method)
+    //   return true
+    // } else if (currentMethod !== method) {
+    //   // every items belongs in the new method
+    //   // const isOk = items.every(item => item.method.includes(method))
+    //   const isOk = true
 
-      if (isOk) {
-        actions._setMethod(method as Method)
-        return true
-      } else {
-        return false
-      }
-    } else {
-      return true
-    }
+    //   if (isOk) {
+    //     actions._setMethod(method as Method)
+    //     return true
+    //   } else {
+    //     return false
+    //   }
+    // } else {
+    //   return true
+    // }
   })
 }
 

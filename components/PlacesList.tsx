@@ -1,11 +1,14 @@
 import * as React from "react"
+import NextLink from 'next/link'
 
 import {
   SimpleGrid,
   Box,
   Flex,
   Badge,
-  Image
+  Image,
+  LinkBox,
+  LinkOverlay
 } from '@chakra-ui/react'
 import { MdStar } from "react-icons/md"
 
@@ -13,6 +16,7 @@ import MethodsAvailable from '@/components/atoms/MethodsAvailable'
 
 import type { Document } from '@/types/common'
 import type { Place } from '@/types/place'
+import { useStoreState } from "@/store/hooks"
 
 export type PlacesListProps = {
   places: Document<Place>[] | null | undefined
@@ -37,8 +41,12 @@ export type PlaceCardProps = {
 }
 
 function PlaceCard({ place, buttonRender }: PlaceCardProps) {
+  const method = useStoreState(state => state.basket.method)
+
+  const href = `/place/${place.id}${method ? `/${method}` : ""}`
+
   return (
-    <Box>
+    <LinkBox>
       <Box boxShadow="lg" borderRadius="lg" overflow="hidden">
         {/* TODO: use Next Image for optimization? */}
         <Image objectFit="cover" maxH="150px" w="full" src={place.cover} alt="Image du restaurant" />
@@ -54,7 +62,16 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
               lineHeight="tight"
               isTruncated
             >
-              {place.name}
+              <NextLink
+                href={{
+                  pathname: `/place/[placeId]${method ? "/[catalogId]" : ""}`,
+                  query: { placeId: place.id, catalogId: method as string }
+                }}
+                passHref>
+                <LinkOverlay>
+                  {place.name}
+                </LinkOverlay>
+              </NextLink>
             </Box>
 
             <Box>
@@ -83,6 +100,6 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
           </Box>
         </Flex>
       </Box>
-    </Box>
+    </LinkBox >
   )
 }

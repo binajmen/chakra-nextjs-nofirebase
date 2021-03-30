@@ -275,7 +275,7 @@ export default function CategoryForm({ category, save }: CategoryFormProps) {
                           if ("order" in field.value && "modifier" in field.value) {
                             form.setFieldValue("modifiers", {
                               order: [...field.value.order, id],
-                              modifier: { ...field.value.event, [id]: modifier }
+                              modifier: { ...field.value.modifier, [id]: modifier }
                             })
                           } else {
                             form.setFieldValue("modifiers", {

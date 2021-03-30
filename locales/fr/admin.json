@@ -31,6 +31,7 @@
   "description": "Description",
   "price": "Prix",
   "tax": "Taxe",
+  "image": "Image",
   "size": "Taille",
   "back": "Retour",
   "type": "Type",

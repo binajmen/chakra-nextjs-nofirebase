@@ -87,6 +87,7 @@ export default function Products() {
               <Th w="1">{t('available')}</Th>
               <Th>{t('name')}</Th>
               <Th>{t('description')}</Th>
+              <Th>{t('price')}</Th>
               <Th></Th>
               <Th w="1"></Th>
             </Tr>
@@ -103,6 +104,7 @@ export default function Products() {
                   </Td>
                   <Td>{product.name}</Td>
                   <Td>{product.description}</Td>
+                  <Td>{product.price / 100}€</Td>
                   <Td>
                     <Stack direction="row" spacing="2">
                       {product.events?.order?.length && <Icon as={FaRegCalendarCheck} />}

@@ -41,6 +41,7 @@ export type Product = {
   available: boolean
   type: ProductType
   code: string
+  imageUrl: string
   name: string
   description: string
   price: number

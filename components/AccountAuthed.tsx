@@ -52,17 +52,18 @@ function Identification({ userId }: AccountProps) {
   }
 
   if (profile) {
-    const { firstName, lastName, email, newsletter } = profile
+    const { firstName, lastName, phone, email, newsletter } = profile
 
     return (
       <Box>
         <Heading size="lg" mb="3">Profil</Heading>
         <Text fontSize="sm" mb="6">Sauvegardez vos informations de base afin de gagner du temps lors de vos prochaines commandes.</Text>
         <Formik
-          initialValues={{ firstName, lastName, email, newsletter }}
+          initialValues={{ firstName, lastName, phone, email, newsletter }}
           validationSchema={Yup.object().shape({
             firstName: Yup.string().required(),
             lastName: Yup.string().required(),
+            phone: Yup.string().required(),
             email: Yup.string().email().required(),
             newsletter: Yup.boolean().required()
           })}
@@ -97,6 +98,15 @@ function Identification({ userId }: AccountProps) {
                       <FormLabel htmlFor="lastName">{t('lastName')}</FormLabel>
                       <Input {...field} id="lastName" placeholder="" />
                       <FormErrorMessage>{form.errors.lastName}</FormErrorMessage>
+                    </FormControl>
+                  )}
+                </Field>
+                <Field name="phone">
+                  {({ field, form, meta }: FieldProps) => (
+                    <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                      <FormLabel htmlFor="phone">{t('phone')}</FormLabel>
+                      <Input {...field} id="phone" placeholder="" />
+                      <FormErrorMessage>{form.errors.phone}</FormErrorMessage>
                     </FormControl>
                   )}
                 </Field>

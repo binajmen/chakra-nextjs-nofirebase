@@ -1,4 +1,5 @@
 {
+  "welcome": "Bienvenue !",
   "menu-header": "Menu",
   "about-us": "À propos",
   "privacy": "Vie privée",
@@ -11,6 +12,9 @@
   "menu-orders": "Commandes",
   "order-type": "Type de commande",
   "now": "Sur place",
+  "today-choice": "Aujourd'hui, j'aimerais passer une commande...",
+  "come-collect": "À emporter",
+  "be-delivered": "À faire livrer",
   "collect": "Emporter",
   "delivery": "Livraison",
   "make-your-choice": "Faites un choix",
@@ -75,7 +79,10 @@
   "bancontact": "Bancontact",
   "firstName": "Prénom",
   "lastName": "Nom",
+  "phone": "Téléphone",
   "mail": "Email",
+  "email": "Email",
   "newsletter": "M'envoyer des nouvelles de temps en temps ? Avec plaisir !",
-  "address": "Adresse"
+  "address": "Adresse",
+  "changes-saved": "Changements enregistrés"
 }
