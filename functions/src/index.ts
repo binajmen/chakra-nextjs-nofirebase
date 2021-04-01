@@ -121,32 +121,42 @@ export const onDeleteModifier =
 export const retrieveMollieAccessToken =
   functions.region("europe-west1")
     .https.onCall(async (data, context) => {
-      return await (await import("./mollie/index")).retrieveMollieAccessToken(data, context)
+      return await (await import("./mollie/retrieveMollieAccessToken")).retrieveMollieAccessToken(data, context)
     })
 
 export const listMollieProfiles =
   functions.region("europe-west1")
     .https.onCall(async (data, context) => {
-      return await (await import("./mollie/index")).listMollieProfiles(data, context)
-    })
-
-export const createOfflineOrder =
-  functions.region("europe-west1")
-    .https.onCall(async (data, context) => {
-      return await (await import("./mollie/index")).createOfflineOrder(data, context)
-    })
-
-export const createOnlineOrder =
-  functions.region("europe-west1")
-    .https.onCall(async (data, context) => {
-      return await (await import("./mollie/index")).createOnlineOrder(data, context)
+      return await (await import("./mollie/listMollieProfiles")).listMollieProfiles(data, context)
     })
 
 export const webhookMollie =
   functions
     .region("europe-west1")
     .https.onRequest(async (request, response) => {
-      await (await import("./mollie/index")).webhookMollie(request, response)
+      await (await import("./mollie/webhookMollie")).webhookMollie(request, response)
+    })
+
+/**
+ * Order
+ */
+export const createOfflineOrder =
+  functions.region("europe-west1")
+    .https.onCall(async (data, context) => {
+      return await (await import("./order/createOfflineOrder")).createOfflineOrder(data, context)
+    })
+
+export const createOnlineOrder =
+  functions.region("europe-west1")
+    .https.onCall(async (data, context) => {
+      return await (await import("./order/createOnlineOrder")).createOnlineOrder(data, context)
+    })
+
+export const orderScheduler =
+  functions.region("europe-west1")
+    .firestore.document("orders/{orderId}")
+    .onUpdate(async (change, context) => {
+      await (await import("./order/orderScheduler")).orderScheduler(change, context)
     })
 
 /**

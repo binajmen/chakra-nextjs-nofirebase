@@ -104,7 +104,7 @@ export default function Products() {
                   </Td>
                   <Td>{product.name}</Td>
                   <Td>{product.description}</Td>
-                  <Td>{product.price / 100}€</Td>
+                  <Td>{product.price === 0 ? t("free") : `${product.price / 100}€`}</Td>
                   <Td>
                     <Stack direction="row" spacing="2">
                       {product.events?.order?.length && <Icon as={FaRegCalendarCheck} />}

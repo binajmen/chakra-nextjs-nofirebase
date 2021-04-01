@@ -10,6 +10,8 @@ import {
 } from '@chakra-ui/react'
 import { FaCheck } from 'react-icons/fa'
 
+import { ORDERSTATUS } from "@/helpers/constants"
+
 type OrderStatusProps = {
   status: string
   label: string
@@ -17,7 +19,10 @@ type OrderStatusProps = {
 }
 
 export default function OrderStatus({ status, label, current }: OrderStatusProps) {
-  const weight: any = { "queuing": 1, "ongoing": 2, "ready": 3 }
+  // const weight: any = { "planned": 1, "waiting": 2, "ongoing": 3, "ready": 4 }
+  const weight = ORDERSTATUS.reduce((acc, cur, index) => (
+    { ...acc, [cur]: index }
+  ), {} as { [index: string]: number })
 
   if (current === status) {
     return (
@@ -45,6 +50,8 @@ export default function OrderStatus({ status, label, current }: OrderStatusProps
       </Center>
     )
   } else {
-    return <Center><Badge borderRadius="lg" fontSize="0.8rem" colorScheme="white">{label}</Badge></Center>
+    return <Center>
+      <Badge borderRadius="lg" fontSize="0.8rem" colorScheme="white">{label}</Badge>
+    </Center>
   }
 }

@@ -4,7 +4,7 @@ import * as admin from "firebase-admin"
 admin.initializeApp()
 
 // eslint-disable-next-line no-unused-vars
-import type { Category } from "./types"
+import type { Category } from "../types"
 
 const FieldValue = admin.firestore.FieldValue
 

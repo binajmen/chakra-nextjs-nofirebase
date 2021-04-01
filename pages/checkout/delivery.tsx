@@ -50,26 +50,13 @@ const postcodes: { [index: string]: string } = {
   1210: "Saint-Josse-ten-Noode / Sint-Joost-ten-Node"
 }
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email().required(),
-  street: Yup.string().required()
-    .test(
-      "has-a-street-name",
-      "Are you sure you specified a street name?",
-      (value) => /[\w\s]{5,}/g.test(value || "")
-    ).test(
-      "has-a-street-number",
-      "Are you sure you specified a street number?",
-      (value) => /[\d]{1,}/g.test(value || "")
-    ),
-  postcode: Yup.string().required()
-})
-
 function CheckoutDelivery() {
   const { t } = useTranslation('checkout')
   const router = useRouter()
 
+  const name = useStoreState(state => state.basket.name)
   const email = useStoreState(state => state.basket.email)
+  const phone = useStoreState(state => state.basket.phone)
   const address = useStoreState(state => state.basket.address)
   const basket = useStoreActions(actions => actions.basket)
   const isRehydrated = useStoreRehydrated()
@@ -86,11 +73,28 @@ function CheckoutDelivery() {
       <Box w={["full", "sm"]} mx="auto">
         <Formik
           initialValues={{
+            name: name,
             email: email,
+            phone: phone,
             street: address.street,
             postcode: address.postcode || "1000"
           }}
-          validationSchema={validationSchema}
+          validationSchema={Yup.object().shape({
+            name: Yup.string().required(),
+            email: Yup.string().email().required(),
+            phone: Yup.string().required(),
+            street: Yup.string().required()
+              .test(
+                "has-a-street-name",
+                "Are you sure you specified a street name?",
+                (value) => /[\w\s]{5,}/g.test(value || "")
+              ).test(
+                "has-a-street-number",
+                "Are you sure you specified a street number?",
+                (value) => /[\d]{1,}/g.test(value || "")
+              ),
+            postcode: Yup.string().required()
+          })}
           onSubmit={(values) => {
             const { email, ...rest } = values
 
@@ -110,6 +114,15 @@ function CheckoutDelivery() {
                   {t('give-your-address')}
                 </Text>
                 <VStack w="full">
+                  <Field name="name">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="name">{t('name')}</FormLabel>
+                        <Input {...field} id="name" placeholder="" />
+                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
                   <Field name="email">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
@@ -117,6 +130,16 @@ function CheckoutDelivery() {
                         <Input {...field} id="email" placeholder="" />
                         <FormErrorMessage>{form.errors.email}</FormErrorMessage>
                         <FormHelperText>{t('why-email')}</FormHelperText>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="phone">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="phone">{t('phone')}</FormLabel>
+                        <Input {...field} id="phone" placeholder="" />
+                        <FormErrorMessage>{form.errors.phone}</FormErrorMessage>
+                        <FormHelperText>{t('why-phone')}</FormHelperText>
                       </FormControl>
                     )}
                   </Field>

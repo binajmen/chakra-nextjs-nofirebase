@@ -2,34 +2,23 @@ import * as React from "react"
 import useTranslation from 'next-translate/useTranslation'
 import { useRouter } from 'next/router'
 import { useAuthUser } from 'next-firebase-auth'
-import { nanoid } from 'nanoid'
 
 import {
   Box,
   Flex,
   Heading,
   Text,
-  HStack,
-  VStack,
   Icon,
-  // Button,
-  IconButton,
-  LinkBox,
-  LinkOverlay,
-  useBreakpointValue,
   Center,
   useToast,
 } from '@chakra-ui/react'
 import { FaMoneyBillWave, FaRegCreditCard, FaMobileAlt, FaCheckCircle, FaRegCircle } from 'react-icons/fa'
 
 import Button from '@/components/atoms/Button'
-import NextButton from '@/components/atoms/NextButton'
-import MethodMenu from '@/components/molecules/MethodMenu'
-import LoginModal from '@/components/molecules/LoginModal'
-import MenuDrawer from '@/components/organisms/MenuDrawer'
 
-import { useStoreState, useStoreActions } from "@/store/hooks"
 import firebase from "@/lib/firebase/client"
+import { useStoreState, useStoreActions } from "@/store/hooks"
+import { UNPAID } from "@/helpers/constants"
 
 type PaymentMethodsProps = {
   methods: string[]
@@ -51,29 +40,39 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
   }
 
   function createOrder() {
-    const userId = getUserId(authUser.id)
+    const clientId = getUserId(authUser.id)
 
     const order = {
       placeId: basket.place,
-      userId: userId,
       method: basket.method,
+      timing: {
+        date: basket.date,
+        time: basket.time
+      },
+      client: {
+        id: clientId,
+        name: basket.name,
+        email: basket.email,
+        phone: basket.phone,
+        address: basket.address
+      },
+      // deliverer: {
+      //   id: ,
+      //   name: ,
+      //   phone: ,
+      // },
       // location: {
       //   type: user.location.type,
       //   value: user.location.type === 'M' ? user.phone : user.location.value,
       // },
       // table: table,
-      // ...(business.sms === true && { sms: { to: phone } }),
-      // tip: tip === "" ? 0 : +tip,
       items: basket.items,
       total: basket.total,
-      // items: cleanCart,
-      // ...(drinkItems.length > 0 && { drink: { status: "new", items: drinkItems } }),
-      // ...(foodItems.length > 0 && { food: { status: "new", items: foodItems } }),
       payment: {
-        status: "unpaid",
+        status: UNPAID,
         method: basket.payment
       },
-      progress: "queuing"
+      online: basket.payment === "online"
       // progress: basket.items.reduce((acc, cur) => {
       //   return {
       //     ...acc,

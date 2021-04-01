@@ -24,7 +24,7 @@ import { useStoreRehydrated } from 'easy-peasy'
 import OrderId from '@/components/atoms/OrderId'
 import OrderStatus from '@/components/atoms/OrderStatus'
 
-import type { Order } from '@/types/basket'
+import type { Order } from '@/types/order'
 
 const LIMIT = 1
 
@@ -104,7 +104,7 @@ export default function Orders() {
             <Flex onClick={() => showDetails(details === order.id ? "" : order.id)}>
               <OrderId size="md" id={order.id} />
               <Spacer />
-              <OrderStatus status={order.progress} label={t(order.progress)} current={order.progress} />
+              <OrderStatus status={order.orderStatus} label={t(order.orderStatus)} current={order.orderStatus} />
               <Center ml="3"><Icon as={order.id === details ? FaChevronDown : FaChevronRight} /></Center>
             </Flex>
             <Collapse in={order.id === details}>
@@ -122,7 +122,7 @@ export default function Orders() {
                 </Flex>
               </Box>
               <Flex justify="space-between" mb="1">
-                <Center ml="3"><Text fontSize="sm" color="gray">{dayjs.unix(order.createdAt.seconds).format('DD/MM/YYYY HH:mm')}</Text></Center>
+                <Center ml="3"><Text fontSize="sm" color="gray">{dayjs.unix(order.log.planned.seconds).format('DD/MM/YYYY HH:mm')}</Text></Center>
                 <Button
                   size="sm" variant="ghost"
                   rightIcon={<FaChevronRight />}

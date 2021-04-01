@@ -118,7 +118,7 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
                       {/* <Spacer /> */}
                       <Box pl="3">
                         <Center h="100%">
-                          {products[prodId].price / 100}€
+                          {products[prodId].price === 0 ? t("free") : `${products[prodId].price / 100}€`}
                         </Center>
                       </Box>
                       <Box pl="3">

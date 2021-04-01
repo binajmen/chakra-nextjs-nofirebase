@@ -1,3 +1,6 @@
+// eslint-disable-next-line no-unused-vars
+import * as firebase from "firebase-admin"
+
 /**
  * Menu
  */
@@ -37,6 +40,7 @@ export type Product = {
   available: boolean
   type: ProductType
   code: string
+  imageUrl: string
   name: string
   description: string
   price: number
@@ -112,5 +116,58 @@ export type Modifiers = {
   order: string[]
   modifier: {
     [index: string]: Modifier
+  }
+}
+
+/**
+ * Order
+ */
+
+type Option = {
+  id: string
+  name: string
+  price: number
+  tax: number
+}
+
+export type BasketItem = {
+  id: string
+  name: string
+  price: number
+  tax: number
+  options: Option[]
+  subtotal: number
+  quantity: number
+  total: number
+  comment: string
+}
+
+export type Order = {
+  placeId: string
+  method: string
+  timing?: {
+    date: string
+    time: string
+  }
+  client: {
+    id: string
+    name: string
+    email: string
+    phone: string
+    address?: string
+  }
+  deliverer?: {
+    id: string
+    name: string
+    phone: string
+  }
+  items: BasketItem[]
+  total: number
+  utensils: boolean,
+  payment: any
+  orderStatus: string
+  deliveryStatus?: string
+  log: {
+    [index: string]: firebase.firestore.Timestamp
   }
 }

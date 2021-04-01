@@ -1,7 +1,7 @@
 import { Action, action, Thunk, thunk, Computed, computed } from 'easy-peasy'
 import { nanoid } from 'nanoid'
 
-import type { Method, BasketItem } from '@/types/basket'
+import type { Method, BasketItem } from '@/types/order'
 
 type Address = {
   street: string
@@ -16,6 +16,7 @@ type State = {
   userId: string
   name: string
   email: string
+  phone: string
   date: string
   time: string
   address: Address
@@ -32,6 +33,7 @@ const state: State = {
   userId: "",
   name: "",
   email: "",
+  phone: "",
   address: {
     street: "",
     postcode: "",
@@ -52,6 +54,7 @@ type Model = State & {
   _setMethod: Action<Model, Method>
   setName: Action<Model, string>
   setEmail: Action<Model, string>
+  setPhone: Action<Model, string>
   setDate: Action<Model, string>
   setTime: Action<Model, string>
   setAddress: Action<Model, Address>
@@ -94,6 +97,10 @@ const model: Model = {
     state.email = email
   }),
 
+  setPhone: action((state, phone) => {
+    state.phone = phone
+  }),
+
   setDate: action((state, date) => {
     state.date = date
   }),
@@ -134,20 +141,17 @@ const model: Model = {
 
   addItem: action((state, item) => {
     const index = state.items.findIndex(e => {
-      if (e.id === item.id)
-        // e.options.length === item.options.length &&
-        // e.options.every(o => item.options.find(p => p.id === o.id)) &&
-        // e.choices.length === item.choices.length &&
-        // e.choices.every(o => item.choices.find(p => p.id === o.id)))
-        // item.options.every(o => e.options.find(p => p.id === o.id)))
+      if (e.id === item.id &&
+        e.options.length === item.options.length &&
+        e.options.every(o => item.options.find(p => p.id === o.id)))
         return true
       else
         return false
     })
 
     if (index !== -1) {
-      state.items[index].total *= ((state.items[index].quantity + 1) / state.items[index].quantity)
-      state.items[index].quantity += 1
+      state.items[index].quantity += item.quantity
+      state.items[index].total = state.items[index].subtotal * state.items[index].quantity
     } else {
       state.items.push(item)
     }
@@ -156,14 +160,14 @@ const model: Model = {
   increaseItem: action((state, index) => {
     // increase total & quantity
     state.items[index].quantity += 1
-    state.items[index].total = state.items[index].price * state.items[index].quantity
+    state.items[index].total = state.items[index].subtotal * state.items[index].quantity
   }),
 
   decreaseItem: action((state, index) => {
     if (state.items[index].quantity > 1) {
       // decrease total & quantity
       state.items[index].quantity -= 1
-      state.items[index].total = state.items[index].price * state.items[index].quantity
+      state.items[index].total = state.items[index].subtotal * state.items[index].quantity
     } else {
       // delete item
       state.items = state.items.filter((_, idx) => idx !== index)
@@ -185,8 +189,11 @@ const model: Model = {
   }),
 
   setMethod: thunk((actions, method, helpers) => {
-    actions.clearBasket()
-    actions._setMethod(method as Method)
+    const { getState } = helpers
+    if (method !== getState().method) {
+      actions.clearBasket()
+      actions._setMethod(method as Method)
+    }
     // const { getState } = helpers
     // const currentMethod = getState().method
     // const items = getState().items

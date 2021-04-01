@@ -2,7 +2,7 @@ import * as React from 'react'
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
-import type { BasketItem as BasketItemType } from '@/types/basket'
+import type { BasketItem as BasketItemType } from '@/types/order'
 
 import {
   Box,
@@ -119,6 +119,13 @@ function BasketItem({ item, index }: BasketItemProps) {
           </LinkOverlay>
           <Text size="md">{item.total / 100}€</Text>
         </Flex>
+        {item.options.length > 0 &&
+          <Stack direction="column" fontSize="sm" spacing="0" pl="8">
+            {item.options.map(option =>
+              <Text>{option.name}</Text>
+            )}
+          </Stack>
+        }
       </LinkBox>
       {modify.isOpen &&
         <Flex w="full" justify="space-between" pb="2">

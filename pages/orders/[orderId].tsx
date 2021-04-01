@@ -27,6 +27,7 @@ import { useStoreState, useStoreActions } from '@/store/hooks'
 import { useStoreRehydrated } from 'easy-peasy'
 
 import { nextInterval } from '@/helpers/hours'
+import { PLANNED, ONGOING, READY } from '@/helpers/constants'
 
 import Layout from '@/components/layout/Layout'
 import OrderId from '@/components/atoms/OrderId'
@@ -34,7 +35,7 @@ import OrderStatus from '@/components/atoms/OrderStatus'
 import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
-import type { Order } from '@/types/basket'
+import type { Order } from '@/types/order'
 import type { Place } from '@/types/place'
 
 function OrderDetails() {
@@ -69,23 +70,28 @@ function OrderDetails() {
     >
       <Stack direction="column">
         <Center mb="5"><Heading size="md">Votre commande</Heading></Center>
-        <Center mb="5"><OrderId size="xl" expSize="md" id={order!.id} expandable={true} /></Center>
+        <Center mb="5"><OrderId size="xl" expSize="md" id={order!.id} expandable={false} /></Center>
         <Stack direction="column" maxW="lg" py="2" mb="4">
           <Flex justify="space-around">
-            <OrderStatus status="queuing" label={t('queuing')} current={order!.progress} />
+            <OrderStatus status={PLANNED} label={t(PLANNED)} current={order!.orderStatus} />
             <Center><Icon as={FaChevronRight} color="gray.300" /></Center>
-            <OrderStatus status="ongoing" label={t('ongoing')} current={order!.progress} />
+            <OrderStatus status={ONGOING} label={t(ONGOING)} current={order!.orderStatus} />
             <Center><Icon as={FaChevronRight} color="gray.300" /></Center>
-            <OrderStatus status="ready" label={t('ready')} current={order!.progress} />
+            <OrderStatus status={READY} label={t(READY)} current={order!.orderStatus} />
           </Flex>
         </Stack>
         <Stack direction="column" p="3" spacing="2" border="1px solid" borderColor="gray.100" borderRadius="lg" boxShadow="lg" maxW="lg">
           <Heading size="md">Articles</Heading>
-          {order!.items.map(item => (
-            <Flex justify="space-between">
-              <Text>{item.quantity} x {item.name}</Text>
-              <Text>{item.total / 100}€</Text>
-            </Flex>
+          {order!.items.map((item, index) => (
+            <React.Fragment key={index}>
+              <Flex justify="space-between">
+                <Text>{item.quantity} x {item.name}</Text>
+                <Text>{item.total / 100}€</Text>
+              </Flex>
+              {item.options.length > 0 && item.options.map((option, jndex) =>
+                <Text key={jndex} fontSize="sm" pl="7">+ {option.name}</Text>
+              )}
+            </React.Fragment>
           ))}
           <hr />
           <Flex justify="space-between">
@@ -103,7 +109,7 @@ function OrderDetails() {
           <Collapse in={details}>
             <Wrap>
               <WrapItem><Text fontSize="sm" as="b">Date :</Text></WrapItem>
-              <WrapItem><Text fontSize="sm">{dayjs.unix(order!.createdAt.seconds).format('DD/MM/YYYY HH:mm:ss')}</Text></WrapItem>
+              <WrapItem><Text fontSize="sm">{dayjs.unix(order!.log.valid.seconds).format('DD/MM/YYYY HH:mm:ss')}</Text></WrapItem>
             </Wrap>
             <Wrap>
               <WrapItem><Text fontSize="sm" as="b">Commerce :</Text></WrapItem>

@@ -1,4 +1,6 @@
 export default {
+  initialColorMode: "light",
+  useSystemColorMode: false,
   fonts: {
     body: "Montserrat, sans-serif",
     heading: "Poppins, serif",
@@ -67,14 +69,13 @@ export default {
       900: '#200b00',
     }
   },
-  styles: {
-    global: {
-      body: {
-        bg: "white",
-        color: "gray.900"
-      }
-    }
-  },
+  // styles: {
+  //   global: {
+  //     body: {
+  //       color: "gray.900"
+  //     }
+  //   }
+  // },
   components: {
     // https://chakra-ui.com/docs/theming/customize-theme#customizing-single-components
     Badge: {

@@ -1,7 +1,8 @@
 import * as React from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/router'
+import produce from 'immer'
 import useTranslation from 'next-translate/useTranslation'
+import { useRouter } from 'next/router'
 
 import {
   Flex,
@@ -21,15 +22,17 @@ import {
   HStack,
   VStack,
   Icon,
-  Text
+  Text,
+  Center
 } from '@chakra-ui/react'
 import { FaPlus, FaMinus, FaRegSquare, FaCheckSquare, FaRegCircle, FaCheckCircle } from 'react-icons/fa'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
 import AlertDialog from '@/components/molecules/AlertDialog'
+import useWindowSize from '@/hooks/useWindowSize'
 
-import type { WithID, Modifiers as ModifiersType, Modifier as ModifierType, Product } from '@/types/catalog'
-import type { BasketItem } from '@/types/basket'
+import type { WithID, Modifiers as ModifiersType, Modifier as ModifierType, Product, Products } from '@/types/catalog'
+import type { BasketItem } from '@/types/order'
 
 type ProductDrawerProps = {
   product: WithID<Product> | null
@@ -37,16 +40,31 @@ type ProductDrawerProps = {
   onClose: () => void
 }
 
+type Options = {
+  [index: string]: { [index: string]: Product }
+}
+
 export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawerProps) {
   const { t } = useTranslation('common')
-  const [quantity, setQuantity] = React.useState<number>(1)
   const alert = useDisclosure()
   const router = useRouter()
   const place = router.query.placeId as string
-  const [innerHeight, setH] = React.useState<number>(typeof window !== "undefined" ? window.innerHeight : 100)
+  const { height } = useWindowSize()
+  const [quantity, setQuantity] = React.useState<number>(1)
+  const [modifiers, setModifiers] = React.useState<Options>({})
 
   const basketPlace = useStoreState(state => state.basket.place)
   const basket = useStoreActions(actions => actions.basket)
+
+  function updateModifiers(id: string, options: Products) {
+    console.log(id, options)
+    setModifiers(produce(draft => {
+      draft[id] = options
+    }))
+    // setModifiers((prev) => ({ ...prev, [id]: options }))
+  }
+
+  React.useEffect(() => console.log(modifiers), [modifiers])
 
   function onMinus() {
     if (quantity > 1)
@@ -79,63 +97,37 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
       let item: BasketItem = {
         id: product.id,
         name: product.name,
-        // devices: product.devices,
         // ...(product.event && { event: product.event }),
         price: product.price,
         tax: product.tax,
-        quantity: quantity,
+        options: [],
         subtotal: product.price,
+        quantity: quantity,
         total: product.price * quantity,
-        // choices: [],
-        // options: [],
       }
 
-      // Object.values(choices).forEach(choice => {
-      //   Object.entries(choice).forEach(([id, choice]) => {
-      //     item.choices.push({
-      //       id: id,
-      //       devices: choice.devices,
-      //       longName: choice.longName,
-      //     })
-      //   })
-      // })
+      Object.values(modifiers).forEach(modifier => {
+        Object.entries(modifier).forEach(([id, option]) => {
+          item.options.push({
+            id: id,
+            name: option.name,
+            price: option.price,
+            tax: option.tax,
+          })
+        })
+      })
 
-      // Object.values(modifiers).forEach(modifier => {
-      //   Object.entries(modifier).forEach(([id, option]) => {
-      //     item.options.push({
-      //       id: id,
-      //       devices: option.devices,
-      //       longName: option.longName,
-      //       price: option.price,
-      //       tax: option.tax,
-      //     })
-      //   })
-      // })
-
-      // item.total = item.total + item.options.reduce((a, c) => a + c.price, selection.price)
+      item.subtotal = item.options.reduce((a, c) => a + c.price, product.price)
+      item.total = item.subtotal * quantity
 
       basket.addItem(item)
 
       setQuantity(1)
+      setModifiers({})
       onClose()
       alert.onClose()
     }
   }
-
-  function windowResizeHandler() {
-    if (window !== undefined) {
-      setH(window.innerHeight)
-    }
-  }
-
-  React.useEffect(() => {
-    if (window !== undefined) {
-      window.addEventListener('resize', windowResizeHandler)
-      return () => {
-        window.removeEventListener('resize', windowResizeHandler)
-      }
-    }
-  }, [])
 
   if (!product) {
     return null
@@ -143,7 +135,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
     return (
       <Drawer placement="bottom" onClose={dismiss} isOpen={isOpen} scrollBehavior="outside">
         <DrawerOverlay>
-          <DrawerContent maxH={innerHeight}>
+          <DrawerContent maxH={height}>
             {product.imageUrl &&
               <Box position="relative" h="200px" maxH="25vh" w="full">
                 <Image src={product.imageUrl} alt={product.description} layout="fill" objectFit="cover" />
@@ -159,11 +151,14 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
             <DrawerBody>
               <Stack spacing="6">
                 <Box>{product.description}</Box>
-                <Modifiers modifiers={product.modifiers} />
+                <Modifiers
+                  modifiers={product.modifiers}
+                  updateModifiers={updateModifiers}
+                />
               </Stack>
             </DrawerBody>
 
-            <DrawerFooter>
+            <DrawerFooter boxShadow="inner">
               <VStack w="full" spacing="6">
                 <HStack spacing="3">
                   <IconButton aria-label="Search database" icon={<FaMinus />} onClick={onMinus} />
@@ -194,14 +189,19 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
 
 type ModifiersProps = {
   modifiers: ModifiersType
+  updateModifiers: (id: string, options: Products) => void
 }
 
-function Modifiers({ modifiers }: ModifiersProps) {
+function Modifiers({ modifiers, updateModifiers }: ModifiersProps) {
   if ("order" in modifiers) {
     return (
       <React.Fragment>
         {modifiers.order.map(id =>
-          <Modifier key={id} modifier={modifiers.modifier[id]} />
+          <Modifier key={id}
+            id={id}
+            modifier={modifiers.modifier[id]}
+            updateModifiers={updateModifiers}
+          />
         )}
       </React.Fragment>
     )
@@ -211,22 +211,82 @@ function Modifiers({ modifiers }: ModifiersProps) {
 }
 
 type ModifierProps = {
+  id: string
   modifier: ModifierType
+  updateModifiers: (id: string, options: Products) => void
 }
 
-function Modifier({ modifier }: ModifierProps) {
-  const isMultiple = modifier.min < modifier.max
+function Modifier({ id, modifier, updateModifiers }: ModifierProps) {
+  const [options, setOptions] = React.useState<Products>({})
+
+  const isRequired = modifier.min > 0
+  const hasSingleChoice = modifier.max === 1
+  const hasLimit = modifier.max < modifier.products.order.length + 1
+  const showMin = isRequired
+  const showMax = hasLimit && !hasSingleChoice
+
+  function onClick(id: string, option: Product) {
+    if (options[id]) {
+      if (Object.keys(options).length > modifier.min)
+        setOptions(produce(draft => {
+          delete draft[id]
+        }))
+    } else if (modifier.max === 1) {
+      setOptions({
+        [id]: {
+          ...option,
+          price: modifier.products.price[id]
+        }
+      })
+    } else if (Object.keys(options).length < modifier.max) {
+      setOptions({
+        ...options,
+        [id]: {
+          ...option,
+          price: modifier.products.price[id]
+        }
+      })
+    }
+  }
+
+  React.useEffect(() => {
+    for (let i = 0; i < modifier.min; i++) {
+      setOptions({
+        ...options,
+        [modifier.products.order[0]]: {
+          ...modifier.products.product[modifier.products.order[0]],
+          price: modifier.products.price[modifier.products.order[0]]
+        }
+      })
+    }
+  }, [modifier])
+
+  React.useEffect(() => {
+    updateModifiers(id, options)
+  }, [options])
 
   return (
     <Box>
-      <Heading size="md" borderBottom="1px solid lightgray" mb="3">{modifier.name}</Heading>
+      <Flex justify="space-between" borderBottom="1px solid lightgray" mb="3">
+        <Heading size="md">{modifier.name}</Heading>
+        {(showMin || showMax) &&
+          <Center>
+            <Stack direction="row" fontSize="xs" spacing="1">
+              {showMin && <Text>Min: {modifier.min}</Text>}
+              {showMin && showMax && <Text>–</Text>}
+              {showMax && <Text>Max: {modifier.max}</Text>}
+            </Stack>
+          </Center>
+        }
+      </Flex>
       <Stack direction="column">
         {modifier.products.order.map(id =>
           <Option key={id}
             product={modifier.products.product[id]}
             price={modifier.products.price[id]}
-            isSelected={true}
-            isMultiple={modifier.max === 3}
+            hasSingleChoice={hasSingleChoice}
+            isSelected={id in options}
+            onClick={() => onClick(id, modifier.products.product[id])}
           />
         )}
       </Stack>
@@ -237,20 +297,22 @@ function Modifier({ modifier }: ModifierProps) {
 type OptionProps = {
   product: Product
   price: number
+  hasSingleChoice: boolean
   isSelected: boolean
-  isMultiple: boolean
+  onClick: () => void
 }
 
-function Option({ product, price, isSelected, isMultiple }: OptionProps) {
-  const icon = isSelected ? (isMultiple ? FaCheckCircle : FaCheckSquare) : (isMultiple ? FaRegCircle : FaRegSquare)
+function Option({ product, price, hasSingleChoice, isSelected, onClick }: OptionProps) {
+  const { t } = useTranslation("common")
+  const icon = isSelected ? (hasSingleChoice ? FaCheckCircle : FaCheckSquare) : (hasSingleChoice ? FaRegCircle : FaRegSquare)
 
   return (
-    <Flex justify="space-between" py="1" onClick={() => { }}>
+    <Flex justify="space-between" py="1" onClick={onClick}>
       <Flex alignItems="center">
         <Icon as={icon} boxSize="6" color={isSelected ? "green.300" : "lightgray"} mr="3" />
         <Text>{product.name}</Text>
       </Flex>
-      <Text>{price / 100}€</Text>
+      <Text>{price === 0 ? t("free") : `${price / 100}€`}</Text>
     </Flex>
   )
 }

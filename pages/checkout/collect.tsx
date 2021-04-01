@@ -30,17 +30,13 @@ import Button from '@/components/atoms/Button'
 import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email().required(),
-  date: Yup.string().required(),
-  time: Yup.string().required()
-})
-
 function CheckoutCollect() {
   const { t } = useTranslation('checkout')
   const router = useRouter()
 
+  const name = useStoreState(state => state.basket.name)
   const email = useStoreState(state => state.basket.email)
+  const phone = useStoreState(state => state.basket.phone)
   const basket = useStoreActions(actions => actions.basket)
   const isRehydrated = useStoreRehydrated()
 
@@ -56,13 +52,23 @@ function CheckoutCollect() {
       <Box w={["full", "sm"]} mx="auto">
         <Formik
           initialValues={{
+            name: name,
             email: email,
+            phone: phone,
             date: dayjs().format("YYYY-MM-DD"),
             time: nextInterval().format("HH:mm")
           }}
-          validationSchema={validationSchema}
+          validationSchema={Yup.object().shape({
+            name: Yup.string().required(),
+            email: Yup.string().email().required(),
+            phone: Yup.string().required(),
+            date: Yup.string().required(),
+            time: Yup.string().required()
+          })}
           onSubmit={(values) => {
+            basket.setName(values.name)
             basket.setEmail(values.email)
+            basket.setPhone(values.phone)
             basket.setDate(values.date)
             basket.setTime(values.time)
             router.push({
@@ -78,6 +84,15 @@ function CheckoutCollect() {
                   {t('choose-collect-time')}
                 </Text>
                 <VStack>
+                  <Field name="name">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="name">{t('name')}</FormLabel>
+                        <Input {...field} id="name" placeholder="" />
+                        <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                      </FormControl>
+                    )}
+                  </Field>
                   <Field name="email">
                     {({ field, form, meta }: FieldProps) => (
                       <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
@@ -85,6 +100,16 @@ function CheckoutCollect() {
                         <Input {...field} id="email" placeholder="" />
                         <FormErrorMessage>{form.errors.email}</FormErrorMessage>
                         <FormHelperText>{t('why-email')}</FormHelperText>
+                      </FormControl>
+                    )}
+                  </Field>
+                  <Field name="phone">
+                    {({ field, form, meta }: FieldProps) => (
+                      <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
+                        <FormLabel htmlFor="phone">{t('phone')}</FormLabel>
+                        <Input {...field} id="phone" placeholder="" />
+                        <FormErrorMessage>{form.errors.phone}</FormErrorMessage>
+                        <FormHelperText>{t('why-phone')}</FormHelperText>
                       </FormControl>
                     )}
                   </Field>

@@ -10,7 +10,7 @@ import initAuth from '@/lib/firebase/auth'
 import { useStore } from '@/store/index'
 
 import theme from '../theme'
-const customTheme = extendTheme(theme)
+export const customTheme = extendTheme(theme)
 
 initAuth()
 
