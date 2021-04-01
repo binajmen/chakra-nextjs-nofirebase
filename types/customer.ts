@@ -6,5 +6,5 @@ export type Customer = {
   email: string
   newsletter: boolean
   addresses: string[]
-  favorties: string[]
+  favorites: string[]
 }

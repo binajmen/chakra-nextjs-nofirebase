@@ -32,8 +32,6 @@ import { PLANNED, ONGOING, READY } from '@/helpers/constants'
 import Layout from '@/components/layout/Layout'
 import OrderId from '@/components/atoms/OrderId'
 import OrderStatus from '@/components/atoms/OrderStatus'
-import DateField from '@/components/atoms/DateField'
-import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
 import type { Order } from '@/types/order'
 import type { Place } from '@/types/place'
@@ -47,7 +45,6 @@ function OrderDetails() {
   const { data: order, loading, error } = useDocument<Order>(`orders/${orderId}`, { listen: true })
   const { data: place } = useDocument<Place>(order ? `places/${order.placeId}` : null)
 
-  const email = useStoreState(state => state.basket.email)
   const basket = useStoreActions(actions => actions.basket)
   const isRehydrated = useStoreRehydrated()
 

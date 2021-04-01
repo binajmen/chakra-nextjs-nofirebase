@@ -1,16 +1,11 @@
 import * as React from 'react'
 import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
-import { useDocument, useCollection } from '@nandorojo/swr-firestore'
 
 import { Divider, VStack } from '@chakra-ui/react'
 import { FaBuilding, FaCog, FaClock, FaBookOpen, FaFolderOpen, FaBoxes, FaRegCalendarCheck, FaTasks, FaArrowLeft } from 'react-icons/fa'
 
 import ButtonLink from '@/components/atoms/NextButton'
-
-import type { Categories, Category, CategoryMeta } from '@/types/category'
-
-import { useStoreState } from '@/store/hooks'
 
 const items = [
   { label: "general", pathname: "/manage/[placeId]/", icon: <FaBuilding /> },

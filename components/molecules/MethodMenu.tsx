@@ -44,11 +44,16 @@ export default function MethodMenu() {
   }
 
   function confirmMethod() {
-    router.push({
-      pathname: "/place/[placeId]/[catalogId]",
-      query: { placeId, catalogId: newMethod }
-    })
-    setNewMethod("")
+    if (placeId) {
+      router.push({
+        pathname: "/place/[placeId]/[catalogId]",
+        query: { placeId, catalogId: newMethod }
+      })
+      setNewMethod("")
+    } else {
+      setMethod(newMethod)
+      setNewMethod("")
+    }
   }
 
   if (!isRehydrated) {

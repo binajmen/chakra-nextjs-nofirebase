@@ -18,6 +18,9 @@ import {
   DrawerOverlay,
   DrawerContent,
   DrawerCloseButton,
+  FormControl,
+  FormLabel,
+  Input,
   useDisclosure,
   HStack,
   VStack,
@@ -48,12 +51,13 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
   const { t } = useTranslation('common')
   const alert = useDisclosure()
   const router = useRouter()
-  const place = router.query.placeId as string
+  const placeId = router.query.placeId as string
   const { height } = useWindowSize()
   const [quantity, setQuantity] = React.useState<number>(1)
   const [modifiers, setModifiers] = React.useState<Options>({})
+  const [comment, setComment] = React.useState<string>("")
 
-  const basketPlace = useStoreState(state => state.basket.place)
+  const basketPlaceId = useStoreState(state => state.basket.placeId)
   const basket = useStoreActions(actions => actions.basket)
 
   function updateModifiers(id: string, options: Products) {
@@ -81,7 +85,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
   }
 
   function isSamePlace() {
-    if (basketPlace !== "" && place !== basketPlace) {
+    if (basketPlaceId !== "" && placeId !== basketPlaceId) {
       alert.onOpen()
     } else {
       addToBasket()
@@ -89,8 +93,8 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
   }
 
   function addToBasket() {
-    if (place !== basketPlace) {
-      basket.setPlace(place)
+    if (placeId !== basketPlaceId) {
+      basket.setPlaceId(placeId)
     }
 
     if (product) {
@@ -104,6 +108,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
         subtotal: product.price,
         quantity: quantity,
         total: product.price * quantity,
+        comment: comment
       }
 
       Object.values(modifiers).forEach(modifier => {
@@ -155,6 +160,15 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
                   modifiers={product.modifiers}
                   updateModifiers={updateModifiers}
                 />
+                <FormControl>
+                  <FormLabel htmlFor="comment">{t('comment')}</FormLabel>
+                  <Input
+                    name="comment"
+                    id="comment"
+                    onChange={(event) => setComment(event.target.value)}
+                    placeholder={t('optional')}
+                  />
+                </FormControl>
               </Stack>
             </DrawerBody>
 

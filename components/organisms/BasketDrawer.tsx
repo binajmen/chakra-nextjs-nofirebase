@@ -121,8 +121,8 @@ function BasketItem({ item, index }: BasketItemProps) {
         </Flex>
         {item.options.length > 0 &&
           <Stack direction="column" fontSize="sm" spacing="0" pl="8">
-            {item.options.map(option =>
-              <Text>{option.name}</Text>
+            {item.options.map((option, index) =>
+              <Text key={index}>{option.name}</Text>
             )}
           </Stack>
         }

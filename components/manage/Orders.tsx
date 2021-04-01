@@ -212,8 +212,8 @@ function OrderTileItems({ order }: OrderProps) {
   return (
     <Flex justify="space-between" alignItems="center" borderTop="1px solid gray" mt="3" pt="3">
       <Grid templateColumns="auto 1fr auto" gap={2} w="full">
-        {order.items.map(item =>
-          <React.Fragment key={item.id}>
+        {order.items.map((item, index) =>
+          <React.Fragment key={index}>
 
             <GridItem
               rowSpan={1 + item.options.length + ((item.comment ?? "") !== "" ? 1 : 0)}
@@ -228,16 +228,16 @@ function OrderTileItems({ order }: OrderProps) {
               <Heading size="lg">{item.name}</Heading>
             </GridItem>
             <GridItem justifySelf="end" alignSelf="center">
-              <Heading size="md">{item.price / 100}€</Heading>
+              <Heading size="md">{item.quantity * item.price / 100}€</Heading>
             </GridItem>
 
-            {item.options.length > 0 && item.options.map(option =>
-              <React.Fragment key={item.id}>
+            {item.options.length > 0 && item.options.map((option, index) =>
+              <React.Fragment key={index}>
                 <GridItem px="6">
                   <Text size="lg">{option.name}</Text>
                 </GridItem>
                 <GridItem justifySelf="end" alignSelf="center">
-                  <Text size="md">{option.price / 100}€</Text>
+                  <Text size="md">{item.quantity * option.price / 100}€</Text>
                 </GridItem>
               </React.Fragment>
             )}

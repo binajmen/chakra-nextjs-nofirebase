@@ -3,42 +3,42 @@ import { nanoid } from 'nanoid'
 
 import type { Method, BasketItem } from '@/types/order'
 
-type Address = {
-  street: string
-  postcode: string
-  city: string
-}
-
-type State = {
-  place: string
-  method: Method
-  items: BasketItem[]
-  userId: string
+type Client = {
+  id: string
   name: string
   email: string
   phone: string
+  address: string
+}
+
+type State = {
+  placeId: string
+  method: Method
+  client: Client
+  items: BasketItem[]
+  utensils: boolean
+  comment: string
   date: string
   time: string
-  address: Address
   payment: string
 }
 
 const state: State = {
-  place: "",
+  placeId: "",
   method: null,
+  client: {
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    address: ""
+  },
   items: [],
+  utensils: false,
+  comment: "",
   date: "",
   time: "",
   payment: "",
-  userId: "",
-  name: "",
-  email: "",
-  phone: "",
-  address: {
-    street: "",
-    postcode: "",
-    city: ""
-  }
 }
 
 type ChangeMethodPayload = {
@@ -50,23 +50,21 @@ type Model = State & {
   size: Computed<Model, number>
   total: Computed<Model, number>
 
-  setPlace: Action<Model, string>
-  _setMethod: Action<Model, Method>
-  setName: Action<Model, string>
-  setEmail: Action<Model, string>
-  setPhone: Action<Model, string>
+  setPlaceId: Action<Model, string>
+  setClient: Action<Model, Client>
+  setUtensils: Action<Model, boolean>
+  setComment: Action<Model, string>
   setDate: Action<Model, string>
   setTime: Action<Model, string>
-  setAddress: Action<Model, Address>
   setPayment: Action<Model, string>
-  setUserId: Action<Model, string>
 
-  getUserId: Thunk<Model, string | null>
   addItem: Action<Model, BasketItem>
   increaseItem: Action<Model, number>
   decreaseItem: Action<Model, number>
   deleteItem: Action<Model, number>
   clearBasket: Action<Model>
+
+  _setMethod: Action<Model, Method>
   setMethod: Thunk<Model, string>
 }
 
@@ -76,12 +74,10 @@ const model: Model = {
   size: computed(state => { return state.items.reduce((a, c) => a + c.quantity, 0) }),
   total: computed(state => state.items.reduce((a, c) => a + c.total, 0)),
 
-  setPlace: action((state, place) => {
-    if (state.place !== place) {
+  setPlaceId: action((state, placeId) => {
+    if (state.placeId !== placeId) {
       state.items = []
-      state.place = place
-    } else {
-      state.place = place
+      state.placeId = placeId
     }
   }),
 
@@ -89,16 +85,8 @@ const model: Model = {
     state.method = method
   }),
 
-  setName: action((state, name) => {
-    state.name = name
-  }),
-
-  setEmail: action((state, email) => {
-    state.email = email
-  }),
-
-  setPhone: action((state, phone) => {
-    state.phone = phone
+  setClient: action((state, client) => {
+    state.client = client
   }),
 
   setDate: action((state, date) => {
@@ -109,34 +97,16 @@ const model: Model = {
     state.time = time
   }),
 
-  setAddress: action((state, address) => {
-    state.address = address
-  }),
-
   setPayment: action((state, payment) => {
     state.payment = payment
   }),
 
-  setUserId: action((state, userId) => {
-    state.userId = userId
+  setComment: action((state, comment) => {
+    state.comment = comment
   }),
 
-  getUserId: thunk((actions, authId, helpers) => {
-    const { getState } = helpers
-
-    if (authId) {
-      console.log("authed", authId)
-      actions.setUserId(authId)
-      return authId
-    } else if (getState().userId !== "") {
-      console.log("already ordered", getState().userId)
-      return getState().userId
-    } else {
-      console.log("first order")
-      const anonymId = nanoid()
-      actions.setUserId(anonymId)
-      return anonymId
-    }
+  setUtensils: action((state, utensils) => {
+    state.utensils = utensils
   }),
 
   addItem: action((state, item) => {
@@ -180,7 +150,7 @@ const model: Model = {
   }),
 
   clearBasket: action((state) => {
-    state.place = ""
+    state.placeId = ""
     // state.method = null
     state.items = []
     state.date = ""

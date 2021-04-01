@@ -25,14 +25,12 @@ type PaymentMethodsProps = {
 }
 
 export default function PaymentMethods({ methods }: PaymentMethodsProps) {
+  const { t } = useTranslation('checkout')
   const router = useRouter()
   const toast = useToast()
-  const authUser = useAuthUser()
-  const { t } = useTranslation('checkout')
   const [loading, setLoading] = React.useState<boolean>(false)
 
   const basket = useStoreState(state => state.basket)
-  const getUserId = useStoreActions(actions => actions.basket.getUserId)
 
   function initOrder() {
     setLoading(true)
@@ -40,21 +38,19 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
   }
 
   function createOrder() {
-    const clientId = getUserId(authUser.id)
-
     const order = {
-      placeId: basket.place,
+      placeId: basket.placeId,
       method: basket.method,
       timing: {
         date: basket.date,
         time: basket.time
       },
       client: {
-        id: clientId,
-        name: basket.name,
-        email: basket.email,
-        phone: basket.phone,
-        address: basket.address
+        id: basket.client.id,
+        name: basket.client.name,
+        email: basket.client.email,
+        phone: basket.client.phone,
+        address: basket.client.address
       },
       // deliverer: {
       //   id: ,

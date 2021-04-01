@@ -3,33 +3,36 @@ import { createStore, persist, Store } from 'easy-peasy'
 
 import * as ui from './ui'
 import * as geolocation from './geolocation'
+import * as user from './user'
 import * as basket from './basket'
-// import * as categories from './categories'
-// import * as products from './products'
 
 let store: Store | undefined = undefined
 
 export type State = {
   ui: ui.State
   geolocation: geolocation.State
+  user: user.State
   basket: basket.State
 }
 
 const initialState: State = {
   ui: ui.state,
   geolocation: geolocation.state,
+  user: user.state,
   basket: basket.state,
 }
 
 export type StoreModel = {
   ui: ui.Model
   geolocation: geolocation.Model
+  user: user.Model
   basket: basket.Model
 }
 
 const model: StoreModel = {
   ui: ui.model,
   geolocation: geolocation.model,
+  user: user.model,
   basket: basket.model,
 }
 
@@ -39,6 +42,7 @@ function initStore(preloadedState = initialState) {
       model,
       {
         allow: [
+          'user',
           'basket'
         ]
       }

@@ -9,30 +9,36 @@ import {
   Select
 } from '@chakra-ui/react'
 
-import { nextInterval, buildIntervals } from '@/helpers/hours'
+import { createTimeInterval } from '@/helpers/hours'
 
 type TimeIntervalFieldProps = FieldInputProps<string> & {
   id: string
-  opening: string[]
-  isToday: boolean
+  openingHours: { [index: string]: string[] }
+  interval: number
+  dateValue: string
   resetValue: (value: string) => void
 }
 
 export default function TimeIntervalField({
-  opening, // = ["0800", "1300", "1400", "1500"]
-  isToday,
+  openingHours, // = ["08:00", "13:00", "14:00", "15:00"]
+  interval,
+  dateValue,
   resetValue,
   ...restProps
 }: TimeIntervalFieldProps) {
-  const interval = 30
-  const start = isToday ? nextInterval(interval) : dayjs(opening[0], "HHmm")
+  const isToday = dayjs().isSame(dateValue, 'day')
+  const dayOfWeek = dayjs(dateValue, "YYYY-MM-DD").format("ddd").toLowerCase()
 
-  const intervals = React.useMemo(() => buildIntervals(start, start.hour(22).minute(0), interval), [start])
+  const intervals = React.useMemo(() => {
+    console.log(dayOfWeek)
+    console.log(openingHours[dayOfWeek])
+    console.log(isToday)
+    return createTimeInterval(openingHours[dayOfWeek], interval, isToday)
+  }, [openingHours, dayOfWeek, interval, isToday])
 
   React.useEffect(() => {
-    if (isToday)
-      resetValue(nextInterval().format("HH:mm"))
-  }, [isToday])
+    resetValue(intervals.length > 0 ? intervals[0] : "––:––")
+  }, [intervals])
 
   return (
     <Select {...restProps}>
