@@ -32,11 +32,20 @@ function CheckoutNow() {
   const { t } = useTranslation('checkout')
   const router = useRouter()
 
-  const name = useStoreState(state => state.basket.name)
   const basket = useStoreActions(actions => actions.basket)
+
+  const user = useStoreActions(actions => actions.user)
+  const userId = useStoreState(state => state.user.id)
+  const name = useStoreState(state => state.user.firstName)
+
   const isRehydrated = useStoreRehydrated()
 
-  if (!isRehydrated) {
+  React.useEffect(() => {
+    const unsubscribe = user.onUser()
+    return () => unsubscribe()
+  }, [])
+
+  if (!isRehydrated || userId === "") {
     return <Progress size="xs" isIndeterminate />
   }
 
@@ -50,7 +59,13 @@ function CheckoutNow() {
           initialValues={{ name: name }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
-            basket.setName(values.name)
+            basket.setClient({
+              id: userId,
+              name: values.name,
+              email: "",
+              phone: "",
+              address: ""
+            })
             router.push({
               pathname: "/checkout/payment"
             })
@@ -80,7 +95,7 @@ function CheckoutNow() {
           )}
         </Formik>
       </Box>
-    </Layout>
+    </Layout >
   )
 }
 

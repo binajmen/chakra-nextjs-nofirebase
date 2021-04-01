@@ -35,7 +35,7 @@ export default function Orders() {
   const [hasNoMore, noMore] = React.useState<boolean>(false)
   const { t } = useTranslation('common')
 
-  const userId = useStoreState(state => state.basket.userId)
+  const userId = useStoreState(state => state.basket.client.id)
   const isRehydrated = useStoreRehydrated()
 
   const { data: orders, loading, error, mutate } = useCollection<Order>(

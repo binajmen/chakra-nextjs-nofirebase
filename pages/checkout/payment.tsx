@@ -31,7 +31,7 @@ function CheckoutPayment() {
   const { t } = useTranslation('checkout')
 
   const method = useStoreState(state => state.basket.method)
-  const placeId = useStoreState(state => state.basket.place)
+  const placeId = useStoreState(state => state.basket.placeId)
   const basket = useStoreActions(actions => actions.basket)
   const isRehydrated = useStoreRehydrated()
   const { data: place } = useDocument<Place>(isRehydrated ? `places/${placeId}` : null)
