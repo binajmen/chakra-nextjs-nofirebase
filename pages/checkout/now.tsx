@@ -64,7 +64,13 @@ function CheckoutNow() {
               name: values.name,
               email: "",
               phone: "",
-              address: ""
+              address: {
+                address: "",
+                addressId: "",
+                lat: 0,
+                lng: 0,
+                geohash: ""
+              }
             })
             router.push({
               pathname: "/checkout/payment"

@@ -1,4 +1,6 @@
 import dayjs from 'dayjs'
+import minMax from 'dayjs/plugin/minMax'
+dayjs.extend(minMax)
 
 import type { OpeningHours } from '@/types/place'
 
@@ -26,7 +28,6 @@ export function createTimeInterval(schedule: string[], interval: number, today: 
   let firstInterval = nextInterval(interval);
 
   if (schedule === undefined || schedule.length === 0) {
-    console.log("undefined or 0", schedule)
     return [];
   } else if (schedule.length % 2 !== 0) {
     console.error("wrong format");
@@ -41,16 +42,12 @@ export function createTimeInterval(schedule: string[], interval: number, today: 
       .hour(parseInt(schedule[i + 1].slice(0, 2), 10))
       .minute(parseInt(schedule[i + 1].slice(2), 10));
 
-    console.log(start.toString(), end.toString())
-
     if (today) {
-      console.log("today", today)
       if (end < firstInterval) continue;
-      else start = firstInterval
+      else start = dayjs.max(start, firstInterval)
     }
 
     while (start < end) {
-      console.log("one interval", start.format("HH:mm"))
       intervals.push(start.format("HH:mm"));
       start = start.add(interval, "minute");
     }

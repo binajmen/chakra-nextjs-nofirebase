@@ -18,7 +18,10 @@ import {
   Select,
   VStack,
   Progress,
-  Heading
+  Heading,
+  RadioGroup,
+  Radio,
+  Stack,
 } from '@chakra-ui/react'
 
 import { useStoreState, useStoreActions } from '@/store/hooks'
@@ -30,6 +33,8 @@ import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
 import type { Place } from '@/types/place'
+import type { Address } from '@/types/customer'
+import AddressField from '@/components/atoms/AddressField'
 
 function CheckoutDelivery() {
   const { t } = useTranslation('checkout')
@@ -43,7 +48,9 @@ function CheckoutDelivery() {
   const name = useStoreState(state => state.user.firstName)
   const email = useStoreState(state => state.user.email)
   const phone = useStoreState(state => state.user.phone)
-  const addresses = useStoreState(state => state.user.addresses)
+  const userAddresses = useStoreState(state => state.user.addresses)
+
+  const [addresses, setAddresses] = React.useState<Address[]>([])
 
   const address = useStoreState(state => state.basket.client.address)
 
@@ -55,6 +62,11 @@ function CheckoutDelivery() {
     const unsubscribe = user.onUser()
     return () => unsubscribe()
   }, [])
+
+  React.useEffect(() => {
+    if (userId !== "")
+      setAddresses(userAddresses)
+  }, [userId])
 
   if (!isRehydrated || userId === "" || place.loading) {
     return <Progress size="xs" isIndeterminate />
@@ -82,16 +94,13 @@ function CheckoutDelivery() {
               name: Yup.string().required(),
               email: Yup.string().email().required(),
               phone: Yup.string().required(),
-              address: Yup.string().required()
-                .test(
-                  "has-a-street-name",
-                  "Are you sure you specified a street name?",
-                  (value) => /[\w\s]{5,}/g.test(value || "")
-                ).test(
-                  "has-a-street-number",
-                  "Are you sure you specified a street number?",
-                  (value) => /[\d]{1,}/g.test(value || "")
-                ),
+              address: Yup.object().shape({
+                address: Yup.string().required(),
+                addressId: Yup.string().required(),
+                lat: Yup.number().required(),
+                lng: Yup.number().required(),
+                geohash: Yup.string()
+              }),
               comment: Yup.string(),
               utensils: Yup.boolean().required(),
               date: Yup.string().required(),
@@ -151,30 +160,37 @@ function CheckoutDelivery() {
                       )}
                     </Field>
 
-
                     <Field name="address">
                       {({ field, form, meta }: FieldProps) => (
                         <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
-                          <FormLabel htmlFor="street">{t('street')}</FormLabel>
-                          <Input {...field} id="street" placeholder="" />
-                          <FormErrorMessage>{form.errors.street}</FormErrorMessage>
+                          <FormLabel htmlFor="address">{t('address')}</FormLabel>
+                          <RadioGroup value={field.value.address}>
+                            <Stack direction="column">
+                              {addresses.map((address, index) =>
+                                <Radio
+                                  key={index}
+                                  value={address.address}
+                                  onChange={() => form.setFieldValue("address", address)}
+                                >{address.address}</Radio>
+                              )}
+                            </Stack>
+                          </RadioGroup>
                         </FormControl>
                       )}
                     </Field>
                     <Field name="address">
                       {({ field, form, meta }: FieldProps) => (
                         <FormControl isInvalid={!!meta.error && !!meta.touched}>
-                          <FormLabel htmlFor="address">Vos adresses</FormLabel>
-                          <Select {...field}>
-                            {Object.entries(addresses).map((address, index) =>
-                              <option key={index} value={address}>{address}</option>
-                            )}
-                          </Select>
-                          <FormErrorMessage>{form.errors.postcode}</FormErrorMessage>
+                          <AddressField
+                            onAddress={(address) => {
+                              setAddresses([...addresses, address])
+                              form.setFieldValue("address", address)
+                            }}
+                          />
+                          <FormErrorMessage>{form.errors.address}</FormErrorMessage>
                         </FormControl>
                       )}
                     </Field>
-
 
                     <Field name="comment">
                       {({ field, form, meta }: FieldProps) => (
@@ -195,6 +211,7 @@ function CheckoutDelivery() {
                         </FormControl>
                       )}
                     </Field>
+
                     <Heading size="md" pt="6" pb="3">{t('when-delivery')}</Heading>
                     <Field name="date">
                       {({ field, form, meta }: FieldProps) => (

@@ -38,8 +38,6 @@ import Button from '@/components/atoms/Button'
 
 import firebase from '@/lib/firebase/client'
 
-import type { Customer } from '@/types/customer'
-
 type MollieInfo = {
   access_token: string
   csrf: string

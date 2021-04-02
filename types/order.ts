@@ -1,5 +1,6 @@
 import firebase from '@/lib/firebase/client'
 
+import type { Address } from './customer'
 export type Method = "now" | "collect" | "delivery" | null
 
 type Option = {
@@ -21,6 +22,14 @@ export type BasketItem = {
   comment: string
 }
 
+export type OrderClient = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address?: Address
+}
+
 export type Order = {
   placeId: string
   method: string
@@ -28,13 +37,7 @@ export type Order = {
     date: string
     time: string
   }
-  client: {
-    id: string
-    name: string
-    email: string
-    phone: string
-    address?: string
-  }
+  client: OrderClient
   deliverer?: {
     id: string
     name: string
@@ -42,6 +45,7 @@ export type Order = {
   }
   items: BasketItem[]
   total: number
+  comment: string
   utensils: boolean,
   payment: any
   orderStatus: string

@@ -23,8 +23,9 @@ import {
 import { FaPlusCircle, FaTrash } from 'react-icons/fa'
 
 import Button from '@/components/atoms/Button'
+import AddressField from '@/components/atoms/AddressField'
 
-import type { Customer } from '@/types/customer'
+import type { CustomerProfile } from '@/types/customer'
 
 export default function AccountAuthed() {
   const authUser = useAuthUser()
@@ -34,6 +35,7 @@ export default function AccountAuthed() {
       <Identification userId={authUser.id as string} />
       <Box my="6" />
       <Addresses userId={authUser.id as string} />
+      {/* <AddressField /> */}
     </Stack>
   )
 }
@@ -45,7 +47,7 @@ type AccountProps = {
 function Identification({ userId }: AccountProps) {
   const toast = useToast()
   const { t } = useTranslation('common')
-  const { data: profile, loading, update } = useDocument<Customer>(`customers/${userId}`)
+  const { data: profile, loading, update } = useDocument<CustomerProfile>(`customers/${userId}`)
 
   if (loading) {
     return (<Text>Loading..</Text>)
@@ -150,7 +152,7 @@ function Identification({ userId }: AccountProps) {
 function Addresses({ userId }: AccountProps) {
   const toast = useToast()
   const { t } = useTranslation('common')
-  const { data: profile, loading, update } = useDocument<Customer>(`customers/${userId}`)
+  const { data: profile, loading, update } = useDocument<CustomerProfile>(`customers/${userId}`)
 
   if (loading) {
     return (<Text>Loading..</Text>)

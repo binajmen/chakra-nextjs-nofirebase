@@ -19,6 +19,7 @@ import Button from '@/components/atoms/Button'
 import firebase from "@/lib/firebase/client"
 import { useStoreState, useStoreActions } from "@/store/hooks"
 import { UNPAID } from "@/helpers/constants"
+import dayjs from "functions/node_modules/dayjs"
 
 type PaymentMethodsProps = {
   methods: string[]
@@ -42,8 +43,10 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
       placeId: basket.placeId,
       method: basket.method,
       timing: {
-        date: basket.date,
-        time: basket.time
+        delay: 0,
+        expectedAt: firebase.firestore.Timestamp.fromDate(
+          dayjs(`${basket.date} ${basket.time}`, "YYYY-MM-DD HH:mm").toDate()
+        )
       },
       client: {
         id: basket.client.id,
@@ -64,6 +67,8 @@ export default function PaymentMethods({ methods }: PaymentMethodsProps) {
       // table: table,
       items: basket.items,
       total: basket.total,
+      comment: basket.comment,
+      utensils: basket.utensils,
       payment: {
         status: UNPAID,
         method: basket.payment

@@ -142,20 +142,30 @@ export type BasketItem = {
   comment: string
 }
 
+export type Address = {
+  address: string
+  addressId: string
+  lat: number
+  lng: number
+  geohash: string
+}
+
+export type OrderClient = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address?: Address
+}
+
 export type Order = {
   placeId: string
   method: string
-  timing?: {
-    date: string
-    time: string
+  timing: {
+    delay: number
+    expectedAt: firebase.firestore.Timestamp
   }
-  client: {
-    id: string
-    name: string
-    email: string
-    phone: string
-    address?: string
-  }
+  client: OrderClient
   deliverer?: {
     id: string
     name: string
@@ -163,6 +173,7 @@ export type Order = {
   }
   items: BasketItem[]
   total: number
+  comment: string
   utensils: boolean,
   payment: any
   orderStatus: string

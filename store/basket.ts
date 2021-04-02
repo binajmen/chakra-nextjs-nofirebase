@@ -2,13 +2,14 @@ import { Action, action, Thunk, thunk, Computed, computed } from 'easy-peasy'
 import { nanoid } from 'nanoid'
 
 import type { Method, BasketItem } from '@/types/order'
+import type { Address } from '@/types/customer'
 
 type Client = {
   id: string
   name: string
   email: string
   phone: string
-  address: string
+  address: Address
 }
 
 type State = {
@@ -31,7 +32,13 @@ const state: State = {
     name: "",
     email: "",
     phone: "",
-    address: ""
+    address: {
+      address: "",
+      addressId: "",
+      lat: 0,
+      lng: 0,
+      geohash: "",
+    }
   },
   items: [],
   utensils: false,

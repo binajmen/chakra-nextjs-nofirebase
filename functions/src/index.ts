@@ -159,6 +159,13 @@ export const orderScheduler =
       await (await import("./order/orderScheduler")).orderScheduler(change, context)
     })
 
+export const orderAlarm =
+  functions
+    .region("europe-west1")
+    .https.onRequest(async (request, response) => {
+      await (await import("./order/orderScheduler")).orderAlarm(request, response)
+    })
+
 /**
 * Auth
 */

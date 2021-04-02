@@ -30,9 +30,6 @@ export default function TimeIntervalField({
   const dayOfWeek = dayjs(dateValue, "YYYY-MM-DD").format("ddd").toLowerCase()
 
   const intervals = React.useMemo(() => {
-    console.log(dayOfWeek)
-    console.log(openingHours[dayOfWeek])
-    console.log(isToday)
     return createTimeInterval(openingHours[dayOfWeek], interval, isToday)
   }, [openingHours, dayOfWeek, interval, isToday])
 

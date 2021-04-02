@@ -26,7 +26,6 @@ import { FaChevronRight, FaChevronDown, FaCheck } from 'react-icons/fa'
 import { useStoreState, useStoreActions } from '@/store/hooks'
 import { useStoreRehydrated } from 'easy-peasy'
 
-import { nextInterval } from '@/helpers/hours'
 import { PLANNED, ONGOING, READY } from '@/helpers/constants'
 
 import Layout from '@/components/layout/Layout'

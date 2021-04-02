@@ -57,7 +57,7 @@ export const webhookMollie = async (
 
     response.status(200).send()
   } catch (error) {
-    console.warn(error);
+    console.warn(error)
     response.status(500).send()
   }
 }

@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 
 import firebase from '@/lib/firebase/client'
 
-import type { Customer } from '@/types/customer'
+import type { CustomerProfile, Address } from '@/types/customer'
 
 type State = {
   id: string
@@ -11,7 +11,7 @@ type State = {
   lastName: string
   email: string
   phone: string
-  addresses: string[]
+  addresses: Address[]
 }
 
 const state: State = {
@@ -29,7 +29,7 @@ type Model = State & {
   setLastName: Action<Model, string>
   setEmail: Action<Model, string>
   setPhone: Action<Model, string>
-  setAddresses: Action<Model, string[]>
+  setAddresses: Action<Model, Address[]>
 
   clearState: Action<Model>
 
@@ -62,7 +62,7 @@ const model: Model = {
         firebase.firestore().doc(`customers/${user.uid}`).get()
           .then(doc => {
             if (doc.exists) {
-              const { firstName, lastName, email, phone, addresses } = doc.data() as Customer
+              const { firstName, lastName, email, phone, addresses } = doc.data() as CustomerProfile
               actions.setFirstName(firstName)
               actions.setLastName(lastName)
               actions.setEmail(email)

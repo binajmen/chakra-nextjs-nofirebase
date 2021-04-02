@@ -15,13 +15,21 @@ import {
   Text,
   Badge,
   Icon,
+  IconButton,
   Tabs,
   TabPanels,
   TabPanel,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
   useToast,
   useDisclosure
 } from '@chakra-ui/react'
-import { FaWalking, FaBicycle, FaUtensils, FaBan, FaComment, FaCommentSlash } from 'react-icons/fa'
+import { FaInfoCircle, FaWalking, FaBicycle, FaUtensils, FaBan, FaComment, FaCommentSlash } from 'react-icons/fa'
 
 import firebase from '@/lib/firebase/client'
 import { VALID, ACCEPTED, REJECTED, PLANNED, ONGOING, READY, COMPLETED } from '@/helpers/constants'
@@ -30,7 +38,7 @@ import OrdersNavigation from './OrdersNavigation'
 import Button from '@/components/atoms/Button'
 
 import type { WithID } from '@/types/catalog'
-import type { Order } from '@/types/order'
+import type { Order, OrderClient } from '@/types/order'
 
 type OrdersProps = {
 }
@@ -100,10 +108,17 @@ type PanelProps = {
 }
 
 function Panel({ orders, component: Component }: PanelProps) {
+  const [focus, setFocus] = React.useState<string>("")
+
   return (
     <Stack direction="column" spacing="3">
       {orders.map(order =>
-        <Component key={order.id} order={order} />
+        <Component
+          key={order.id}
+          order={order}
+          hasFocus={order.id === focus}
+          setFocus={() => setFocus(focus !== order.id ? order.id : "")}
+        />
       )}
     </Stack>
   )
@@ -113,14 +128,17 @@ type OrderProps = {
   order: WithID<Order>
 }
 
-function OrderTile({ order }: OrderProps) {
-  const collapse = useDisclosure()
+type OrderTileProps = OrderProps & {
+  hasFocus: boolean
+  setFocus: () => void
+}
 
+function OrderTile({ order, hasFocus, setFocus }: OrderTileProps) {
   return (
     <Box bgColor="#fafafa" border="1px solid lightgray" borderRadius="lg" p="3">
-      <OrderTileHeader order={order} openDetails={collapse.onToggle} />
+      <OrderTileHeader order={order} openDetails={setFocus} />
 
-      <Collapse in={collapse.isOpen}>
+      <Collapse in={hasFocus}>
         <OrderTileInfo order={order} />
         <OrderTileItems order={order} />
         <OrderTileFooter order={order} />
@@ -136,13 +154,25 @@ type OrderTileHeaderProps = {
 
 function OrderTileHeader({ order, openDetails }: OrderTileHeaderProps) {
   const { t } = useTranslation("checkout")
+  const clientInfo = useDisclosure()
+
+  function openClientInfo(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation()
+    clientInfo.onOpen()
+  }
 
   return (
     <Flex justify="space-between" alignItems="center" onClick={openDetails}>
 
-      <Stack direction="column">
-        <Heading size="md">{order.client.name}</Heading>
-        <Text as="pre">#{order.id.slice(-5).toUpperCase()}</Text>
+      <Stack direction="row">
+        <Stack direction="column">
+          <Heading size="md">{order.client.name}</Heading>
+          <Text as="pre">#{order.id.slice(-5).toUpperCase()}</Text>
+        </Stack>
+        <IconButton size="xs" aria-label="info" color="gray" variant="ghost" onClick={openClientInfo}>
+          <Icon as={FaInfoCircle} boxSize="100%" />
+        </IconButton>
+        <ClientInfo client={order.client} isOpen={clientInfo.isOpen} onClose={clientInfo.onClose} />
       </Stack>
 
       <Stack direction="row" alignItems="center" spacing="6">
@@ -183,18 +213,26 @@ function OrderTileInfo({ order }: OrderProps) {
 
   return (
     <Flex justify="space-between" alignItems="center" borderTop="1px solid gray" mt="3" pt="3">
-      <Stack direction="row">
-        <Icon
-          boxSize="6"
-          as={order.utensils ? FaUtensils : FaBan}
-          color={order.utensils ? "tomato" : "gray"}
-        />
-        <Text
-          as="strong"
-          color={order.utensils ? "tomato" : "gray"}
-        >
-          {order.utensils ? "Vaisselle jetable" : "Pas de vaisselle jetable"}
-        </Text>
+      <Stack direction="column">
+        <Stack direction="row">
+          <Icon
+            boxSize="6"
+            as={order.utensils ? FaUtensils : FaBan}
+            color={order.utensils ? "tomato" : "gray"}
+          />
+          <Text
+            as="strong"
+            color={order.utensils ? "tomato" : "gray"}
+          >
+            {order.utensils ? "Vaisselle jetable" : "Pas de vaisselle jetable"}
+          </Text>
+        </Stack>
+        {(order.comment ?? "") !== "" &&
+          <Stack direction="row">
+            <Icon boxSize="6" as={FaComment} color="tomato" />
+            <Text as="strong" color="tomato">{order.comment}</Text>
+          </Stack>
+        }
       </Stack>
       <Stack direction="row" alignItems="center">
         {hasComments && <Text as="strong" color="tomato">{hasComments}</Text>}
@@ -210,7 +248,7 @@ function OrderTileInfo({ order }: OrderProps) {
 
 function OrderTileItems({ order }: OrderProps) {
   return (
-    <Flex justify="space-between" alignItems="center" borderTop="1px solid gray" mt="3" pt="3">
+    <Flex justify="space-between" alignItems="center" borderTop="1px solid gray" mt="3" pt="3" px="3">
       <Grid templateColumns="auto 1fr auto" gap={2} w="full">
         {order.items.map((item, index) =>
           <React.Fragment key={index}>
@@ -300,6 +338,42 @@ function OrderTileFooter({ order }: OrderProps) {
       </Flex>
     )
   }
+}
+
+type ClientInfoProps = {
+  client: OrderClient
+  isOpen: boolean
+  onClose: () => void
+}
+
+function ClientInfo({ client, isOpen, onClose }: ClientInfoProps) {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Customer info:</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Grid templateColumns="auto 1fr" gap={3}>
+            <GridItem as="strong">Name</GridItem>
+            <GridItem>{client.name}</GridItem>
+            <GridItem as="strong">Email</GridItem>
+            <GridItem>{client.email}</GridItem>
+            <GridItem as="strong">Phone</GridItem>
+            <GridItem as="pre">{client.phone}</GridItem>
+            <GridItem as="strong">Address</GridItem>
+            <GridItem>{client.address?.address}</GridItem>
+          </Grid>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button onClick={onClose}>
+            Close
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  )
 }
 
 function updateStatus(orderId: string, newStatus: string, toast: any) {

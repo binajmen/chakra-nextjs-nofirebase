@@ -90,7 +90,13 @@ function CheckoutCollect() {
                 name: values.name,
                 email: values.email,
                 phone: values.phone,
-                address: ""
+                address: {
+                  address: "",
+                  addressId: "",
+                  lat: 0,
+                  lng: 0,
+                  geohash: ""
+                }
               })
               basket.setComment(values.comment)
               basket.setUtensils(values.utensils)
