@@ -36,13 +36,12 @@ export const orderScheduler = async (
     const startTime = expectedTime.subtract(preparationTime, "minute")
     const scheduleTime = startTime.diff(dayjs(), "second")
 
-    console.log("prepTime:", preparationTime, "expectedTime:", expectedTime, "startTime:", startTime, "scheduleTime:", scheduleTime)
+    console.log("prepTime:", preparationTime, "expectedTime:", expectedTime.toString(), "startTime:", startTime.toString(), "scheduleTime:", scheduleTime.toString())
 
     // negative schedule time means it must start now
     // skip cloud task scheduling in development
-    if (scheduleTime < 0 || functions.config().portal.development === true) {
+    if (scheduleTime < 0 || functions.config().portal.environment === "development") {
       updateOrder(change.after.ref.path, "ongoing")
-      return null
     } else {
       const project = JSON.parse(process.env.FIREBASE_CONFIG!).projectId
       const location = "europe-west1"
@@ -65,12 +64,13 @@ export const orderScheduler = async (
           },
         },
         scheduleTime: {
-          seconds: scheduleTime
+          seconds: startTime.unix()
         }
       }
 
       console.log("scheduling", docPath)
       await tasksClient.createTask({ parent: queuePath, task })
+      updateOrder(change.after.ref.path, "planned")
     }
   }
 
@@ -83,6 +83,7 @@ export const orderAlarm = async (
 ) => {
   const payload = request.body as ExpirationTaskPayload
   try {
+    console.log("alarm for:", payload.docPath)
     await updateOrder(payload.docPath, "valid")
     response.send(200)
   }

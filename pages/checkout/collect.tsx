@@ -53,7 +53,12 @@ function CheckoutCollect() {
   }, [])
 
   if (!isRehydrated || userId === "" || place.loading) {
-    return <Progress size="xs" isIndeterminate />
+    return <div>
+      <Progress size="xs" isIndeterminate />
+      <Text>isRehydrated: {JSON.stringify(isRehydrated)}</Text>
+      <Text>userId: {JSON.stringify(userId)}</Text>
+      <Text>place.loading: {JSON.stringify(place.loading)}</Text>
+    </div>
   } else if (place.error) {
     return <Text>Error while loading place opening hours</Text>
   } else if (place.data) {

@@ -78,6 +78,7 @@ const model: Model = {
           })
       } else {
         actions.clearState()
+        actions.setId(nanoid())
       }
     })
 
