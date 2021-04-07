@@ -11,34 +11,34 @@ import {
 
 import type { OpeningHours } from '@/types/place'
 
-import { createTimeInterval } from '@/helpers/hours'
+import { hasRemainingIntervalsToday } from '@/helpers/datetime'
 
 type DateFieldProps = FieldInputProps<string> & {
-  id: string,
-  openingHours: { [index: string]: string[] }
+  id: string
+  date: string,
+  schedule: { [index: string]: string[] }
+  interval: number,
   setValue: (value: string) => void
 }
 
-export default function DateField({ openingHours, setValue, ...fieldProps }: DateFieldProps) {
-  const { t } = useTranslation('checkout')
+export default function DateField({ date, schedule, interval, setValue, ...fieldProps }: DateFieldProps) {
+  const { t } = useTranslation('common')
   const scope = [0, 1, 2, 3, 4, 5, 6]
-  const now = dayjs()
 
   function isOpen(shift: number) {
-    const dayOfWeek = now.add(shift, 'd').format("ddd").toLowerCase()
+    const day = dayjs().add(shift, "day").format("ddd").toLowerCase()
 
-    if (openingHours[dayOfWeek].length === 0 || openingHours[dayOfWeek].length % 2 !== 0) {
+    if (schedule[day].length === 0 || schedule[day].length % 2 !== 0) {
       return false
     } else if (shift === 0) {
-      const remainingIntervals = createTimeInterval(openingHours[dayOfWeek], 30, true)
-      return remainingIntervals.length > 0
+      return hasRemainingIntervalsToday(schedule[day], interval)
     } else {
       return true
     }
   }
 
   function dayLongName(shift: number) {
-    return now.add(shift, 'd').format("dddd").toLowerCase()
+    return dayjs().add(shift, "day").format("dddd").toLowerCase()
   }
 
   function optionLabel(shift: number) {
@@ -48,14 +48,15 @@ export default function DateField({ openingHours, setValue, ...fieldProps }: Dat
       case 1:
         return `${t('tomorrow')}${!isOpen(shift) ? ` – ${t('closed')}` : ""}`
       default:
-        return `${t(dayLongName(shift))} – ${!isOpen(shift) ? `${t('closed')}` : `${now.add(shift, 'd').format("DD/MM/YYYY")}`}`
+        return `${t(dayLongName(shift))} – ${!isOpen(shift) ? `${t('closed')}` : `${dayjs().add(shift, 'd').format("DD/MM/YYYY")}`}`
     }
   }
 
   React.useEffect(() => {
+    // set first day available as selected value
     for (let shift = 0; shift < scope.length; shift++) {
       if (isOpen(shift)) {
-        setValue(now.add(shift, 'd').format("YYYY-MM-DD"))
+        setValue(dayjs().add(shift, 'd').format("YYYY-MM-DD"))
         break
       }
     }
@@ -66,7 +67,7 @@ export default function DateField({ openingHours, setValue, ...fieldProps }: Dat
       {scope.map((shift) =>
         <option
           key={shift}
-          value={now.add(shift, 'd').format("YYYY-MM-DD")}
+          value={dayjs().add(shift, 'd').format("YYYY-MM-DD")}
           disabled={!isOpen(shift)}
         >
           {optionLabel(shift)}

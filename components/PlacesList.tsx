@@ -27,7 +27,7 @@ export default function PlacesList({ places, buttonRender }: PlacesListProps) {
   if (!places) return null
 
   return (
-    <Box>
+    <Box p="2">
       <SimpleGrid columns={[1, 2, 3, 4]} spacing={6}>
         {places.map(place => <PlaceCard key={place.id} place={place} buttonRender={buttonRender} />)}
       </SimpleGrid>

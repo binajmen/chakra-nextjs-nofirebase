@@ -14,13 +14,13 @@ import {
   FormLabel,
   FormErrorMessage,
   Input,
-  IconButton,
+  Button as CButton,
   Switch,
   VStack,
   Center,
   useToast
 } from '@chakra-ui/react'
-import { FaPlusCircle, FaTrash } from 'react-icons/fa'
+import { FaTrash, FaSave } from 'react-icons/fa'
 
 import Button from '@/components/atoms/Button'
 import AddressField from '@/components/atoms/AddressField'
@@ -32,7 +32,7 @@ export default function AccountAuthed() {
 
   return (
     <Stack direction="column">
-      <Identification userId={authUser.id as string} />
+      <Profile userId={authUser.id as string} />
       <Box my="6" />
       <Addresses userId={authUser.id as string} />
       {/* <AddressField /> */}
@@ -44,7 +44,7 @@ type AccountProps = {
   userId: string
 }
 
-function Identification({ userId }: AccountProps) {
+function Profile({ userId }: AccountProps) {
   const toast = useToast()
   const { t } = useTranslation('common')
   const { data: profile, loading, update } = useDocument<CustomerProfile>(`customers/${userId}`)
@@ -58,6 +58,7 @@ function Identification({ userId }: AccountProps) {
 
     return (
       <Box>
+        <Center><Heading my="6">{t("my-account")}</Heading></Center>
         <Heading size="lg" mb="3">Profil</Heading>
         <Text fontSize="sm" mb="6">Sauvegardez vos informations de base afin de gagner du temps lors de vos prochaines commandes.</Text>
         <Formik
@@ -131,13 +132,13 @@ function Identification({ userId }: AccountProps) {
                     </FormControl>
                   )}
                 </Field>
-                <Box w="full" textAlign="right">
+                <Center pt="6">
                   <Button
                     type="submit"
-                    size="sm"
+                    leftIcon={<FaSave />}
                     isLoading={props.isSubmitting}
                   >{t('save')}</Button>
-                </Box>
+                </Center>
               </VStack>
             </Form>
           )}
@@ -168,7 +169,13 @@ function Addresses({ userId }: AccountProps) {
         <Formik
           initialValues={{ addresses }}
           validationSchema={Yup.object().shape({
-            addresses: Yup.array().of(Yup.string().required("required field")),
+            addresses: Yup.array().of(Yup.object().shape({
+              address: Yup.string().required(),
+              addressId: Yup.string().required(),
+              geohash: Yup.string(),
+              lat: Yup.number().required(),
+              lng: Yup.number().required()
+            })).required()
           })}
           onSubmit={(values, actions) => {
             update(values)!
@@ -192,32 +199,43 @@ function Addresses({ userId }: AccountProps) {
                       <FormControl isInvalid={!!meta.error && !!meta.touched}>
                         <Flex justify="space-between" mb="2">
                           <Center><FormLabel htmlFor={`addresses[${index}]`} mb="0">{t('address')} #{index + 1}</FormLabel></Center>
-                          <Box>
-                            <IconButton hidden={index !== props.values.addresses.length - 1} size="sm" aria-label="add" icon={<FaPlusCircle />} variant="ghost" colorScheme="gray" onClick={() => {
-                              form.setFieldValue("addresses", [...props.values.addresses, ""])
-                            }} />
-                            <IconButton size="sm" aria-label="delete" icon={<FaTrash />} colorScheme="red" variant="ghost" onClick={() => {
+
+                          <CButton
+                            size="sm"
+                            leftIcon={<FaTrash />}
+                            colorScheme="red"
+                            variant="ghost"
+                            onClick={() => {
                               form.setFieldValue("addresses", props.values.addresses.filter((_, i) => index !== i))
-                            }} />
-                          </Box>
+                            }}
+                          >{t("delete")}</CButton>
                         </Flex>
-                        <Input {...field} id={`addresses[${index}]`} placeholder="" />
+                        <Box>
+                          {field.value.address.split(",").map((slice: string) => <Text>{slice}</Text>)}
+                        </Box>
                       </FormControl>
                     )}
                   </Field>
                 ))}
-                <Box hidden={props.values.addresses?.length !== 0} w="full" textAlign="left">
-                  <Button size="sm" aria-label="add" leftIcon={<FaPlusCircle />} variant="ghost" colorScheme="gray" onClick={() => {
-                    props.setFieldValue("addresses", [...props.values.addresses, ""])
-                  }}>{t('add')}</Button>
+                <Box pt="6" w="full">
+                  <FormControl>
+                    <FormLabel>Ajouter une adresse</FormLabel>
+                    <AddressField
+                      placeholder={t("common:add-an-address")}
+                      noOptions={t("common:no-options")}
+                      onAddress={(address) => {
+                        props.setFieldValue("addresses", [...props.values.addresses, address])
+                      }}
+                    />
+                  </FormControl>
                 </Box>
-                <Box w="full" textAlign="right">
+                <Center pt="6">
                   <Button
                     type="submit"
-                    size="sm"
+                    leftIcon={<FaSave />}
                     isLoading={props.isSubmitting}
                   >{t('save')}</Button>
-                </Box>
+                </Center>
               </VStack>
             </Form>
           )}

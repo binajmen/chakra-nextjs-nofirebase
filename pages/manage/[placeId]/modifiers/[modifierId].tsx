@@ -15,7 +15,8 @@ import type { Modifier } from '@/types/catalog'
 function ModifierEdit() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Options" }}
     >
       <Content />

@@ -8,13 +8,13 @@ import {
   Text,
   Heading
 } from '@chakra-ui/react'
-import { FaChair, FaWalking, FaBicycle } from 'react-icons/fa'
+import { FaStoreAlt, FaWalking, FaShippingFast, FaMapMarkedAlt } from 'react-icons/fa'
 
-type Methods = {
-  [index: string]: {
-    label: string
-    icon: typeof FaChair
-  }
+const methodIcon: any = {
+  onsite: FaStoreAlt,
+  collect: FaWalking,
+  delivery: FaShippingFast,
+  geolocation: FaMapMarkedAlt,
 }
 
 type MethodProps = {
@@ -24,16 +24,10 @@ type MethodProps = {
 export default function Method({ method }: MethodProps) {
   const { t } = useTranslation('common')
 
-  const methods: Methods = {
-    now: { label: "now", icon: FaChair },
-    collect: { label: "collect", icon: FaWalking },
-    delivery: { label: "delivery", icon: FaBicycle },
-  }
-
   return (
     <HStack as={Center} spacing="3" py="3">
-      <Icon boxSize="9" as={methods[method].icon} />
-      <Heading size="md">{t(methods[method].label)}</Heading>
+      <Icon boxSize="9" as={methodIcon[method]} />
+      <Heading size="md">{t(method)}</Heading>
     </HStack>
   )
 }

@@ -15,7 +15,8 @@ import type { Event } from '@/types/catalog'
 function EventEdit() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <Content />

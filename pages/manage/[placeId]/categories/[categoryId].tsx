@@ -15,7 +15,8 @@ import type { Category } from '@/types/catalog'
 function CategoryEdit() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Categories" }}
     >
       <Content />

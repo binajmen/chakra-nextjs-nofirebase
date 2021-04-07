@@ -17,32 +17,11 @@ import { FaFacebook, FaInstagram } from 'react-icons/fa'
 
 import Container from '@/components/layout/Container'
 
-import type { Place } from '@/types/place'
-import type { Layout } from './Layout'
-
-type HeaderProps = {
-  layout: Layout
-  place?: Place | undefined
-}
-
-export default function Footer(props: HeaderProps) {
-  switch (props.layout) {
-    case "place":
-    // return <PlaceHeader {...props} />
-    case "checkout":
-    case "manage":
-    case "admin":
-    case "default":
-    default:
-      return <DefaultFooter />
-  }
-}
-
-function DefaultFooter() {
+export default function Footer() {
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (
-    <Box as="footer" mt={16} bg="primary.50">
+    <Box as="footer" mt={16} bg="white">
       <Container p={6}>
         <Flex w="full" direction={['column', 'column', 'row']}>
           <VStack align="flex-start"
@@ -86,8 +65,8 @@ function DefaultFooter() {
           </SimpleGrid>
         </Flex>
       </Container>
-      <Box as="footer" py={6} bg="primary.100">
-        <Text fontSize="sm" color="gray.700" textAlign="center">Copyright &copy; {new Date().getFullYear()}</Text>
+      <Box as="footer" py={6} bg="black">
+        <Text fontSize="sm" color="white" textAlign="center">Copyright &copy; {new Date().getFullYear()}</Text>
       </Box>
     </Box >
   )

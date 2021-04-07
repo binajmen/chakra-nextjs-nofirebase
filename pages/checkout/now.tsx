@@ -51,7 +51,7 @@ function CheckoutNow() {
 
   return (
     <Layout
-      layout="checkout"
+      subHeader="hide"
       metadata={{ title: "Myresto.brussels" }}
     >
       <Box w={["full", "sm"]} mx="auto">

@@ -26,7 +26,7 @@ type State = {
 
 const state: State = {
   placeId: "",
-  method: null,
+  method: "collect",
   client: {
     id: "",
     name: "",
@@ -56,6 +56,7 @@ type ChangeMethodPayload = {
 type Model = State & {
   size: Computed<Model, number>
   total: Computed<Model, number>
+  isEmpty: Computed<Model, boolean>
 
   setPlaceId: Action<Model, string>
   setClient: Action<Model, Client>
@@ -80,6 +81,7 @@ const model: Model = {
 
   size: computed(state => { return state.items.reduce((a, c) => a + c.quantity, 0) }),
   total: computed(state => state.items.reduce((a, c) => a + c.total, 0)),
+  isEmpty: computed(state => state.items.length === 0),
 
   setPlaceId: action((state, placeId) => {
     if (state.placeId !== placeId) {

@@ -34,7 +34,8 @@ type Model = State & {
   clearState: Action<Model>
 
   onUser: Thunk<Model>
-  getUser: Thunk<Model>
+  // getUser: Thunk<Model>
+  getUser: Action<Model>
 }
 
 const model: Model = {
@@ -85,16 +86,27 @@ const model: Model = {
     return unsubscribe
   }),
 
-  getUser: thunk((_actions, _payload, helpers) => {
-    const { getState } = helpers
+  // getUser: thunk((_actions, _payload, helpers) => {
+  //   const { getState } = helpers
 
+  //   return {
+  //     id: getState().id,
+  //     firstName: getState().firstName,
+  //     lastName: getState().lastName,
+  //     email: getState().email,
+  //     phone: getState().phone,
+  //     addresses: getState().addresses,
+  //   }
+  // }),
+
+  getUser: action((state) => {
     return {
-      id: getState().id,
-      firstName: getState().firstName,
-      lastName: getState().lastName,
-      email: getState().email,
-      phone: getState().phone,
-      addresses: getState().addresses,
+      id: state.id,
+      firstName: state.firstName,
+      lastName: state.lastName,
+      email: state.email,
+      phone: state.phone,
+      addresses: state.addresses,
     }
   }),
 }

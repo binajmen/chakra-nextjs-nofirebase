@@ -9,6 +9,7 @@ import { useDocument } from '@nandorojo/swr-firestore'
 import {
   Box,
   Text,
+  Center,
   FormControl,
   FormLabel,
   FormHelperText,
@@ -75,10 +76,11 @@ function CheckoutDelivery() {
   } else if (place.data) {
     return (
       <Layout
-        layout="checkout"
+        subHeader="hide"
         metadata={{ title: "Myresto.brussels" }}
       >
         <Box w={["full", "sm"]} mx="auto">
+          <Center><Heading my="6">{t('common:delivery')}</Heading></Center>
           <Formik
             initialValues={{
               name: name,
@@ -126,12 +128,11 @@ function CheckoutDelivery() {
           >
             {(props) => (
               <Form>
-                <VStack spacing="5">
-                  <Heading>{t('common:delivery')}</Heading>
+                <Stack direction="column" spacing="6">
                   <Text>
                     {t('personal-info')}
                   </Text>
-                  <VStack w="full">
+                  <Stack direction="column" spacing="6">
                     <Field name="name">
                       {({ field, form, meta }: FieldProps) => (
                         <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
@@ -166,12 +167,18 @@ function CheckoutDelivery() {
                           <FormLabel htmlFor="address">{t('address')}</FormLabel>
                           <RadioGroup value={field.value.address}>
                             <Stack direction="column">
-                              {addresses.map((address, index) =>
-                                <Radio
-                                  key={index}
-                                  value={address.address}
-                                  onChange={() => form.setFieldValue("address", address)}
-                                >{address.address}</Radio>
+                              {addresses.map((address, index, array) =>
+                                <React.Fragment key={index}>
+                                  <Radio
+                                    value={address.address}
+                                    onChange={() => form.setFieldValue("address", address)}
+                                  >
+                                    <Box pl="3">
+                                      {address.address.split(",").map(slice => <Text>{slice}</Text>)}
+                                    </Box>
+                                  </Radio>
+                                  {index < array.length - 1 && <hr />}
+                                </React.Fragment>
                               )}
                             </Stack>
                           </RadioGroup>
@@ -182,6 +189,8 @@ function CheckoutDelivery() {
                       {({ field, form, meta }: FieldProps) => (
                         <FormControl isInvalid={!!meta.error && !!meta.touched}>
                           <AddressField
+                            placeholder={t("common:add-an-address")}
+                            noOptions={t("common:no-options")}
                             onAddress={(address) => {
                               setAddresses([...addresses, address])
                               form.setFieldValue("address", address)
@@ -220,7 +229,9 @@ function CheckoutDelivery() {
                           <DateField
                             {...field}
                             id="date"
-                            openingHours={place.data!.opening["delivery"]}
+                            date={field.value}
+                            schedule={place.data!.opening["collect"]}
+                            interval={15}
                             setValue={(value) => form.setFieldValue("date", value)}
                           />
                           <FormErrorMessage>{form.errors.date}</FormErrorMessage>
@@ -234,20 +245,20 @@ function CheckoutDelivery() {
                           <TimeIntervalField
                             {...field}
                             id="time"
-                            openingHours={place.data!.opening["delivery"]}
-                            interval={30}
-                            dateValue={props.values.date}
-                            resetValue={(value) => form.setFieldValue("time", value)}
+                            date={props.values.date}
+                            schedule={place.data!.opening["collect"]}
+                            interval={15}
+                            setValue={(value) => form.setFieldValue("time", value)}
                           />
                           <FormErrorMessage>{form.errors.time}</FormErrorMessage>
                         </FormControl>
                       )}
                     </Field>
-                  </VStack>
+                  </Stack>
                   <Button onClick={props.submitForm}>
                     {t('go-to-payment')}
                   </Button>
-                </VStack>
+                </Stack>
               </Form>
             )}
           </Formik>

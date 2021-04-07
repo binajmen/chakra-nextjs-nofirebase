@@ -61,7 +61,7 @@ function OrderDetails() {
 
   return (
     <Layout
-      layout="default"
+      subHeader="hide"
       metadata={{ title: "Votre commande" }}
     >
       <Stack direction="column">

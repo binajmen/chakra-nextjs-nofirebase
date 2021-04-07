@@ -30,7 +30,8 @@ function PlaceIndex() {
 
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Vos commandes" }}
     >
       Under construction

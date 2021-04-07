@@ -15,7 +15,8 @@ function ProductNew() {
 
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <ProductForm

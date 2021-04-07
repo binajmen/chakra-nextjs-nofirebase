@@ -9,7 +9,8 @@ import Catalogs from '@/components/manage/Catalogs'
 function CatalogsIndex() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <Catalogs />

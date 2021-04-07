@@ -10,7 +10,8 @@ import CatalogEdit from '@/components/manage/CatalogEdit'
 function CatalogEditPage() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <CatalogEdit />

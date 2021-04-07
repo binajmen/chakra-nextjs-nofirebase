@@ -20,7 +20,7 @@ function AdminIndex({ admin }: AdminIndexProps) {
 
   return (
     <Layout
-      layout="admin"
+      subHeader="hide"
       metadata={{ title: "Vos commandes" }}
     >
       Welcome {authUser.email}!

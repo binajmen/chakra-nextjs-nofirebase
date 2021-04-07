@@ -1,52 +1,66 @@
-import * as React from "react"
-import {
-    Computed, computed,
-    Action, action,
-    Thunk, thunk
-} from 'easy-peasy'
+import { Action, action, Computed, computed } from 'easy-peasy'
+
+type Filters = {
+  open: boolean
+  favorites: boolean
+  cuisines: string[]
+  keywords: string[]
+}
 
 type State = {
-    message: string
-    status: "error" | "info" | "warning" | "success" | undefined
+  filters: Filters
 }
 
 const state: State = {
-    message: "",
-    status: undefined,
-}
-
-type ToastPayload = {
-    message: string
-    status: "error" | "info" | "warning" | "success"
+  filters: {
+    open: true,
+    favorites: false,
+    cuisines: [],
+    keywords: [],
+  },
 }
 
 type Model = State & {
-    hasNewToast: Computed<Model, boolean>
+  filtersCount: Computed<Model, number>
 
-    setToast: Action<Model, ToastPayload>
-    resetToast: Action<Model>
-
-    toast: Thunk<Model, ToastPayload>
+  setFilters: Action<Model, Partial<Filters>>
+  addCuisine: Action<Model, string>
+  delCuisine: Action<Model, string>
+  addKeyword: Action<Model, string>
+  delKeyword: Action<Model, string>
 }
 
 const model: Model = {
-    ...state,
+  ...state,
 
-    hasNewToast: computed(state => state.message !== null && state.status !== undefined),
+  filtersCount: computed((state) => {
+    let count = 0
 
-    setToast: action((state, { message, status }) => {
-        state.message = message
-        state.status = status
-    }),
+    if (state.filters.open) count++
+    if (state.filters.favorites) count++
+    if (state.filters.cuisines.length > 0) count++
+    if (state.filters.keywords.length > 0) count++
 
-    resetToast: action((state) => {
-        state.message = ""
-        state.status = undefined
-    }),
+    return count
+  }),
 
-    toast: thunk((actions, payload) => {
-        actions.setToast(payload)
-    })
+  setFilters: action((state, filters) => {
+    state.filters = { ...state.filters, ...filters }
+  }),
+
+  addCuisine: action((state, cuisine) => {
+    state.filters.cuisines = [...state.filters.cuisines, cuisine]
+  }),
+  delCuisine: action((state, cuisine) => {
+    state.filters.cuisines = state.filters.cuisines.filter(c => c !== cuisine)
+  }),
+
+  addKeyword: action((state, keyword) => {
+    state.filters.keywords = [...state.filters.keywords, keyword]
+  }),
+  delKeyword: action((state, keyword) => {
+    state.filters.keywords = state.filters.keywords.filter(k => k !== keyword)
+  }),
 }
 
 export type { State, Model }

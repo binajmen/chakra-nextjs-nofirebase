@@ -9,7 +9,8 @@ import Categories from '@/components/manage/Categories'
 function CategoriesIndex() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <Categories />

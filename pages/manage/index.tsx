@@ -21,7 +21,7 @@ function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps
 
   return (
     <Layout
-      layout="manage"
+      subHeader="hide"
       metadata={{ title: "Vos sites" }}
     >
       <Heading mb={3} size="md">Vos sites :</Heading>

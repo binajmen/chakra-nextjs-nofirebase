@@ -12,8 +12,8 @@ import { FaChair, FaWalking, FaBicycle } from 'react-icons/fa'
 import type { OpeningHours } from '@/types/place'
 import type { Method } from '@/types/common'
 
-
-const METHODS = ["now", "collect", "delivery"]
+// TOFIX
+const METHODS = ["collect", "delivery"]
 
 type TodayOpeningProps = {
   methods: string[]

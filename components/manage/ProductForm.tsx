@@ -255,6 +255,7 @@ export default function ProductForm({ product, save }: ProductFormProps) {
                     <FormLabel htmlFor="tags">{t('tags')}</FormLabel>
                     <TagsField
                       tags={field.value}
+                      limit={100}
                       onTag={(tags) => {
                         form.setFieldValue("tags", tags)
                       }}

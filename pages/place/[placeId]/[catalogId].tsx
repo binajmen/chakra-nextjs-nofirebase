@@ -30,12 +30,13 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { FaCartPlus, FaPlus, FaMinus, FaShoppingBasket } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
 import Layout from '@/components/layout/Layout'
-
+import PlaceHeader from "@/components/layout/PlaceHeader"
 import ProductDrawer from '@/components/ProductDrawer'
 import BasketBar from '@/components/molecules/BasketBar'
 import BasketDrawer from '@/components/organisms/BasketDrawer'
@@ -49,14 +50,15 @@ import type { WithID, Catalog, Category, Categories, Product, Products } from '@
 function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { t } = useTranslation('common')
   const drawer = useDisclosure()
+  const isMobile = useBreakpointValue({ base: true, md: false })
   const basketDrawer = useDisclosure()
   const router = useRouter()
   const { placeId, catalogId } = router.query
 
-  const method = useStoreState(state => state.basket.method)
   const basketSize = useStoreState(state => state.basket.size)
   const total = useStoreState(state => state.basket.total)
-  const setMethod = useStoreActions(actions => actions.basket.setMethod)
+  const method = useStoreState(state => state.order.method)
+  const setMethod = useStoreActions(actions => actions.order.setMethod)
   const isRehydrated = useStoreRehydrated()
   const [product, setProduct] = React.useState<Product | null>(null)
 
@@ -69,16 +71,10 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
   const { data: _products } = useCollection<Product>(`places/${placeId}/products`, {}, { initialData: props.products })
 
   const hasCategories = catalog && catalog.categories.length > 0 && _categories && _categories.length > 0
-  // const categories: Categories = _categories!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
+  const categories: Categories = _categories!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
 
   const hasProducts = _products && _products.length > 0
   const products: Products = _products!.reduce((acc, cur) => ({ ...acc, [cur.id]: cur }), {})
-
-  React.useEffect(() => {
-    if (isRehydrated) {
-      setMethod(catalogId as string)
-    }
-  }, [isRehydrated, catalogId])
 
   React.useEffect(() => {
     if (product)
@@ -90,50 +86,64 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
       setProduct(null)
   }, [drawer.isOpen])
 
+  React.useEffect(() => {
+    if (isRehydrated) {
+      setMethod(catalogId as string)
+    }
+  }, [isRehydrated, catalogId])
+
+  React.useEffect(() => {
+    if (method !== catalogId) {
+      router.push({
+        pathname: "/place/[placeId]/[catalogId]",
+        query: { placeId, catalogId: method }
+      })
+    }
+  }, [method])
+
   return (
     <Layout
-      layout="place"
+      subHeader="datetime"
       metadata={{ title: place!.name }}
-      place={place as Place}
+      padding={false}
     >
-      <Box>
-        {hasCategories && _categories!.filter(c => c.available)
-          .map(category => (
-            <Box mb="6" key={category.id}>
-              <Heading
-                mb="6" pb="1"
-                borderBottomWidth={["1px", "1px", "0"]}
-                borderBottomColor="lightgray"
-              >{category.name}</Heading>
-              <SimpleGrid columns={[1, 1, 2, 3]} spacing={[0, 0, 9, 9]}>
-                {hasProducts && category.products.filter(p => products[p]?.available)
-                  .map((prodId) => (
-                    <Flex key={prodId} p={[0, 0, 3]} mb={[3, 3, 0]} borderWidth={[0, 0, '1px']} rounded="md">
-                      <Box m="auto 0" w="full">
-                        <Stack direction="column">
-                          <Heading size="md">{products[prodId].name}</Heading>
-                          <Text>{products[prodId].description}</Text>
+      <PlaceHeader place={place!} />
+      {/* <Categories categories={categories} /> */}
+      <Box p="3">
+        {hasCategories && catalog!.categories.filter(c => categories[c]?.available)
+          .map(catId => (
+            <Box mb="6" key={catId}>
+              <Heading size="lg" mb="6">{categories[catId].name}</Heading>
+              <SimpleGrid columns={[1, 1, 2, 3]} spacing={[3, 3, 9, 9]}>
+                {hasProducts && categories[catId].products.filter(p => products[p]?.available)
+                  .map((prodId, index, array) => (
+                    <React.Fragment key={prodId}>
+                      <Flex
+                        justify="space-between"
+                        p={[0, 0, 3]}
+                        borderWidth={[0, 0, '1px']}
+                        rounded="md"
+                        onClick={() => setProduct(products[prodId])}
+                      >
+                        <Stack direction="column" spacing="0">
+                          <Text as="strong">{products[prodId].name}</Text>
+                          {products[prodId].description && <Text>{products[prodId].description}</Text>}
                         </Stack>
-                      </Box>
-                      {/* <Spacer /> */}
-                      <Box pl="3">
-                        <Center h="100%">
-                          {products[prodId].price === 0 ? t("free") : `${products[prodId].price / 100}€`}
-                        </Center>
-                      </Box>
-                      <Box pl="3">
-                        <Center h="100%">
+
+                        <Stack direction="row" alignItems="center">
+                          <Text>{products[prodId].price === 0 ? t("free") : `${products[prodId].price / 100}€`}</Text>
                           <IconButton
                             color="gray.900"
                             colorScheme="primary"
                             aria-label="Add to cart"
                             size="sm"
-                            onClick={() => setProduct(products[prodId])}
+                            // onClick={() => setProduct(products[prodId])}
                             icon={<FaPlus />}
                           />
-                        </Center>
-                      </Box>
-                    </Flex>
+                        </Stack>
+                      </Flex>
+                      {(isMobile && index < array.length - 1) && <hr />}
+                    </React.Fragment>
                   ))}
               </SimpleGrid>
             </Box>
@@ -144,7 +154,7 @@ function PlaceCatalog(props: InferGetServerSidePropsType<typeof getServerSidePro
       <BasketBar onClick={basketDrawer.onOpen} />
       <BasketDrawer logo={place!.logo} isOpen={basketDrawer.isOpen} onClose={basketDrawer.onClose} />
 
-    </Layout>
+    </Layout >
   )
 }
 

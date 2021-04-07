@@ -1,10 +1,10 @@
 import * as React from 'react'
+import useTranslation from 'next-translate/useTranslation'
 import { useRouter } from 'next/router'
 import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
-import useTranslation from 'next-translate/useTranslation'
 import { useDocument } from '@nandorojo/swr-firestore'
 
-import { Flex, Box, Heading, Button, Spacer, Text, useToast } from '@chakra-ui/react'
+import { Flex, Box, Heading, Button, Spacer, useToast } from '@chakra-ui/react'
 import { FaSave } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
@@ -36,25 +36,43 @@ function PlaceOpeningHours() {
     }
   }, [place])
 
+  function hasValidFormat(time: string) {
+    // HH:mm format - "00:00" to "23:59"
+    return /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(time);
+  }
+
+  function isSorted(timeA: string, timeB: string) {
+    // eg: "11:00" < "12:00"
+    return timeA.localeCompare(timeB) === -1
+  }
+
+  function isValidSchedule(schedule: string[]) {
+    // an empty schedule is always valid
+    if (schedule.length === 0) return true
+    // a schedule must have 2-tuples
+    if (schedule.length % 2 !== 0) return false
+
+    // a schedule must be ordered
+    return schedule.every((time, index, array) => {
+      // last time returns true
+      if (index === array.length - 1) return true
+      // must be valid format and lower than next time
+      else return hasValidFormat(time) && isSorted(time, array[index + 1])
+    });
+  }
+
   function saveChanges() {
     try {
+      // scan all methods / days / schedules
       Object.entries(opening).forEach(([method, days]) => {
-        Object.entries(days).forEach(([day, slots]) => {
-          if (slots.length % 2 !== 0) throw new Error(`Uneven entries for: ${t(method)} / ${t(day)}`)
-          const success = slots.every((slot, index, array) => {
-            if (index === array.length - 1) return true
-            else if (
-              index + 1 <= array.length - 1 &&
-              slot < array[index + 1] &&
-              slot.length === 4 &&
-              array[index + 1].length === 4
-            ) return true
-            else return false
-          })
-          if (!success) throw new Error(`Wrong format and/or order for: ${t(method)} / ${t(day)}`)
+        Object.entries(days).forEach(([day, schedule]) => {
+          const isValid = isValidSchedule(schedule)
+          if (!isValid)
+            throw new Error(`Merci de revoir l'horaire pour le jour "${t(day)}" (${t(method)})`)
         })
       })
 
+      // if no error thrown, save the changes
       update({ opening, methods })!
         .then(() => toast({
           description: t('admin:changes-saved'),
@@ -71,7 +89,8 @@ function PlaceOpeningHours() {
 
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: t('opening-hours') }}
     >
       <Flex>

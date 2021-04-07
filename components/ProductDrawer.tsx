@@ -21,12 +21,14 @@ import {
   FormControl,
   FormLabel,
   Input,
-  useDisclosure,
   HStack,
   VStack,
   Icon,
   Text,
-  Center
+  Center,
+  useDisclosure,
+  useBreakpointValue,
+  DrawerProps
 } from '@chakra-ui/react'
 import { FaPlus, FaMinus, FaRegSquare, FaCheckSquare, FaRegCircle, FaCheckCircle } from 'react-icons/fa'
 
@@ -52,6 +54,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
   const alert = useDisclosure()
   const router = useRouter()
   const placeId = router.query.placeId as string
+  const placement = useBreakpointValue({ base: "bottom", sm: "right" })
   const { height } = useWindowSize()
   const [quantity, setQuantity] = React.useState<number>(1)
   const [modifiers, setModifiers] = React.useState<Options>({})
@@ -65,7 +68,6 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
     setModifiers(produce(draft => {
       draft[id] = options
     }))
-    // setModifiers((prev) => ({ ...prev, [id]: options }))
   }
 
   React.useEffect(() => console.log(modifiers), [modifiers])
@@ -79,8 +81,10 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
     setQuantity(quantity + 1)
   }
 
-  function dismiss() {
+  function close() {
     setQuantity(1)
+    setModifiers({})
+    setComment("")
     onClose()
   }
 
@@ -127,9 +131,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
 
       basket.addItem(item)
 
-      setQuantity(1)
-      setModifiers({})
-      onClose()
+      close()
       alert.onClose()
     }
   }
@@ -138,7 +140,7 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
     return null
   } else {
     return (
-      <Drawer placement="bottom" onClose={dismiss} isOpen={isOpen} scrollBehavior="outside">
+      <Drawer placement={placement as DrawerProps["placement"]} onClose={close} isOpen={isOpen} scrollBehavior="outside">
         <DrawerOverlay>
           <DrawerContent maxH={height}>
             {product.imageUrl &&
@@ -186,8 +188,8 @@ export default function ProductDrawer({ product, isOpen, onClose }: ProductDrawe
               </VStack>
 
               <AlertDialog
-                header="You can't order items from different places"
-                body="If you decide to continue, your basket will be reset before adding this new item."
+                header="Votre panier va être vidé !"
+                body="Votre panier contient des articles provenant d'un autre commerce, et doit donc être vidé pour rajouter cet article."
                 isOpen={alert.isOpen}
                 onCancel={alert.onClose}
                 onConfirm={addToBasket}

@@ -35,8 +35,6 @@ export default function Timetable({ method, opening, setOpening }: TimetableProp
   }
 
   const updateTimeValue = (method: string, day: string, index: number) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.value.match(/^[0-9]{0,4}$/g)) return
-
     setOpening(produce(draft => {
       draft[method][day][index] = event.target.value
     }))

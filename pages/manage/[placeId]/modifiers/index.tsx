@@ -9,7 +9,8 @@ import Modifiers from '@/components/manage/Modifiers'
 function ModifiersIndex() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Options" }}
     >
       <Modifiers />

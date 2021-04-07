@@ -1,8 +1,11 @@
 import * as React from "react"
 import dayjs from "dayjs"
 import useTranslation from "next-translate/useTranslation"
-import { useRouter } from 'next/router'
-import { fuego, useCollection } from '@nandorojo/swr-firestore'
+import useSound from "use-sound"
+import { useRouter } from "next/router"
+import { fuego, useCollection } from "@nandorojo/swr-firestore"
+
+import notification from "../../public/static/notification.mp3"
 
 import {
   Flex,
@@ -28,17 +31,17 @@ import {
   ModalCloseButton,
   useToast,
   useDisclosure
-} from '@chakra-ui/react'
-import { FaInfoCircle, FaWalking, FaBicycle, FaUtensils, FaBan, FaComment, FaCommentSlash } from 'react-icons/fa'
+} from "@chakra-ui/react"
+import { FaInfoCircle, FaWalking, FaBicycle, FaUtensils, FaBan, FaComment, FaCommentSlash } from "react-icons/fa"
 
-import firebase from '@/lib/firebase/client'
-import { VALID, ACCEPTED, REJECTED, PLANNED, ONGOING, READY, COMPLETED } from '@/helpers/constants'
+import firebase from "@/lib/firebase/client"
+import { VALID, ACCEPTED, REJECTED, PLANNED, ONGOING, READY, COMPLETED } from "@/helpers/constants"
 
-import OrdersNavigation from './OrdersNavigation'
-import Button from '@/components/atoms/Button'
+import OrdersNavigation from "./OrdersNavigation"
+import Button from "@/components/atoms/Button"
 
-import type { WithID } from '@/types/catalog'
-import type { Order, OrderClient } from '@/types/order'
+import type { WithID } from "@/types/catalog"
+import type { Order, OrderClient } from "@/types/order"
 
 type OrdersProps = {
 }
@@ -46,18 +49,30 @@ type OrdersProps = {
 export default function Orders(props: OrdersProps) {
   const router = useRouter()
   const placeId = router.query.placeId
+  const soundInterval = React.useRef<any>(null)
   const [tabIndex, setTabIndex] = React.useState(0)
   const [orders, setOrders] = React.useState<WithID<Order>[]>([])
+  const [playNotification] = useSound(notification, { volume: 0.5 })
 
   const sixAM = dayjs().hour() < 6
-    ? dayjs().startOf('day').subtract(1, 'day').add(6, 'hour') // yesterday @6am
-    : dayjs().startOf('day').add(6, 'hour') // today @6am
+    ? dayjs().startOf("day").subtract(1, "day").add(6, "hour") // yesterday @6am
+    : dayjs().startOf("day").add(6, "hour") // today @6am
 
   const pending = React.useMemo(() => orders.filter(o => o.orderStatus === VALID), [orders])
   const planned = React.useMemo(() => orders.filter(o => o.orderStatus === PLANNED), [orders])
   const ongoing = React.useMemo(() => orders.filter(o => o.orderStatus === ONGOING), [orders])
   const ready = React.useMemo(() => orders.filter(o => o.orderStatus === READY), [orders])
   const history = React.useMemo(() => orders.filter(o => ![VALID, PLANNED, ONGOING, READY].includes(o.orderStatus)), [orders])
+
+  React.useEffect(() => {
+    if (pending.length > 0 && soundInterval.current === null) {
+      playNotification()
+      soundInterval.current = setInterval(playNotification, 15 * 1000)
+    } else if (pending.length === 0) {
+      clearInterval(soundInterval.current)
+      soundInterval.current = null
+    }
+  }, [pending])
 
   React.useEffect(() => {
     firebase.firestore().collection("orders")

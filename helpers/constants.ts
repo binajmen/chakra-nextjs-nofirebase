@@ -1,3 +1,11 @@
+// cuisines
+export const CUISINES = [
+  "breakfast",
+  "french",
+  "indian",
+  "lebanese"
+]
+
 // product tags
 export const TAGS = [
   "bio",
@@ -16,9 +24,12 @@ export const DAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]
 export const FULLDAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
 
 // methods
+export const ONSITE = "onsite"
 export const COLLECT = "collect"
 export const DELIVERY = "delivery"
-export const METHODS = [COLLECT, DELIVERY]
+export const GEOLOCATION = "geolocation"
+export const METHODS = [ONSITE, COLLECT, DELIVERY]
+// export const METHODS = [ONSITE, COLLECT, DELIVERY, GEOLOCATION]
 
 // payment status
 export const PAID = "paid"

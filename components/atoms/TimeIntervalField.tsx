@@ -9,38 +9,37 @@ import {
   Select
 } from '@chakra-ui/react'
 
-import { createTimeInterval } from '@/helpers/hours'
+import { generateIntervals } from '@/helpers/datetime'
 
 type TimeIntervalFieldProps = FieldInputProps<string> & {
   id: string
-  openingHours: { [index: string]: string[] }
+  date: string
+  schedule: { [index: string]: string[] }
   interval: number
-  dateValue: string
-  resetValue: (value: string) => void
+  setValue: (value: string) => void
 }
 
 export default function TimeIntervalField({
-  openingHours, // = ["08:00", "13:00", "14:00", "15:00"]
+  date,
+  schedule, // = ["08:00", "13:00", "14:00", "15:00"]
   interval,
-  dateValue,
-  resetValue,
+  setValue,
   ...restProps
 }: TimeIntervalFieldProps) {
-  const isToday = dayjs().isSame(dateValue, 'day')
-  const dayOfWeek = dayjs(dateValue, "YYYY-MM-DD").format("ddd").toLowerCase()
-
   const intervals = React.useMemo(() => {
-    return createTimeInterval(openingHours[dayOfWeek], interval, isToday)
-  }, [openingHours, dayOfWeek, interval, isToday])
+    const day = dayjs(date, "YYYY-MM-DD").format("ddd").toLowerCase()
+    return generateIntervals(date, schedule[day], interval)
+  }, [date, schedule, interval])
 
   React.useEffect(() => {
-    resetValue(intervals.length > 0 ? intervals[0] : "––:––")
+    if (!restProps.value)
+      setValue(intervals.length > 0 ? intervals[0] : "––:––")
   }, [intervals])
 
   return (
     <Select {...restProps}>
-      {intervals.map((interval, index) =>
-        <option key={index} value={interval}>{interval}</option>
+      {intervals.map(interval =>
+        <option key={interval} value={interval}>{interval}</option>
       )}
     </Select>
   )

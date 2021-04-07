@@ -44,7 +44,7 @@ type BasketDrawerProps = {
 export default function BasketDrawer({ logo, isOpen, onClose }: BasketDrawerProps) {
   const { t } = useTranslation('common')
 
-  const method = useStoreState(state => state.basket.method)
+  const method = useStoreState(state => state.order.method)
   const items = useStoreState(state => state.basket.items)
   const size = useStoreState(state => state.basket.size)
   const total = useStoreState(state => state.basket.total)

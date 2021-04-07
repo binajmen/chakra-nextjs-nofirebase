@@ -44,7 +44,7 @@ function CheckoutPayment() {
 
   return (
     <Layout
-      layout="checkout"
+      subHeader="hide"
       metadata={{ title: "Myresto.brussels" }}
     >
       <PaymentMethods methods={methods} />

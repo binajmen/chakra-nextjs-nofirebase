@@ -9,7 +9,8 @@ import Events from '@/components/manage/Events'
 function EventsIndex() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <Events />

@@ -12,7 +12,7 @@ export type Catalog = {
   categories: string[]
 }
 
-export type Method = "now" | "collect" | "delivery"
+export type Method = "onsite" | "collect" | "delivery"
 
 /**
  * Category

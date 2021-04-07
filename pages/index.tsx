@@ -35,7 +35,7 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { data: places, error } = useCollection<Place>('places', {}, { initialData: props.places })
 
   return (
-    <Layout layout="default">
+    <Layout subHeader="filters">
       <PlacesList
         places={places}
         buttonRender={(id) => (

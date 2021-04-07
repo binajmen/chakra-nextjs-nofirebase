@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import useTranslation from 'next-translate/useTranslation'
 
 import { Divider, VStack } from '@chakra-ui/react'
-import { FaBuilding, FaCog, FaClock, FaBookOpen, FaFolderOpen, FaBoxes, FaRegCalendarCheck, FaTasks, FaArrowLeft } from 'react-icons/fa'
+import { FaBuilding, FaCog, FaClock, FaBookOpen, FaFolderOpen, FaBoxes, FaRegCalendarCheck, FaTasks, FaArrowLeft, FaReceipt } from 'react-icons/fa'
 
 import ButtonLink from '@/components/atoms/NextButton'
 
@@ -16,6 +16,7 @@ const items = [
   { label: "products", pathname: "/manage/[placeId]/products", icon: <FaBoxes /> },
   { label: "events", pathname: "/manage/[placeId]/events", icon: <FaRegCalendarCheck /> },
   { label: "modifiers", pathname: "/manage/[placeId]/modifiers", icon: <FaTasks /> },
+  { label: "orders", pathname: "/manage/[placeId]/orders", icon: <FaReceipt /> },
 ]
 
 export default function Menu() {

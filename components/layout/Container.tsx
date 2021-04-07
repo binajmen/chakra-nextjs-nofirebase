@@ -4,7 +4,11 @@ export default function Container(props: React.PropsWithChildren<BoxProps>) {
   const { children, ...boxProps } = props
 
   return (
-    <Box {...boxProps} mx="auto" w={{ base: 'full', xl: "80em" }}>
+    <Box
+      {...boxProps}
+      mx="auto"
+      w={{ base: 'full', "2xl": "96em" }}
+    >
       {children}
     </Box>
   )

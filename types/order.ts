@@ -1,7 +1,8 @@
 import firebase from '@/lib/firebase/client'
 
 import type { Address } from './customer'
-export type Method = "now" | "collect" | "delivery" | null
+
+export type Method = "onsite" | "collect" | "delivery" | "geolocation" | string
 
 type Option = {
   id: string

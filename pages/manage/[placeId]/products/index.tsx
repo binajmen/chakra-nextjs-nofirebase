@@ -9,7 +9,8 @@ import Products from '@/components/manage/Products'
 function CatalogsIndex() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <Products />

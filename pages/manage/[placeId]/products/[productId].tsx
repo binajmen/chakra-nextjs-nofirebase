@@ -15,7 +15,8 @@ import type { Product } from '@/types/catalog'
 function ProductEdit() {
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <Content />

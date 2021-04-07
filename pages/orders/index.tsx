@@ -7,7 +7,7 @@ import Orders from '@/components/Orders'
 function OrdersIndex() {
   return (
     <Layout
-      layout="default"
+      subHeader="hide"
       metadata={{ title: "Vos commandes" }}
     >
       <Orders />

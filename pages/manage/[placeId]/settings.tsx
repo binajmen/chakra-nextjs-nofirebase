@@ -21,7 +21,8 @@ function SettingsIndex() {
 
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Vos commandes" }}
     >
       <SettingsMollie placeId={placeId} />

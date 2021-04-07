@@ -9,7 +9,8 @@ import { useDocument } from '@nandorojo/swr-firestore'
 import {
   Box,
   Text,
-  VStack,
+  Center,
+  Stack,
   FormControl,
   FormLabel,
   FormErrorMessage,
@@ -29,6 +30,7 @@ import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
 import type { Place } from '@/types/place'
+import dayjs from 'functions/node_modules/dayjs'
 
 function CheckoutCollect() {
   const { t } = useTranslation('checkout')
@@ -42,6 +44,9 @@ function CheckoutCollect() {
   const name = useStoreState(state => state.user.firstName)
   const email = useStoreState(state => state.user.email)
   const phone = useStoreState(state => state.user.phone)
+
+  const date = useStoreState(state => state.order.date)
+  const time = useStoreState(state => state.order.time)
 
   const isRehydrated = useStoreRehydrated()
 
@@ -60,14 +65,24 @@ function CheckoutCollect() {
       <Text>place.loading: {JSON.stringify(place.loading)}</Text>
     </div>
   } else if (place.error) {
-    return <Text>Error while loading place opening hours</Text>
+    return <div>
+      <Progress size="xs" isIndeterminate />
+      <Text>isRehydrated: {JSON.stringify(isRehydrated)}</Text>
+      <Text>userId: {JSON.stringify(userId)}</Text>
+      <Text>placeId: {JSON.stringify(placeId)}</Text>
+      <Text>place.loading: {JSON.stringify(place.loading)}</Text>
+      <Text>place.loading: {JSON.stringify(place)}</Text>
+    </div>
   } else if (place.data) {
+    console.log(place.data)
+    console.log(dayjs(date, "YYYY-MM-DD").format("ddd").toLowerCase())
     return (
       <Layout
-        layout="checkout"
+        subHeader="hide"
         metadata={{ title: "Myresto.brussels" }}
       >
-        <Box w={["full", "sm"]} mx="auto">
+        <Box w={["full", "md"]} mx="auto" p="2">
+          <Center><Heading my="6">{t('common:collect')}</Heading></Center>
           <Formik
             initialValues={{
               name: name,
@@ -75,8 +90,8 @@ function CheckoutCollect() {
               phone: phone,
               comment: "",
               utensils: false,
-              date: "",
-              time: ""
+              date: date,
+              time: time
               // date: dayjs().format("YYYY-MM-DD"),
               // time: nextInterval(15).format("HH:mm")
             }}
@@ -114,12 +129,11 @@ function CheckoutCollect() {
           >
             {(props) => (
               <Form>
-                <VStack spacing="5">
-                  <Heading>{t('common:collect')}</Heading>
+                <Stack direction="column" spacing="6">
                   <Text>
                     {t('personal-info')}
                   </Text>
-                  <VStack>
+                  <Stack direction="column" spacing="6">
                     <Field name="name">
                       {({ field, form, meta }: FieldProps) => (
                         <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
@@ -174,7 +188,9 @@ function CheckoutCollect() {
                           <DateField
                             {...field}
                             id="date"
-                            openingHours={place.data!.opening["collect"]}
+                            date={field.value}
+                            schedule={place.data!.opening["collect"]}
+                            interval={15}
                             setValue={(value) => form.setFieldValue("date", value)}
                           />
                           <FormErrorMessage>{form.errors.date}</FormErrorMessage>
@@ -188,20 +204,20 @@ function CheckoutCollect() {
                           <TimeIntervalField
                             {...field}
                             id="time"
-                            openingHours={place.data!.opening["collect"]}
+                            date={props.values.date}
+                            schedule={place.data!.opening["collect"]}
                             interval={15}
-                            dateValue={props.values.date}
-                            resetValue={(value) => form.setFieldValue("time", value)}
+                            setValue={(value) => form.setFieldValue("time", value)}
                           />
                           <FormErrorMessage>{form.errors.time}</FormErrorMessage>
                         </FormControl>
                       )}
                     </Field>
-                  </VStack>
+                  </Stack>
                   <Button onClick={props.submitForm}>
                     {t('go-to-payment')}
                   </Button>
-                </VStack>
+                </Stack>
               </Form>
             )}
           </Formik>

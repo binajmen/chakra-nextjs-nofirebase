@@ -15,7 +15,8 @@ function EventNew() {
 
   return (
     <Layout
-      layout="manage"
+      layout="manager"
+      subHeader="hide"
       metadata={{ title: "Methods" }}
     >
       <EventForm

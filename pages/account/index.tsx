@@ -1,3 +1,4 @@
+import { useRouter } from "next/router"
 import {
   AuthAction,
   useAuthUser,
@@ -7,27 +8,27 @@ import {
 
 import Layout from '@/components/layout/Layout'
 
-import AccountAuthed from '@/components/AccountAuthed'
-import AccountUnauthed from '@/components/AccountUnauthed'
-
+import AccountAuthed from '@/components/account/Account'
 
 function UserIndex() {
   const authUser = useAuthUser()
+  const router = useRouter()
+
+  console.log(router)
 
   return (
     <Layout
-      layout="default"
+      subHeader="hide"
       metadata={{ title: "Votre compte" }}
     >
-      {authUser.id ? (
-        <AccountAuthed />
-      ) : (
-        <AccountUnauthed />
-      )}
+      <AccountAuthed />
     </Layout>
   )
 }
 
-export default withAuthUser()(UserIndex)
+export default withAuthUser({
+  // whenUnauthedBeforeInit: AuthAction.REDIRECT_TO_LOGIN,
+  whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
+})(UserIndex)
 
 export function getStaticProps() { return { props: {} } }
