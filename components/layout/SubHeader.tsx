@@ -32,10 +32,11 @@ import useWindowSize from "@/hooks/useWindowSize"
 import TagsField from "@/components/atoms/TagsField"
 import AlertDialog from "@/components/molecules/AlertDialog"
 import DateTimeDrawer from "@/components/shared/DateTimeDrawer"
+import AddressDrawer from "@/components/shared/AddressDrawer"
 import { useStoreState, useStoreActions } from "@/store/hooks"
 import { METHODS, ONSITE, COLLECT, CUISINES, TAGS } from "@/helpers/constants"
 
-import DateTimeForm from "../shared/DateTimeDrawer"
+import DateTimeForm from "../shared/AddressDrawer"
 
 export type SubHeaderFormat = "filters" | "datetime" | "hide"
 
@@ -257,6 +258,7 @@ function MethodDetails() {
   const changeAddress = useDisclosure()
 
   const currentMethod = useStoreState(state => state.order.method)
+  const currentAddress = useStoreState(state => state.user.currentAddress)
 
   return (
     <React.Fragment>
@@ -282,21 +284,22 @@ function MethodDetails() {
               {currentMethod === ONSITE && <Text>{t("always-now")}</Text>}
               {currentMethod !== ONSITE &&
                 <Stack direction="column" spacing="6">
-                  <Flex justify="space-between" alignItems="center">
+                  <Flex justify="space-between" alignItems="center" onClick={changeDateTime.onOpen}>
                     <Stack direction="row" alignItems="center" spacing="3">
                       <Icon as={FaClock} boxSize={5} />
                       <HumanReadableDateTime />
                     </Stack>
-                    <IconButton aria-label="change" icon={<FaEdit />} onClick={changeDateTime.onOpen} />
+                    <IconButton aria-label="change" icon={<FaEdit />} />
                     <DateTimeDrawer isOpen={changeDateTime.isOpen} onClose={changeDateTime.onClose} />
                   </Flex>
 
-                  <Flex justify="space-between" alignItems="center">
+                  <Flex justify="space-between" alignItems="center" onClick={changeAddress.onOpen}>
                     <Stack direction="row" alignItems="center" spacing="3">
                       <Icon as={FaMapMarkerAlt} boxSize={5} />
-                      <Text>Rue des Faines 25, 1000 Bruxelles</Text>
+                      <Text pr="1">{currentAddress ? currentAddress.address : "–"}</Text>
                     </Stack>
-                    <IconButton aria-label="change" icon={<FaEdit />}></IconButton>
+                    <IconButton aria-label="change" icon={<FaEdit />} />
+                    <AddressDrawer isOpen={changeAddress.isOpen} onClose={changeAddress.onClose} />
                   </Flex>
                 </Stack>
               }

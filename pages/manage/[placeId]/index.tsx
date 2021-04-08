@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useRouter } from 'next/router'
-import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { AuthAction, withAuthUser, withAuthUserTokenSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
 import {
@@ -12,6 +12,7 @@ import admin from '@/lib/firebase/admin'
 import firebase from '@/lib/firebase/client'
 
 import Layout from '@/components/layout/Layout'
+import { toReadableClaims } from "@/hooks/useAuthClaims"
 
 function PlaceIndex() {
   const [data, setData] = React.useState<any>({})
@@ -44,25 +45,20 @@ export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(PlaceIndex)
 
-// https://github.com/vinissimus/next-translate/issues/487
-export const getServerSideProps = withAuthUserSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
   try {
-    // retrieve place id
-    const { place } = query
+    const token = await AuthUser.getIdToken()
+    const decodedToken = await admin.auth().verifyIdToken(token ?? '')
+    const claims = toReadableClaims(decodedToken)
 
-    // retrieve roles for the current user
-    const doc = await admin.firestore()
-      .collection('roles')
-      .doc(AuthUser.id!)
-      .get()
-
-    // if no roles or no roles for the requested place, 404
-    if (!doc.exists || !doc.data()?.places.includes(place)) return { notFound: true }
-
-    // else
-    return { props: {} }
+    console.log(claims)
+    if (claims.manager && claims.managerOf.includes(query.placeId as string)) {
+      return { props: {} }
+    } else {
+      return { notFound: true }
+    }
   } catch (error) {
     console.error(error)
     return { notFound: true }

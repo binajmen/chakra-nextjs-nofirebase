@@ -62,10 +62,10 @@ function OrderDetails() {
   return (
     <Layout
       subHeader="hide"
-      metadata={{ title: "Votre commande" }}
+      metadata={{ title: `Votre commande #${order!.id}` }}
+      title="Votre commande"
     >
       <Stack direction="column">
-        <Center mb="5"><Heading size="md">Votre commande</Heading></Center>
         <Center mb="5"><OrderId size="xl" expSize="md" id={order!.id} expandable={false} /></Center>
         <Stack direction="column" maxW="lg" py="2" mb="4">
           <Flex justify="space-around">

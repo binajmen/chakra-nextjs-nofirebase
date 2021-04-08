@@ -21,7 +21,7 @@ export default function Footer() {
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   return (
-    <Box as="footer" mt={16} bg="white">
+    <Box as="footer" mt={16} color="white" bg="black">
       <Container p={6}>
         <Flex w="full" direction={['column', 'column', 'row']}>
           <VStack align="flex-start"
@@ -29,7 +29,7 @@ export default function Footer() {
             mb={{ base: '6', md: '0' }}
             mr={{ base: '0', md: '6' }}
           >
-            <Image boxSize="75px" objectFit="contain" src="/logo.svg" alt="Myresto.brussels" />
+            <Image boxSize="75px" objectFit="contain" src="/myresto_white.svg" alt="Myresto.brussels" />
             <Text fontSize="sm">
               Plateforme de commandes reposant sur un modèle équitable pous tous.
                         </Text>

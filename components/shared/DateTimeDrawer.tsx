@@ -38,7 +38,7 @@ type DrawerProps = {
   onClose: () => void
 }
 
-export default function DateTimeForm({ isOpen, onClose }: DrawerProps) {
+export default function DateTimeDrawer({ isOpen, onClose }: DrawerProps) {
   const { t } = useTranslation("common")
   const { height } = useWindowSize()
   const isRehydrated = useStoreRehydrated()

@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { AuthAction, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { AuthAction, withAuthUser, withAuthUserSSR, withAuthUserTokenSSR } from 'next-firebase-auth'
 import { resetServerContext } from 'react-beautiful-dnd'
 import { useRouter } from 'next/router'
 import { useDocument } from '@nandorojo/swr-firestore'
@@ -11,6 +11,7 @@ import ProductForm from '@/components/manage/ProductForm'
 import { Loading, Error } from '@/components/Suspense'
 
 import type { Product } from '@/types/catalog'
+import { toReadableClaims } from '@/hooks/useAuthClaims'
 
 function ProductEdit() {
   return (
@@ -53,25 +54,19 @@ export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(ProductEdit)
 
-export const getServerSideProps = withAuthUserSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ query, AuthUser }) => {
-  resetServerContext()
   try {
-    // retrieve place id
-    const { placeId } = query
+    const token = await AuthUser.getIdToken()
+    const decodedToken = await admin.auth().verifyIdToken(token ?? '')
+    const claims = toReadableClaims(decodedToken)
 
-    // retrieve roles for the current user
-    const doc = await admin.firestore()
-      .collection('roles')
-      .doc(AuthUser.id!)
-      .get()
-
-    // if no roles or no roles for the requested place, 404
-    if (!doc.exists || !doc.data()!.places?.includes(placeId)) return { notFound: true }
-
-    // else
-    return { props: {} }
+    if (claims.manager && claims.managerOf.includes(query.placeId as string)) {
+      return { props: {} }
+    } else {
+      return { notFound: true }
+    }
   } catch (error) {
     console.error(error)
     return { notFound: true }

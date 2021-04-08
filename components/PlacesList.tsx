@@ -41,9 +41,9 @@ export type PlaceCardProps = {
 }
 
 function PlaceCard({ place, buttonRender }: PlaceCardProps) {
-  const method = useStoreState(state => state.basket.method)
+  const currentMethod = useStoreState(state => state.order.method)
 
-  const href = `/place/${place.id}${method ? `/${method}` : ""}`
+  const href = `/place/${place.id}${currentMethod ? `/${currentMethod}` : ""}`
 
   return (
     <LinkBox>
@@ -64,8 +64,8 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
             >
               <NextLink
                 href={{
-                  pathname: `/place/[placeId]${method ? "/[catalogId]" : ""}`,
-                  query: { placeId: place.id, catalogId: method as string }
+                  pathname: `/place/[placeId]${currentMethod ? "/[catalogId]" : ""}`,
+                  query: { placeId: place.id, catalogId: currentMethod as string }
                 }}
                 passHref>
                 <LinkOverlay>

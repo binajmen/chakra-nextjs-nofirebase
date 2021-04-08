@@ -1,4 +1,4 @@
-import { Action, action, Thunk, thunk } from 'easy-peasy'
+import { Action, action, Computed, computed, Thunk, thunk } from 'easy-peasy'
 import { nanoid } from 'nanoid'
 
 import firebase from '@/lib/firebase/client'
@@ -12,6 +12,7 @@ type State = {
   email: string
   phone: string
   addresses: Address[]
+  addrIndex: number
 }
 
 const state: State = {
@@ -20,26 +21,36 @@ const state: State = {
   lastName: "",
   email: "",
   phone: "",
-  addresses: []
+  addresses: [],
+  addrIndex: -1
 }
 
 type Model = State & {
+  currentAddress: Computed<Model, Address | null>
+
   setId: Action<Model, string>
   setFirstName: Action<Model, string>
   setLastName: Action<Model, string>
   setEmail: Action<Model, string>
   setPhone: Action<Model, string>
   setAddresses: Action<Model, Address[]>
+  setAddrIndex: Action<Model, number>
 
   clearState: Action<Model>
 
   onUser: Thunk<Model>
-  // getUser: Thunk<Model>
-  getUser: Action<Model>
+  getUser: Thunk<Model>
 }
 
 const model: Model = {
   ...state,
+
+  currentAddress: computed(state => {
+    if (state.addresses.length === 0) return null
+
+    const index = state.addrIndex !== -1 ? state.addrIndex : 0
+    return state.addresses[index]
+  }),
 
   setId: action((state, value) => { state.id = value }),
   setFirstName: action((state, value) => { state.firstName = value }),
@@ -47,6 +58,7 @@ const model: Model = {
   setEmail: action((state, value) => { state.email = value }),
   setPhone: action((state, value) => { state.phone = value }),
   setAddresses: action((state, value) => { state.addresses = value }),
+  setAddrIndex: action((state, value) => { state.addrIndex = value }),
 
   clearState: action((state) => {
     state.id = ""
@@ -86,20 +98,9 @@ const model: Model = {
     return unsubscribe
   }),
 
-  // getUser: thunk((_actions, _payload, helpers) => {
-  //   const { getState } = helpers
+  getUser: thunk((_actions, _payload, { getState }) => {
+    const state = getState()
 
-  //   return {
-  //     id: getState().id,
-  //     firstName: getState().firstName,
-  //     lastName: getState().lastName,
-  //     email: getState().email,
-  //     phone: getState().phone,
-  //     addresses: getState().addresses,
-  //   }
-  // }),
-
-  getUser: action((state) => {
     return {
       id: state.id,
       firstName: state.firstName,
@@ -107,6 +108,7 @@ const model: Model = {
       email: state.email,
       phone: state.phone,
       addresses: state.addresses,
+      addrIndex: state.addrIndex
     }
   }),
 }

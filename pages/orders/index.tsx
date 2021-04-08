@@ -9,6 +9,7 @@ function OrdersIndex() {
     <Layout
       subHeader="hide"
       metadata={{ title: "Vos commandes" }}
+      title="Vos commandes"
     >
       <Orders />
     </Layout>

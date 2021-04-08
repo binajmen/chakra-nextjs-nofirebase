@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
 import {
@@ -10,6 +10,7 @@ import {
 import admin from '@/lib/firebase/admin'
 import Layout from '@/components/layout/Layout'
 import SettingsMollie from '@/components/manage/SettingsMollie'
+import { toReadableClaims } from '@/hooks/useAuthClaims'
 
 // TODO:
 // Payment (mollie)
@@ -35,5 +36,21 @@ export default withAuthUser({
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(SettingsIndex)
 
-// https://github.com/vinissimus/next-translate/issues/487
-export function getServerSideProps() { return { props: {} }; }
+export const getServerSideProps = withAuthUserTokenSSR({
+  whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
+})(async ({ query, AuthUser }) => {
+  try {
+    const token = await AuthUser.getIdToken()
+    const decodedToken = await admin.auth().verifyIdToken(token ?? '')
+    const claims = toReadableClaims(decodedToken)
+
+    if (claims.manager && claims.managerOf.includes(query.placeId as string)) {
+      return { props: {} }
+    } else {
+      return { notFound: true }
+    }
+  } catch (error) {
+    console.error(error)
+    return { notFound: true }
+  }
+})

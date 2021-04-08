@@ -1,6 +1,6 @@
 import * as React from "react"
 
-import { Flex, Box } from "@chakra-ui/react"
+import { Flex, Box, Center, Heading } from "@chakra-ui/react"
 
 import Head, { MetadataProps } from "./Head"
 import Container from "./Container"
@@ -18,6 +18,7 @@ type LayoutProps = {
   metadata?: MetadataProps
   padding?: boolean
   layout?: "normal" | "manager" | "admin"
+  title?: string
 }
 
 export default function Layout({
@@ -26,6 +27,7 @@ export default function Layout({
   metadata = {},
   padding = true,
   layout = "normal",
+  title = "",
 }: LayoutProps & { metadata?: MetadataProps }) {
 
   function renderLayout() {
@@ -49,6 +51,7 @@ export default function Layout({
       <Container>
         <Header />
         <SubHeader subHeader={subHeader} />
+        {title && <Center><Heading my="6">{title}</Heading></Center>}
         {renderLayout()}
       </Container>
       <Footer />

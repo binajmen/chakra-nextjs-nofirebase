@@ -175,3 +175,11 @@ export const onAuthCreateUser =
     .auth.user().onCreate(async (event: firebase.auth.UserRecord) => {
       await (await import("./onAuthCreateUser")).onAuthCreateUser(event)
     })
+
+export const mirrorCustomClaims =
+  functions
+    .region("europe-west1")
+    .firestore.document("credentials/{userId}")
+    .onWrite(async (change, context) => {
+      await (await import("./user/mirrorCustomClaims")).mirrorCustomClaims(change, context)
+    })

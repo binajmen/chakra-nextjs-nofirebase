@@ -98,7 +98,6 @@ export default function Orders() {
   else {
     return (
       <React.Fragment>
-        <Center><Heading size="lg" mb="6">Vos commandes</Heading></Center>
         {orders?.map(order => (
           <Box p="3" key={order.id}>
             <Flex onClick={() => showDetails(details === order.id ? "" : order.id)}>

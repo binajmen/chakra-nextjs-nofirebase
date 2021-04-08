@@ -12,7 +12,7 @@ export default function Logo() {
     <LinkBox>
       <LinkOverlay href="/">
         <Box position="relative" height="50px" width="120px">
-          <Image src="/logo.svg" alt="Myresto.brussels" layout="fill" objectFit="contain" />
+          <Image src="/myresto.svg" alt="Myresto.brussels" layout="fill" objectFit="contain" />
         </Box>
       </LinkOverlay>
     </LinkBox>

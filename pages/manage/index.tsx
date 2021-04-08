@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next'
-import { AuthAction, useAuthUser, withAuthUser, withAuthUserSSR } from 'next-firebase-auth'
+import { AuthAction, useAuthUser, withAuthUser, withAuthUserTokenSSR } from 'next-firebase-auth'
 import useTranslation from 'next-translate/useTranslation'
 
 import {
@@ -11,9 +11,9 @@ import { FaArrowRight } from 'react-icons/fa'
 
 import admin from '@/lib/firebase/admin'
 import Layout from '@/components/layout/Layout'
-
 import PlacesList from '@/components/PlacesList'
 import ButtonLink from '@/components/atoms/NextButton'
+import { toReadableClaims } from "@/hooks/useAuthClaims"
 
 function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const { places } = props
@@ -23,8 +23,8 @@ function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps
     <Layout
       subHeader="hide"
       metadata={{ title: "Vos sites" }}
+      title="Manage"
     >
-      <Heading mb={3} size="md">Vos sites :</Heading>
       <PlacesList
         places={places}
         buttonRender={(id) => (
@@ -35,7 +35,7 @@ function PlaceIndex(props: InferGetServerSidePropsType<typeof getServerSideProps
             variant="ghost"
             rightIcon={<FaArrowRight />}
             pathname="/manage/[placeId]"
-            query={{ place: id }}
+            query={{ placeId: id }}
           >{t('admin:manage')}</ButtonLink>
         )}
       />
@@ -48,36 +48,24 @@ export default withAuthUser<InferGetServerSidePropsType<typeof getServerSideProp
   whenUnauthedAfterInit: AuthAction.REDIRECT_TO_LOGIN
 })(PlaceIndex)
 
-export const getServerSideProps = withAuthUserSSR({
+export const getServerSideProps = withAuthUserTokenSSR({
   whenUnauthed: AuthAction.REDIRECT_TO_LOGIN,
 })(async ({ AuthUser }) => {
-  try {
-    // retrieve roles for the current user
-    const roleRef = admin.firestore().collection('roles').doc(AuthUser.id!)
-    const role = await roleRef.get()
+  const token = await AuthUser.getIdToken()
+  const decodedToken = await admin.auth().verifyIdToken(token ?? '')
+  const claims = toReadableClaims(decodedToken)
 
-    // if no roles, 404
-    if (!role.exists) return { notFound: true }
-
-    // extract places list
-    const placeIds = role.data()?.places ?? []
-
-    // if empty list, 404
-    if (placeIds.length === 0) return { notFound: true }
-
-    // retrieve places data
-    // TOFIX: limit to 10 when using 'in' query
-    // TOFIX: return first 10 + id list -> lazy loading at client side for the rest
+  // TOFIX: handle > 10
+  if (claims.manager && claims.managerOf.length < 10) {
     const snapshot = await admin.firestore()
       .collection('places')
-      .where(admin.firestore.FieldPath.documentId(), "in", placeIds)
+      .where(admin.firestore.FieldPath.documentId(), "in", claims.managerOf)
       .get()
 
     const places = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }))
 
     return { props: { places } }
-  } catch (error) {
-    console.error(error)
+  } else {
     return { notFound: true }
   }
 })

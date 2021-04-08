@@ -16,8 +16,6 @@ export type AdminIndexProps = {
 function AdminIndex({ admin }: AdminIndexProps) {
   const authUser = useAuthUser()
 
-  if (!admin) return null
-
   return (
     <Layout
       subHeader="hide"
@@ -39,7 +37,7 @@ export const getServerSideProps = withAuthUserTokenSSR({
   const token = await AuthUser.getIdToken()
   const decodedToken = await admin.auth().verifyIdToken(token ?? '')
 
-  if (decodedToken.admin) {
+  if (decodedToken.a) {
     return { props: {} }
   } else {
     return { notFound: true }

@@ -20,8 +20,9 @@ import {
   useBreakpointValue
 } from "@chakra-ui/react"
 
-import { FaBars, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaLocationArrow, FaHandsHelping, FaReceipt } from "react-icons/fa"
+import { FaBars, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaLocationArrow, FaStoreAlt, FaHandsHelping, FaReceipt } from "react-icons/fa"
 
+import useAuthClaims from "@/hooks/useAuthClaims"
 import useWindowSize from "@/hooks/useWindowSize"
 import NextButton from "@/components/atoms/NextButton"
 
@@ -117,16 +118,33 @@ function AccountButton() {
   const { t } = useTranslation("common")
   const user = useAuthUser()
   const isSignedIn = user.id !== null
+  const claims = useAuthClaims()
+
+  React.useEffect(() => {
+    console.log(claims)
+  }, [claims])
 
   if (isSignedIn) {
     return (
-      <NextButton
-        leftIcon={<FaUserCircle />}
-        colorScheme="primary"
-        pathname="/account"
-      >
-        {t("menu-account")}
-      </NextButton>
+      <React.Fragment>
+        <NextButton
+          leftIcon={<FaUserCircle />}
+          colorScheme="primary"
+          pathname="/account"
+        >
+          {t("menu-account")}
+        </NextButton>
+        {claims.manager &&
+          <NextButton
+            leftIcon={<FaStoreAlt />}
+            color="white"
+            colorScheme="red"
+            pathname="/manage"
+          >
+            {t("menu-manager")}
+          </NextButton>
+        }
+      </React.Fragment>
     )
   } else {
     return (
