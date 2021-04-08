@@ -2,7 +2,7 @@ import { Action, action, Thunk, thunk, Computed, computed } from 'easy-peasy'
 import { nanoid } from 'nanoid'
 
 import type { Method, BasketItem } from '@/types/order'
-import type { Address } from '@/types/customer'
+import type { Address } from '@/types/shared'
 
 type Client = {
   id: string

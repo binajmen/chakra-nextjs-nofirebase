@@ -3,7 +3,8 @@ import { nanoid } from 'nanoid'
 
 import firebase from '@/lib/firebase/client'
 
-import type { CustomerProfile, Address } from '@/types/customer'
+import type { UserProfile } from '@/types/user'
+import type { Address } from '@/types/shared'
 
 type State = {
   id: string
@@ -11,7 +12,7 @@ type State = {
   lastName: string
   email: string
   phone: string
-  addresses: Address[]
+  locations: Address[]
   addrIndex: number
 }
 
@@ -21,7 +22,7 @@ const state: State = {
   lastName: "",
   email: "",
   phone: "",
-  addresses: [],
+  locations: [],
   addrIndex: -1
 }
 
@@ -33,7 +34,7 @@ type Model = State & {
   setLastName: Action<Model, string>
   setEmail: Action<Model, string>
   setPhone: Action<Model, string>
-  setAddresses: Action<Model, Address[]>
+  setLocations: Action<Model, Address[]>
   setAddrIndex: Action<Model, number>
 
   clearState: Action<Model>
@@ -46,10 +47,10 @@ const model: Model = {
   ...state,
 
   currentAddress: computed(state => {
-    if (state.addresses.length === 0) return null
+    if (state.locations.length === 0) return null
 
     const index = state.addrIndex !== -1 ? state.addrIndex : 0
-    return state.addresses[index]
+    return state.locations[index]
   }),
 
   setId: action((state, value) => { state.id = value }),
@@ -57,7 +58,7 @@ const model: Model = {
   setLastName: action((state, value) => { state.lastName = value }),
   setEmail: action((state, value) => { state.email = value }),
   setPhone: action((state, value) => { state.phone = value }),
-  setAddresses: action((state, value) => { state.addresses = value }),
+  setLocations: action((state, value) => { state.locations = value }),
   setAddrIndex: action((state, value) => { state.addrIndex = value }),
 
   clearState: action((state) => {
@@ -66,21 +67,21 @@ const model: Model = {
     state.lastName = ""
     state.email = ""
     state.phone = ""
-    state.addresses = []
+    state.locations = []
   }),
 
   onUser: thunk((actions) => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        firebase.firestore().doc(`customers/${user.uid}`).get()
+        firebase.firestore().doc(`users/${user.uid}`).get()
           .then(doc => {
             if (doc.exists) {
-              const { firstName, lastName, email, phone, addresses } = doc.data() as CustomerProfile
+              const { firstName, lastName, email, phone, locations } = doc.data() as UserProfile
               actions.setFirstName(firstName)
               actions.setLastName(lastName)
               actions.setEmail(email)
               actions.setPhone(phone)
-              actions.setAddresses(addresses)
+              actions.setLocations(locations)
               actions.setId(user.uid)
             }
           })
@@ -107,7 +108,7 @@ const model: Model = {
       lastName: state.lastName,
       email: state.email,
       phone: state.phone,
-      addresses: state.addresses,
+      locations: state.locations,
       addrIndex: state.addrIndex
     }
   }),

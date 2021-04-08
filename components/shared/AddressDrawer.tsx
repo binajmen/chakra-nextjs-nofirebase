@@ -29,7 +29,7 @@ import LoadingOverlay from "@/components/atoms/LoadingOverlay"
 import AddressField from "@/components/atoms/AddressField"
 import useWindowSize from "@/hooks/useWindowSize"
 
-import type { Address } from "@/types/customer"
+import type { Address } from "@/types/shared"
 
 type DrawerProps = {
   isOpen: boolean
@@ -41,7 +41,7 @@ export default function AddressDrawer({ isOpen, onClose }: DrawerProps) {
   const { height } = useWindowSize()
   const isRehydrated = useStoreRehydrated()
 
-  const addresses = useStoreState(state => state.user.addresses)
+  const locations = useStoreState(state => state.user.locations)
   const addrIndex = useStoreState(state => state.user.addrIndex)
   const user = useStoreActions(actions => actions.user)
 
@@ -67,8 +67,8 @@ export default function AddressDrawer({ isOpen, onClose }: DrawerProps) {
           <DrawerBody>
             <Formik
               initialValues={{
-                addresses: addresses,
-                addrIndex: `${addrIndex > -1 ? addrIndex : addresses.length > 0 ? 0 : -1}`,
+                locations: locations,
+                addrIndex: `${addrIndex > -1 ? addrIndex : locations.length > 0 ? 0 : -1}`,
               }}
               validationSchema={Yup.object().shape({
                 addrIndex: Yup.string().required()
@@ -86,14 +86,14 @@ export default function AddressDrawer({ isOpen, onClose }: DrawerProps) {
                         <FormControl isInvalid={!!meta.error && !!meta.touched} isRequired>
                           <RadioGroup value={field.value}>
                             <Stack direction="column">
-                              {props.values.addresses.map((address, index, array) =>
+                              {props.values.locations.map((location, index, array) =>
                                 <React.Fragment key={index}>
                                   <Radio
                                     value={`${index}`}
                                     onChange={() => form.setFieldValue("addrIndex", `${index}`)}
                                   >
                                     <Box pl="3">
-                                      {address.address.split(",").map(slice => <Text>{slice}</Text>)}
+                                      {location.address.split(",").map(slice => <Text>{slice}</Text>)}
                                     </Box>
                                   </Radio>
                                   {index < array.length - 1 && <hr />}

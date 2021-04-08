@@ -1,4 +1,4 @@
-import type { Geolocation } from './shared'
+import type { Geolocation, Address } from './shared'
 
 export type OpeningHours = {
   [index: string]: {              // now, collect, delivery
@@ -12,7 +12,7 @@ export type PaymentMethods = {
 
 export type Place = {
   id?: string
-  address: string
+  location: Address
   cover: string
   logo: string
   geo: Geolocation

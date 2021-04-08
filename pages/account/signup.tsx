@@ -6,20 +6,21 @@ import type { InferGetServerSidePropsType, GetServerSideProps, GetServerSideProp
 import Layout from "@/components/layout/Layout"
 import SignIn from "@/components/account/SignIn"
 
-function SignInPage() {
+
+function SignUp() {
   const { t } = useTranslation("common")
 
   return (
     <Layout
       subHeader="hide"
-      title={t("signing-in")}
+      title={t("signing-up")}
     >
-      <SignIn prefix="signin" />
+      <SignIn prefix="signup" />
     </Layout>
   )
 }
 
-export default withAuthUser()(SignInPage)
+export default withAuthUser()(SignUp)
 
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return { props: {} }

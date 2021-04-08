@@ -75,7 +75,7 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
             </Box>
 
             <Box>
-              {place.address}
+              {place.location.address}
             </Box>
 
             <Box d="flex" mt="2" alignItems="center">

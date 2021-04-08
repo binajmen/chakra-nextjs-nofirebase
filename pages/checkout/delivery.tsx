@@ -34,7 +34,7 @@ import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
 
 import type { Place } from '@/types/place'
-import type { Address } from '@/types/customer'
+import type { Address } from '@/types/shared'
 import AddressField from '@/components/atoms/AddressField'
 
 function CheckoutDelivery() {
@@ -49,9 +49,9 @@ function CheckoutDelivery() {
   const name = useStoreState(state => state.user.firstName)
   const email = useStoreState(state => state.user.email)
   const phone = useStoreState(state => state.user.phone)
-  const userAddresses = useStoreState(state => state.user.addresses)
+  const userAddresses = useStoreState(state => state.user.locations)
 
-  const [addresses, setAddresses] = React.useState<Address[]>([])
+  const [locations, setLocations] = React.useState<Address[]>([])
 
   const address = useStoreState(state => state.basket.client.address)
 
@@ -66,7 +66,7 @@ function CheckoutDelivery() {
 
   React.useEffect(() => {
     if (userId !== "")
-      setAddresses(userAddresses)
+    setLocations(userAddresses)
   }, [userId])
 
   if (!isRehydrated || userId === "" || place.loading) {
@@ -86,7 +86,7 @@ function CheckoutDelivery() {
               name: name,
               email: email,
               phone: phone,
-              address: addresses.length > 0 ? addresses[0] : address,
+              address: locations.length > 0 ? locations[0] : address,
               comment: "",
               utensils: false,
               date: "",
@@ -167,14 +167,14 @@ function CheckoutDelivery() {
                           <FormLabel htmlFor="address">{t('address')}</FormLabel>
                           <RadioGroup value={field.value.address}>
                             <Stack direction="column">
-                              {addresses.map((address, index, array) =>
+                              {locations.map((location, index, array) =>
                                 <React.Fragment key={index}>
                                   <Radio
-                                    value={address.address}
-                                    onChange={() => form.setFieldValue("address", address)}
+                                    value={location.address}
+                                    onChange={() => form.setFieldValue("address", location)}
                                   >
                                     <Box pl="3">
-                                      {address.address.split(",").map(slice => <Text>{slice}</Text>)}
+                                      {location.address.split(",").map(slice => <Text>{slice}</Text>)}
                                     </Box>
                                   </Radio>
                                   {index < array.length - 1 && <hr />}
@@ -192,7 +192,7 @@ function CheckoutDelivery() {
                             placeholder={t("common:add-an-address")}
                             noOptions={t("common:no-options")}
                             onAddress={(address) => {
-                              setAddresses([...addresses, address])
+                              setLocations([...locations, address])
                               form.setFieldValue("address", address)
                             }}
                           />

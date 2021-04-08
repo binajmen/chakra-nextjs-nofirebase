@@ -1,8 +1,28 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isAdmin() {
+      return "a" in request.auth.token && request.auth.token.a == true
+    }
+
+    function isManagerOf(placeId) {
+      return "m" in request.auth.token && request.auth.token.m[placeId]
+    }
+
     match /{document=**} {
       allow read, write: if true;
+    }
+
+    match /users/{userId} {
+      allow read, write: if signedIn() && (request.auth.uid == userId || request.auth.token.a);
+    }
+
+    match /credentials/{document=**} {
+      allow read, write: if false;
     }
   }
 }

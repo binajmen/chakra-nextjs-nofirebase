@@ -5,21 +5,30 @@ import {
   ModalOverlay,
   ModalContent,
   Center,
-  Spinner
+  Stack,
+  Spinner,
+  Heading
 } from '@chakra-ui/react'
 
-export default function LoadingOverlay() {
+type LoadingOverlayProps = {
+  text?: string
+}
+
+export default function LoadingOverlay({ text }: LoadingOverlayProps) {
   return (
     <Modal isOpen={true} onClose={() => { }} isCentered>
       <ModalOverlay />
       <ModalContent bg="transparent">
         <Center>
-          <Spinner
-            thickness="3px"
-            emptyColor="gray.200"
-            color="#bf9900"
-            size="xl"
-          />
+          <Stack direction="column" alignItems="center">
+            <Spinner
+              thickness="3px"
+              emptyColor="gray.200"
+              color="#bf9900"
+              size="xl"
+            />
+            {text && <Heading color="white" size="md">{text}</Heading>}
+          </Stack>
         </Center>
       </ModalContent>
     </Modal>

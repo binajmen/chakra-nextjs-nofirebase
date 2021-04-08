@@ -5,7 +5,7 @@ import { geohashForLocation } from 'geofire-common'
 
 import { Box } from "@chakra-ui/react"
 
-import type { Address } from '@/types/customer'
+import type { Address } from '@/types/shared'
 
 type AddressFieldProps = {
   onAddress: (address: Address) => void

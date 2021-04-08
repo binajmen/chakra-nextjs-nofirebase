@@ -1,6 +1,6 @@
 import firebase from '@/lib/firebase/client'
 
-import type { Address } from './customer'
+import type { Address } from './shared'
 
 export type Method = "onsite" | "collect" | "delivery" | "geolocation" | string
 

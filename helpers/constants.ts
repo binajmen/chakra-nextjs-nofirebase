@@ -3,7 +3,8 @@ export const CUISINES = [
   "breakfast",
   "french",
   "indian",
-  "lebanese"
+  "lebanese",
+  "caterer"
 ]
 
 // product tags
