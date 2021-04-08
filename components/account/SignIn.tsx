@@ -15,16 +15,18 @@ import {
   Input,
   Icon,
   Divider,
+  Heading,
   Center,
   Text,
   useToast
 } from "@chakra-ui/react"
-import { FaGoogle, FaFacebook, FaSignInAlt } from "react-icons/fa"
+import { FaGoogle, FaFacebook, FaSignInAlt, FaPenAlt } from "react-icons/fa"
 
 import firebase from "@/lib/firebase/client"
 
 import PasswordField from "@/components/atoms/PasswordField"
 import LoadingOverlay from "@/components/atoms/LoadingOverlay"
+import NextButton from "@/components/atoms/NextButton"
 
 type SignInProps = {
   prefix: string
@@ -249,7 +251,7 @@ export default function SignIn({ prefix }: SignInProps) {
                       </FormControl>
                     )}
                   </Field>
-                  <Center>
+                  <Stack direction="column" alignItems="center">
                     <Button
                       type="submit"
                       color="black"
@@ -259,12 +261,40 @@ export default function SignIn({ prefix }: SignInProps) {
                     >
                       {t(`${prefix}`)}
                     </Button>
-                  </Center>
+                    {prefix === "signin" &&
+                      <NextButton
+                        size="sm"
+                        variant="link"
+                        colorScheme="gray"
+                        pathname="/account/forgot-password"
+                      >
+                        Mot de passe oublié ?
+                      </NextButton>
+                    }
+                  </Stack>
                 </Stack>
               </Form>
             )}
           </Formik>
         </Box>
+        {prefix === "signin" &&
+          <React.Fragment>
+            <Divider py="3" mb="3" />
+            <Stack direction="column" alignItems="center" spacing="6">
+              <Heading size="lg">Pas encore inscrit ?</Heading>
+              <NextButton
+                color="black"
+                colorScheme="primary"
+                leftIcon={<FaPenAlt />}
+                pathname="/account/signup"
+                query={{ ...router.query }}
+              >
+                Inscrivez-vous !
+          </NextButton>
+              <Text fontSize="md" textAlign="center">Cela ne vous prendra pas plus de 30 secondes et vous permettra d'économiser un temps précieux lors de vos prochaines commandes !</Text>
+            </Stack>
+          </React.Fragment>
+        }
       </Stack>
     </Box>
   )

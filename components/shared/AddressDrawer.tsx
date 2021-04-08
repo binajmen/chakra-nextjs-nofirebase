@@ -26,10 +26,7 @@ import { useStoreState, useStoreActions } from "@/store/hooks"
 import { useStoreRehydrated } from "easy-peasy"
 
 import LoadingOverlay from "@/components/atoms/LoadingOverlay"
-import AddressField from "@/components/atoms/AddressField"
 import useWindowSize from "@/hooks/useWindowSize"
-
-import type { Address } from "@/types/shared"
 
 type DrawerProps = {
   isOpen: boolean

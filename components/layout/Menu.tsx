@@ -1,6 +1,7 @@
 import * as React from "react"
 import useTranslation from "next-translate/useTranslation"
 import { useAuthUser } from "next-firebase-auth"
+import { useRouter } from "next/router"
 
 import {
   Button,
@@ -117,6 +118,7 @@ function MenuDrawer({ drawer, buttonRef }: MenuProps) {
 function AccountButton() {
   const { t } = useTranslation("common")
   const user = useAuthUser()
+  const router = useRouter()
   const isSignedIn = user.id !== null
   const claims = useAuthClaims()
 
@@ -151,10 +153,11 @@ function AccountButton() {
       <NextButton
         leftIcon={<FaSignInAlt />}
         colorScheme="primary"
-        pathname="/account/signin"
+        pathname={`/account/signin`}
+        query={{ next: router.asPath }}
       >
         {t("sign-in")}
-      </NextButton>
+      </NextButton >
     )
   }
 }

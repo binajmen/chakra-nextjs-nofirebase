@@ -88,11 +88,11 @@ const model: Model = {
           .catch(error => {
             console.error(error)
             actions.clearState()
-            actions.setId(nanoid())
+            // actions.setId(nanoid())
           })
       } else {
         actions.clearState()
-        actions.setId(nanoid())
+        // actions.setId(nanoid())
       }
     })
 

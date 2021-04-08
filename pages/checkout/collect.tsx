@@ -1,7 +1,7 @@
 import * as React from 'react'
 import * as Yup from 'yup'
 import useTranslation from 'next-translate/useTranslation'
-import { withAuthUser } from 'next-firebase-auth'
+import { AuthAction, useAuthUser, withAuthUser } from 'next-firebase-auth'
 import { useRouter } from 'next/router'
 import { Formik, Form, Field, FieldProps } from 'formik'
 import { useDocument } from '@nandorojo/swr-firestore'
@@ -28,6 +28,7 @@ import Layout from '@/components/layout/Layout'
 import Button from '@/components/atoms/Button'
 import DateField from '@/components/atoms/DateField'
 import TimeIntervalField from '@/components/atoms/TimeIntervalField'
+import LoadingOverlay from '@/components/atoms/LoadingOverlay'
 
 import type { Place } from '@/types/place'
 import dayjs from 'functions/node_modules/dayjs'
@@ -35,6 +36,7 @@ import dayjs from 'functions/node_modules/dayjs'
 function CheckoutCollect() {
   const { t } = useTranslation('checkout')
   const router = useRouter()
+  const authUser = useAuthUser()
 
   const basket = useStoreActions(actions => actions.basket)
   const placeId = useStoreState(state => state.basket.placeId)
@@ -53,19 +55,32 @@ function CheckoutCollect() {
   const place = useDocument<Place>(isRehydrated ? `places/${placeId}` : null)
 
   React.useEffect(() => {
+    if (authUser.id === null) {
+      router.push({
+        pathname: "/account/signin",
+        query: { next: router.asPath }
+      })
+    } else {
+      console.log("authUser ok:", authUser.id)
+    }
+  }, [authUser])
+
+  React.useEffect(() => {
     const unsubscribe = user.onUser()
+    console.log("onUser ok:", userId)
     return () => unsubscribe()
   }, [])
 
-  if (!isRehydrated || userId === "" || place.loading) {
+  if (!isRehydrated || authUser.id === null || userId === "" || place.loading) {
     return <div>
-      <Progress size="xs" isIndeterminate />
+      <LoadingOverlay />
       <Text>isRehydrated: {JSON.stringify(isRehydrated)}</Text>
       <Text>userId: {JSON.stringify(userId)}</Text>
       <Text>place.loading: {JSON.stringify(place.loading)}</Text>
     </div>
   } else if (place.error) {
     return <div>
+      <LoadingOverlay />
       <Progress size="xs" isIndeterminate />
       <Text>isRehydrated: {JSON.stringify(isRehydrated)}</Text>
       <Text>userId: {JSON.stringify(userId)}</Text>
@@ -74,8 +89,6 @@ function CheckoutCollect() {
       <Text>place.loading: {JSON.stringify(place)}</Text>
     </div>
   } else if (place.data) {
-    console.log(place.data)
-    console.log(dayjs(date, "YYYY-MM-DD").format("ddd").toLowerCase())
     return (
       <Layout
         subHeader="hide"
@@ -229,6 +242,9 @@ function CheckoutCollect() {
   }
 }
 
-export default withAuthUser()(CheckoutCollect)
+export default withAuthUser({
+  whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
+  LoaderComponent: () => <LoadingOverlay />,
+})(CheckoutCollect)
 
 export function getStaticProps() { return { props: {} } }

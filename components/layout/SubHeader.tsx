@@ -1,5 +1,7 @@
 import * as React from "react"
 import useTranslation from "next-translate/useTranslation"
+import { useRouter } from "next/router"
+import { useDocument } from "@nandorojo/swr-firestore"
 
 import {
   Flex,
@@ -36,7 +38,7 @@ import AddressDrawer from "@/components/shared/AddressDrawer"
 import { useStoreState, useStoreActions } from "@/store/hooks"
 import { METHODS, ONSITE, COLLECT, CUISINES, TAGS } from "@/helpers/constants"
 
-import DateTimeForm from "../shared/AddressDrawer"
+import { Place } from "@/types/place"
 
 export type SubHeaderFormat = "filters" | "datetime" | "hide"
 
@@ -81,12 +83,23 @@ function Methods({ withLabel }: MethodsProps) {
   const { t } = useTranslation("common")
   const alert = useDisclosure()
   const isLarge = useBreakpointValue({ base: false, sm: true })
+  const router = useRouter()
+  const placeId = router.query.placeId
 
   const currentMethod = useStoreState(state => state.order.method)
   const setMethod = useStoreActions(actions => actions.order.setMethod)
   const basketIsEmpty = useStoreState(state => state.basket.isEmpty)
   const clearBasket = useStoreActions(actions => actions.basket.clearBasket)
   const [tempMethod, setTempMethod] = React.useState("")
+
+  const place = useDocument<Place>(placeId ? `places/${placeId}` : null)
+  const methods = React.useMemo(() => {
+    if (place.data) {
+      return place.data.methods
+    } else {
+      return METHODS
+    }
+  }, [METHODS, place.data])
 
   function updateMethod(method: string, force: boolean = false) {
     if (method === currentMethod)
@@ -117,7 +130,7 @@ function Methods({ withLabel }: MethodsProps) {
           </Stack>
         </MenuButton>
         <MenuList>
-          {METHODS.map(method =>
+          {methods.map(method =>
             <MenuItem key={method} onClick={() => updateMethod(method)}>
               <Stack direction="column">
                 <Stack direction="row" alignItems="center">

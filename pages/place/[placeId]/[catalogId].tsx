@@ -168,6 +168,20 @@ export const getServerSideProps: GetServerSideProps = async ({ query }: GetServe
     if (!place.exists)
       return { notFound: true }
 
+    const methods = (place.data() as Place).methods
+    if (!methods.includes(catalogId as string)) {
+      console.log("no such catalog")
+      if (methods.length > 0)
+        return {
+          redirect: {
+            destination: `/place/${placeId}/${methods[0]}`,
+            permanent: false,
+          },
+        }
+      else
+        return { notFound: true }
+    }
+
     const catalog = await admin.firestore().doc(`places/${placeId}/catalogs/${catalogId}`).get()
     if (!catalog.exists)
       return { notFound: true }
