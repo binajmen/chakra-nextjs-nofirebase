@@ -49,6 +49,8 @@ export default function BasketDrawer({ logo, isOpen, onClose }: BasketDrawerProp
   const size = useStoreState(state => state.basket.size)
   const total = useStoreState(state => state.basket.total)
 
+  const router = useRouter()
+
   return (
     <Drawer
       isOpen={isOpen}
@@ -58,9 +60,13 @@ export default function BasketDrawer({ logo, isOpen, onClose }: BasketDrawerProp
         <Heading size="lg">{t('your-basket')}</Heading>
       }
       footer={
-        <NextButton
+        <Button
           w="full"
-          pathname={`/checkout/${method}`}
+          onClick={() => {
+            onClose()
+            router.push(`/checkout/${method}`)
+          }}
+        // pathname={`/checkout/${method}`}
         >
           <Flex justify="space-between" w="full">
             <HStack>
@@ -72,13 +78,13 @@ export default function BasketDrawer({ logo, isOpen, onClose }: BasketDrawerProp
             </Text>
             <Text>{total / 100}€</Text>
           </Flex>
-        </NextButton >
+        </Button>
       }
     >
       <Image m="auto" boxSize="100px" objectFit="contain" src={logo} alt="Myresto.brussels" />
       <Method method={method as string} />
       <Box>
-        {items.map((item, index) => <BasketItem key={index} index={index} item={item} />)}
+        {items.map((item, index) => <BasketItem key={item.id} index={index} item={item} />)}
       </Box>
     </Drawer >
   )
@@ -121,8 +127,8 @@ function BasketItem({ item, index }: BasketItemProps) {
         </Flex>
         {item.options.length > 0 &&
           <Stack direction="column" fontSize="sm" spacing="0" pl="8">
-            {item.options.map((option, index) =>
-              <Text key={index}>{option.name}</Text>
+            {item.options.map((option) =>
+              <Text key={option.name}>{option.name}</Text>
             )}
           </Stack>
         }

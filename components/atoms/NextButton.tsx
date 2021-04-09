@@ -1,23 +1,22 @@
 import * as React from 'react'
-import NextLink from 'next/link'
+import Link from 'next/link'
 
-import { ButtonProps } from '@chakra-ui/react'
-
-import Button from './Button'
+import { Button, ButtonProps } from "@chakra-ui/react"
 
 type NextButtonProps = ButtonProps & {
+  children: React.ReactNode
   pathname: string
   query?: any
 }
 
 export default function NextButton(props: NextButtonProps) {
-  const { pathname, query = {}, children, ...buttonProps } = props
+  const { children, pathname, query = {}, ...buttonProps } = props
 
   return (
-    <NextLink href={{ pathname, query }}>
+    <Link href={{ pathname, query }}>
       <Button {...buttonProps}>
         {children}
       </Button>
-    </NextLink>
+    </Link>
   )
 }

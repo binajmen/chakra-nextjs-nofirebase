@@ -1,6 +1,4 @@
 export default {
-  initialColorMode: "light",
-  useSystemColorMode: false,
   fonts: {
     body: "Montserrat, sans-serif",
     heading: "Poppins, serif",

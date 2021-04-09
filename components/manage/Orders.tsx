@@ -5,7 +5,7 @@ import useSound from "use-sound"
 import { useRouter } from "next/router"
 import { fuego, useCollection } from "@nandorojo/swr-firestore"
 
-import notification from "../../public/static/notification.mp3"
+// import notification from "../../public/static/notification.mp3"
 
 import {
   Flex,
@@ -52,7 +52,7 @@ export default function Orders(props: OrdersProps) {
   const soundInterval = React.useRef<any>(null)
   const [tabIndex, setTabIndex] = React.useState(0)
   const [orders, setOrders] = React.useState<WithID<Order>[]>([])
-  const [playNotification] = useSound(notification, { volume: 0.5 })
+  // const [playNotification] = useSound(notification, { volume: 0.5 })
 
   const sixAM = dayjs().hour() < 6
     ? dayjs().startOf("day").subtract(1, "day").add(6, "hour") // yesterday @6am
@@ -66,8 +66,8 @@ export default function Orders(props: OrdersProps) {
 
   React.useEffect(() => {
     if (pending.length > 0 && soundInterval.current === null) {
-      playNotification()
-      soundInterval.current = setInterval(playNotification, 15 * 1000)
+      // playNotification()
+      // soundInterval.current = setInterval(playNotification, 15 * 1000)
     } else if (pending.length === 0) {
       clearInterval(soundInterval.current)
       soundInterval.current = null

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-export default function useAuthClaims() {
+export default function useWindowSize() {
   // https://joshwcomeau.com/react/the-perils-of-rehydration/
   const [windowSize, setWindowSize] = React.useState<{ width: number, height: number }>({
     width: 0,

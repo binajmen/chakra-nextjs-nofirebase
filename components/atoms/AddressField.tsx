@@ -38,28 +38,28 @@ export default function AddressField({ onAddress, placeholder, noOptions }: Addr
   }, [value])
 
   return (
-    <Box w="full">
-      <RGPA
-        apiKey="AIzaSyAlLBvlq6YsDDaidjMwyPpsdHcAIhUq2gY"
-        apiOptions={{ language: 'fr' }}
-        autocompletionRequest={{
-          componentRestrictions: {
-            country: ['be'],
-          },
-        }}
-        debounce={1000}
-        minLengthAutocomplete={5}
-        onLoadFailed={(error) => (
-          console.error("Could not inject Google script:", error)
-        )}
-        selectProps={{
-          value,
-          onChange: setValue,
-          placeholder: placeholder,
-          noOptionsMessage: () => noOptions
-        }}
-        withSessionToken={true}
-      />
-    </Box>
+    // <Box w="full">
+    <RGPA
+      apiKey="AIzaSyAlLBvlq6YsDDaidjMwyPpsdHcAIhUq2gY"
+      apiOptions={{ language: 'fr' }}
+      autocompletionRequest={{
+        componentRestrictions: {
+          country: ['be'],
+        },
+      }}
+      debounce={1000}
+      minLengthAutocomplete={5}
+      onLoadFailed={(error) => (
+        console.error("Could not inject Google script:", error)
+      )}
+      selectProps={{
+        value,
+        onChange: setValue,
+        placeholder: placeholder,
+        noOptionsMessage: () => noOptions
+      }}
+      withSessionToken={true}
+    />
+    // </Box>∆
   )
 }

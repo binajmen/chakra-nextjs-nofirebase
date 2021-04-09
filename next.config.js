@@ -4,26 +4,26 @@ module.exports = nextTranslate({
   images: {
     domains: ['firebasestorage.googleapis.com'],
   },
-  webpack(config, { isServer }) {
-    config.module.rules.push({
-      test: /\.(ogg|mp3|wav|mpe?g)$/i,
-      exclude: config.exclude,
-      use: [
-        {
-          loader: "file-loader",
-          options: {
-            // limit: config.inlineImageLimit,
-            // fallback: require.resolve('file-loader'),
-            publicPath: `${config.assetPrefix}/_next/static/`,
-            outputPath: `${isServer ? '../' : ''}static/`,
-            name: '[name]-[hash].[ext]',
-            esModule: config.esModule || false,
-          },
-        },
-      ],
-    });
-    return config;
-  },
+  // webpack(config, { isServer }) {
+  //   config.module.rules.push({
+  //     test: /\.(ogg|mp3|wav|mpe?g)$/i,
+  //     // exclude: config.exclude,
+  //     use: [
+  //       {
+  //         loader: "file-loader",
+  //         // options: {
+  //         //   // limit: config.inlineImageLimit,
+  //         //   // fallback: require.resolve('file-loader'),
+  //         //   publicPath: `${config.assetPrefix}/_next/static/`,
+  //         //   outputPath: `${isServer ? '../' : ''}static/`,
+  //         //   name: '[name]-[hash].[ext]',
+  //         //   esModule: config.esModule || false,
+  //         // },
+  //       },
+  //     ],
+  //   });
+  //   return config;
+  // },
 })
 
 // https://github.com/vinissimus/next-translate#add-next-translate-plugin

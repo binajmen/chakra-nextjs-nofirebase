@@ -11,7 +11,7 @@ export default function Header() {
     <Flex justify="space-between" alignItems="center" p="2">
       <Logo />
       <Stack direction="row" spacing="1">
-        <SignIn />
+        {/* <SignIn /> */}
         <Menu />
       </Stack>
     </Flex>

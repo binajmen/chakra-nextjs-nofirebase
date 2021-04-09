@@ -11,11 +11,7 @@ import Layout from '@/components/layout/Layout'
 import AccountAuthed from '@/components/account/Account'
 
 function UserIndex() {
-  const authUser = useAuthUser()
-  const router = useRouter()
-
-  console.log(router)
-
+  console.log("UserIndex render")
   return (
     <Layout
       subHeader="hide"

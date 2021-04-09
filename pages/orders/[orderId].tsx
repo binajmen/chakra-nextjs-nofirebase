@@ -79,7 +79,7 @@ function OrderDetails() {
         <Stack direction="column" p="3" spacing="2" border="1px solid" borderColor="gray.100" borderRadius="lg" boxShadow="lg" maxW="lg">
           <Heading size="md">Articles</Heading>
           {order!.items.map((item, index) => (
-            <React.Fragment key={index}>
+            <React.Fragment key={item.id}>
               <Flex justify="space-between">
                 <Text>{item.quantity} x {item.name}</Text>
                 <Text>{item.total / 100}€</Text>

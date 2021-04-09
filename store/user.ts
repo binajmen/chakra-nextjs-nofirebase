@@ -27,6 +27,7 @@ const state: State = {
 }
 
 type Model = State & {
+  isLogged: Computed<Model, boolean>
   currentAddress: Computed<Model, Address | null>
 
   setId: Action<Model, string>
@@ -46,6 +47,7 @@ type Model = State & {
 const model: Model = {
   ...state,
 
+  isLogged: computed(state => state.id !== ""),
   currentAddress: computed(state => {
     if (state.locations.length === 0) return null
 

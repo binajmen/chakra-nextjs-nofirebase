@@ -23,13 +23,12 @@ import { useStoreState } from '@/store/hooks'
 
 import Layout from '@/components/layout/Layout'
 import PlacesList from '@/components/PlacesList'
-import ButtonLink from '@/components/atoms/NextButton'
-import WelcomeModal from '@/components/home/WelcomeModal'
+import NextButton from '@/components/atoms/NextButton'
 
 import type { Place } from '@/types/place'
 
 function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  const { t } = useTranslation('common')
+  const { t } = useTranslation("common")
   const method = useStoreState(state => state.basket.method)
 
   const { data: places, error } = useCollection<Place>('places', {}, { initialData: props.places })
@@ -39,29 +38,15 @@ function Index(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
       <PlacesList
         places={places}
         buttonRender={(id) => (
-          <ButtonLink
+          <NextButton
             size="sm"
             variant="ghost"
             rightIcon={<FaArrowRight />}
             pathname={`/place/[placeId]${method ? "/[catalogId]" : ""}`}
             query={{ placeId: id, catalogId: method as string }}
-          >{t('visit')}</ButtonLink>
+          >{t('visit')}</NextButton>
         )}
       />
-
-      <Modal closeOnOverlayClick={false} isOpen={method === null} onClose={() => { }} isCentered>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Bienvenue !</ModalHeader>
-          <ModalBody>
-            <Text>Aujourd'hui, j'aimerais passer une commande ...</Text>
-            <Center><WelcomeModal /></Center>
-          </ModalBody>
-          <ModalFooter>
-            <Text>En utilisant </Text>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
     </Layout>
   )
 }

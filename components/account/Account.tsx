@@ -30,6 +30,7 @@ import LoadingOverlay from "@/components/atoms/LoadingOverlay"
 import type { UserProfile } from "@/types/user"
 
 export default function AccountAuthed() {
+  console.log("AccountAuthed render")
   const authUser = useAuthUser()
 
   const user = useDocument<UserProfile>(authUser.id ? `users/${authUser.id}` : null)
@@ -58,6 +59,7 @@ type AccountProps = {
 }
 
 function Profile({ user, update }: AccountProps) {
+  console.log("Profile render")
   const { t } = useTranslation("common")
   const toast = useToast()
 
@@ -155,6 +157,7 @@ function Profile({ user, update }: AccountProps) {
 }
 
 function Locations({ user, update }: AccountProps) {
+  console.log("Locations render")
   const { t } = useTranslation("common")
   const toast = useToast()
 
@@ -192,7 +195,7 @@ function Locations({ user, update }: AccountProps) {
           <Form>
             <VStack spacing={3}>
               {props.values.locations?.map((address, index) => (
-                <Field key={index} name={`location-${index}`}>
+                <Field key={address.geohash} name={`location-${index}`}>
                   {({ field, form, meta }: FieldProps) => (
                     <FormControl isInvalid={!!meta.error && !!meta.touched}>
                       <Flex justify="space-between" mb="2" alignItems="center">
@@ -211,7 +214,9 @@ function Locations({ user, update }: AccountProps) {
                         >{t("delete")}</CButton>
                       </Flex>
                       <Box>
-                        {address.address.split(",").map((slice: string) => <Text>{slice}</Text>)}
+                        {address.address.split(",").map((slice: string) =>
+                          <Text key={slice}>{slice}</Text>
+                        )}
                       </Box>
                     </FormControl>
                   )}

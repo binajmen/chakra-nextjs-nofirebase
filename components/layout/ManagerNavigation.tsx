@@ -30,10 +30,10 @@ export default function Menu() {
 
   return (
     <VStack w="full" align="stretch" spacing={3}>
-      {items.map((item, index) => {
+      {items.map((item) => {
         const isActive = item.label === active
         return (
-          <React.Fragment key={index}>
+          <React.Fragment key={item.label}>
             <ButtonLink
               pathname={item.pathname}
               query={{ placeId }}

@@ -27,6 +27,7 @@ import firebase from "@/lib/firebase/client"
 import PasswordField from "@/components/atoms/PasswordField"
 import LoadingOverlay from "@/components/atoms/LoadingOverlay"
 import NextButton from "@/components/atoms/NextButton"
+import { useStoreActions } from "@/store/hooks"
 
 type SignInProps = {
   prefix: string
@@ -40,7 +41,9 @@ export default function SignIn({ prefix }: SignInProps) {
 
   const [signingUpWithGoogle, setGoogle] = React.useState(false)
   const [signingUpWithFacebook, setFacebook] = React.useState(false)
-  const [user, setUser] = React.useState<firebase.User | null>(null)
+  const [firebaseUser, setFirebaseUser] = React.useState<firebase.User | null>(null)
+
+  const user = useStoreActions(actions => actions.user)
 
   function signInWithGoogle() {
     setGoogle(true)
@@ -55,7 +58,7 @@ export default function SignIn({ prefix }: SignInProps) {
         console.log(credential)
         console.log(user)
         setGoogle(false)
-        setUser(user)
+        setFirebaseUser(user)
       }).catch((error) => {
         // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signinwithpopup
         toast({
@@ -79,7 +82,7 @@ export default function SignIn({ prefix }: SignInProps) {
         console.log(credential)
         console.log(user)
         setFacebook(false)
-        setUser(user)
+        setFirebaseUser(user)
       }).catch((error) => {
         // https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signinwithpopup
         toast({
@@ -97,7 +100,7 @@ export default function SignIn({ prefix }: SignInProps) {
         let user = userCredential.user
         console.log(user)
         callback()
-        setUser(user)
+        setFirebaseUser(user)
       })
       .catch((error) => {
         if (error.code === "auth/user-not-found") {
@@ -123,7 +126,7 @@ export default function SignIn({ prefix }: SignInProps) {
         let user = userCredential.user
         console.log(user)
         callback()
-        setUser(user)
+        setFirebaseUser(user)
       })
       .catch((error) => {
         let errorCode = error.code
@@ -142,14 +145,20 @@ export default function SignIn({ prefix }: SignInProps) {
   }
 
   React.useEffect(() => {
-    if (user !== null) {
-      firebase.firestore().doc(`users/${user.uid}`).get()
+    if (firebaseUser !== null) {
+      user.setId(firebaseUser.uid)
+      firebase.firestore().doc(`users/${firebaseUser.uid}`).get()
         .then((doc) => {
           if (doc.exists) {
             const data = doc.data()
+            // set data
+            user.setFirstName(data?.firstName ?? "")
+            user.setLastName(data?.lastName ?? "")
+            user.setEmail(data?.email ?? "")
+            user.setPhone(data?.phone ?? "")
+            user.setLocations(data?.locations ?? [])
             // is the profile info complete ?
             if (data && data.firstName && data.email && data.phone && data.locations.length > 0) {
-              console.log("profile complete, redirect to ref page")
               if (next !== undefined && typeof next === "string" && next.length) {
                 router.push(next)
               } else {
@@ -159,31 +168,31 @@ export default function SignIn({ prefix }: SignInProps) {
               console.log("profile incomplete, redirect to ref page")
               router.push({
                 pathname: "/account/complete",
-                query: { next }
+                query: { next: next ?? "/" }
               })
             }
           } else {
             console.log("no profile yet")
             router.push({
               pathname: "/account/complete",
-              query: { next }
+              query: { next: next ?? "/" }
             })
           }
-          setUser(null)
+          setFirebaseUser(null)
         })
         .catch((error) => {
           toast({
             description: error,
             status: "error"
           })
-          setUser(null)
+          setFirebaseUser(null)
         })
     }
-  }, [user])
+  }, [firebaseUser])
 
   return (
     <Box w={["full", "md"]} mx="auto">
-      {user !== null && <LoadingOverlay text="Encore quelques secondes..." />}
+      {firebaseUser !== null && <LoadingOverlay text="Encore quelques secondes..." />}
       <Stack direction="column" spacing="3">
         <Button
           colorScheme="gray"

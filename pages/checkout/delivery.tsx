@@ -66,7 +66,7 @@ function CheckoutDelivery() {
 
   React.useEffect(() => {
     if (userId !== "")
-    setLocations(userAddresses)
+      setLocations(userAddresses)
   }, [userId])
 
   if (!isRehydrated || userId === "" || place.loading) {
@@ -168,7 +168,7 @@ function CheckoutDelivery() {
                           <RadioGroup value={field.value.address}>
                             <Stack direction="column">
                               {locations.map((location, index, array) =>
-                                <React.Fragment key={index}>
+                                <React.Fragment key={location.addressId}>
                                   <Radio
                                     value={location.address}
                                     onChange={() => form.setFieldValue("address", location)}

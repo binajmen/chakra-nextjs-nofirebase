@@ -46,6 +46,7 @@ export default function Layout({
         )
     }
   }
+
   return (
     <Head {...metadata}>
       <Container>

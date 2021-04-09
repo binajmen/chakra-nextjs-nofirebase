@@ -100,8 +100,8 @@ function PlaceOpeningHours() {
         <Button leftIcon={<FaSave />} color="gray.900" colorScheme="primary" onClick={saveChanges}>{t('save')}</Button>
       </Flex>
 
-      {METHODS.map((method, index) =>
-        <Box key={index} my={3} w="full">
+      {METHODS.map((method) =>
+        <Box key={method} my={3} w="full">
           <Heading size="md">{t(method)}</Heading>
           <SwitchOrderType method={method} methods={methods} setMethods={setMethods} />
           <Timetable method={method} opening={opening} setOpening={setOpening} />

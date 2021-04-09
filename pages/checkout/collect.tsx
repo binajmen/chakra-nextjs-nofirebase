@@ -36,7 +36,7 @@ import dayjs from 'functions/node_modules/dayjs'
 function CheckoutCollect() {
   const { t } = useTranslation('checkout')
   const router = useRouter()
-  const authUser = useAuthUser()
+  // const authUser = useAuthUser()
 
   const basket = useStoreActions(actions => actions.basket)
   const placeId = useStoreState(state => state.basket.placeId)
@@ -54,16 +54,16 @@ function CheckoutCollect() {
 
   const place = useDocument<Place>(isRehydrated ? `places/${placeId}` : null)
 
-  React.useEffect(() => {
-    if (authUser.id === null) {
-      router.push({
-        pathname: "/account/signin",
-        query: { next: router.asPath }
-      })
-    } else {
-      console.log("authUser ok:", authUser.id)
-    }
-  }, [authUser])
+  // React.useEffect(() => {
+  //   if (authUser.id === null) {
+  //     router.push({
+  //       pathname: "/account/signin",
+  //       query: { next: router.asPath }
+  //     })
+  //   } else {
+  //     console.log("authUser ok:", authUser.id)
+  //   }
+  // }, [authUser])
 
   React.useEffect(() => {
     const unsubscribe = user.onUser()
@@ -71,24 +71,11 @@ function CheckoutCollect() {
     return () => unsubscribe()
   }, [])
 
-  if (!isRehydrated || authUser.id === null || userId === "" || place.loading) {
-    return <div>
-      <LoadingOverlay />
-      <Text>isRehydrated: {JSON.stringify(isRehydrated)}</Text>
-      <Text>userId: {JSON.stringify(userId)}</Text>
-      <Text>place.loading: {JSON.stringify(place.loading)}</Text>
-    </div>
-  } else if (place.error) {
-    return <div>
-      <LoadingOverlay />
-      <Progress size="xs" isIndeterminate />
-      <Text>isRehydrated: {JSON.stringify(isRehydrated)}</Text>
-      <Text>userId: {JSON.stringify(userId)}</Text>
-      <Text>placeId: {JSON.stringify(placeId)}</Text>
-      <Text>place.loading: {JSON.stringify(place.loading)}</Text>
-      <Text>place.loading: {JSON.stringify(place)}</Text>
-    </div>
-  } else if (place.data) {
+  // if (!isRehydrated || authUser.id === null || userId === "" || place.loading) {
+  //   return null
+  // } else if (place.error) {
+  //   return null
+  // } else if (place.data) {
     return (
       <Layout
         subHeader="hide"
@@ -202,7 +189,16 @@ function CheckoutCollect() {
                             {...field}
                             id="date"
                             date={field.value}
-                            schedule={place.data!.opening["collect"]}
+                            // schedule={place.data!.opening["collect"]}
+                            schedule={{
+                              mon: ["08:00", "12:00"],
+                              tue: ["08:00", "12:00"],
+                              wed: ["08:00", "12:00"],
+                              thu: ["08:00", "12:00"],
+                              fri: ["08:00", "12:00"],
+                              sat: ["08:00", "12:00"],
+                              sun: ["08:00", "12:00"],
+                            }}
                             interval={15}
                             setValue={(value) => form.setFieldValue("date", value)}
                           />
@@ -218,7 +214,16 @@ function CheckoutCollect() {
                             {...field}
                             id="time"
                             date={props.values.date}
-                            schedule={place.data!.opening["collect"]}
+                            // schedule={place.data!.opening["collect"]}
+                            schedule={{
+                              mon: ["08:00", "12:00"],
+                              tue: ["08:00", "12:00"],
+                              wed: ["08:00", "12:00"],
+                              thu: ["08:00", "12:00"],
+                              fri: ["08:00", "12:00"],
+                              sat: ["08:00", "12:00"],
+                              sun: ["08:00", "12:00"],
+                            }}
                             interval={15}
                             setValue={(value) => form.setFieldValue("time", value)}
                           />
@@ -237,9 +242,9 @@ function CheckoutCollect() {
         </Box>
       </Layout>
     )
-  } else {
-    return null
-  }
+  // } else {
+  //   return null
+  // }
 }
 
 export default withAuthUser({
@@ -247,4 +252,4 @@ export default withAuthUser({
   LoaderComponent: () => <LoadingOverlay />,
 })(CheckoutCollect)
 
-export function getStaticProps() { return { props: {} } }
+export function getServerSideProps() { return { props: {} } }

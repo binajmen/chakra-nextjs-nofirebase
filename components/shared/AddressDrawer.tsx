@@ -84,7 +84,7 @@ export default function AddressDrawer({ isOpen, onClose }: DrawerProps) {
                           <RadioGroup value={field.value}>
                             <Stack direction="column">
                               {props.values.locations.map((location, index, array) =>
-                                <React.Fragment key={index}>
+                                <React.Fragment key={location.addressId}>
                                   <Radio
                                     value={`${index}`}
                                     onChange={() => form.setFieldValue("addrIndex", `${index}`)}

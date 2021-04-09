@@ -21,39 +21,38 @@ import {
   useBreakpointValue
 } from "@chakra-ui/react"
 
-import { FaBars, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaSitemap, FaShoppingBasket, FaHeart, FaUserCog, FaLocationArrow, FaStoreAlt, FaHandsHelping, FaReceipt } from "react-icons/fa"
+import { FaBars, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaHeart, FaHandsHelping, FaReceipt } from "react-icons/fa"
 
 import useAuthClaims from "@/hooks/useAuthClaims"
 import useWindowSize from "@/hooks/useWindowSize"
 import NextButton from "@/components/atoms/NextButton"
 
 import Languages from "./Languages"
+import { useStoreState } from "@/store/hooks"
+import { nanoid } from "nanoid"
 
 export default function Menu() {
   const drawer = useDisclosure()
-  const buttonRef = React.useRef<HTMLButtonElement>(null)
 
   return (
     <React.Fragment>
-      <MenuButton drawer={drawer} buttonRef={buttonRef} />
-      <MenuDrawer drawer={drawer} buttonRef={buttonRef} />
+      <MenuButton drawer={drawer} />
+      <MenuDrawer drawer={drawer} />
     </React.Fragment>
   )
 }
 
 type MenuProps = {
   drawer: ReturnType<typeof useDisclosure>
-  buttonRef: React.RefObject<HTMLButtonElement>
 }
 
-function MenuButton({ drawer, buttonRef }: MenuProps) {
+function MenuButton({ drawer }: MenuProps) {
   const { t } = useTranslation("common")
   const isMobile = useBreakpointValue({ base: true, md: false })
 
   if (isMobile) {
     return (
       <IconButton
-        ref={buttonRef}
         aria-label="open-menu"
         icon={<FaBars />}
         color="black"
@@ -64,7 +63,6 @@ function MenuButton({ drawer, buttonRef }: MenuProps) {
   } else {
     return (
       <Button
-        ref={buttonRef}
         leftIcon={<FaBars />}
         color="black"
         colorScheme="primary"
@@ -77,16 +75,20 @@ function MenuButton({ drawer, buttonRef }: MenuProps) {
   }
 }
 
-function MenuDrawer({ drawer, buttonRef }: MenuProps) {
+function MenuDrawer({ drawer }: MenuProps) {
   const { t } = useTranslation("common")
   const { height } = useWindowSize()
 
+  if (!drawer.isOpen) {
+    return null
+  }
+
   return (
     <Drawer
+      id={nanoid()}
       isOpen={drawer.isOpen}
       placement="right"
       onClose={drawer.onClose}
-      finalFocusRef={buttonRef}
     >
       <DrawerOverlay>
         <DrawerContent heigth={height}>
@@ -102,7 +104,6 @@ function MenuDrawer({ drawer, buttonRef }: MenuProps) {
 
           <DrawerFooter>
             <VStack w="full" align="stretch" spacing={4}>
-              {/* <Geolocation /> */}
               <SignOutButton />
               <SupportButton />
               <Languages />
@@ -117,36 +118,52 @@ function MenuDrawer({ drawer, buttonRef }: MenuProps) {
 
 function AccountButton() {
   const { t } = useTranslation("common")
+  const isLogged = useStoreState(state => state.user.isLogged)
   const user = useAuthUser()
   const router = useRouter()
   const isSignedIn = user.id !== null
   const claims = useAuthClaims()
+  console.log("AccountButton")
 
   React.useEffect(() => {
     console.log(claims)
   }, [claims])
 
+  function goToAccount() {
+    router.push("/account")
+  }
+
+  // if (isLogged) {
+  //   return (
+  //     <Button
+  //       leftIcon={<FaUserCircle />}
+  //       colorScheme="primary"
+  //       // pathname="/account"
+  //       onClick={goToAccount}
+  //     >
+  //       {t("menu-account")}
+  //     </Button>
+  //   )
+  // } else {
+  //   return (
+  //     <Button
+  //       leftIcon={<FaSignInAlt />}
+  //       colorScheme="primary"
+  //       pathname={`/account/signin`}
+  //     >
+  //       {t("sign-in")}
+  //     </Button>
+  //   )
+  // }
   if (isSignedIn) {
     return (
-      <React.Fragment>
-        <NextButton
-          leftIcon={<FaUserCircle />}
-          colorScheme="primary"
-          pathname="/account"
-        >
-          {t("menu-account")}
-        </NextButton>
-        {claims.manager &&
-          <NextButton
-            leftIcon={<FaStoreAlt />}
-            color="white"
-            colorScheme="red"
-            pathname="/manage"
-          >
-            {t("menu-manager")}
-          </NextButton>
-        }
-      </React.Fragment>
+      <NextButton
+        leftIcon={<FaUserCircle />}
+        colorScheme="primary"
+        pathname="/account"
+      >
+        {t("menu-account")}
+      </NextButton>
     )
   } else {
     return (
@@ -162,6 +179,17 @@ function AccountButton() {
   }
 }
 
+// {claims.manager &&
+//   <NextButton
+//     leftIcon={<FaStoreAlt />}
+//     color="white"
+//     colorScheme="red"
+//     pathname="/manage"
+//   >
+//     {t("menu-manager")}
+//   </NextButton>
+// }
+
 const MENU_ITEMS = [
   { label: "menu-favorites", to: "/favorites", icon: <FaHeart />, color: "gray", variant: "ghost" },
   // { label: "menu-basket", to: "/basket", icon: <FaShoppingBasket />, color: "gray", variant: "ghost" },
@@ -173,9 +201,9 @@ function MenuItems() {
 
   return (
     <React.Fragment>
-      {MENU_ITEMS.map((item, index) =>
+      {MENU_ITEMS.map((item) =>
         <NextButton
-          key={index}
+          key={item.label}
           leftIcon={item.icon}
           colorScheme="gray"
           pathname={item.to}

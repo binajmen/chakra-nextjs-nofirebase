@@ -78,20 +78,6 @@ function PlaceCard({ place, buttonRender }: PlaceCardProps) {
               {place.location.address}
             </Box>
 
-            <Box d="flex" mt="2" alignItems="center">
-              {Array(5)
-                .fill("")
-                .map((_, index) => (
-                  <MdStar
-                    key={index}
-                    color={index < 3 ? "orange.500" : "gray.300"}
-                  />
-                ))}
-              <Box as="span" ml="2" color="gray.600" fontSize="sm">
-                2 reviews
-              </Box>
-            </Box>
-
             {buttonRender &&
               <Box mt="2" textAlign="right">
                 {buttonRender(place.id!)}
