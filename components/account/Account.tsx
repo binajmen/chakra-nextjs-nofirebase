@@ -49,7 +49,7 @@ export default function AccountAuthed() {
       </Stack>
     )
   } else {
-    return <Text>.</Text>
+    return null
   }
 }
 
@@ -69,7 +69,6 @@ function Profile({ user, update }: AccountProps) {
     <Box>
       <Center><Heading my="6">{t("my-account")}</Heading></Center>
       <Heading size="lg" mb="3">Profil</Heading>
-      <Text fontSize="sm" mb="6">Sauvegardez vos informations de base afin de gagner du temps lors de vos prochaines commandes.</Text>
       <Formik
         initialValues={{ firstName, lastName, phone, email, newsletter }}
         validationSchema={Yup.object().shape({
@@ -166,7 +165,6 @@ function Locations({ user, update }: AccountProps) {
   return (
     <Box>
       <Heading size="lg" mb="3">Adresses</Heading>
-      <Text fontSize="sm" mb="6">Sauvegardez vos adresses afin de les retrouver rapidement lors de vos prochaines commandes.</Text>
       <Formik
         initialValues={{ locations }}
         validationSchema={Yup.object().shape({

@@ -3,7 +3,7 @@ import { nanoid } from 'nanoid'
 
 import firebase from '@/lib/firebase/client'
 
-import type { UserProfile } from '@/types/user'
+import type { UserProfile, Claims } from '@/types/user'
 import type { Address } from '@/types/shared'
 
 type State = {
@@ -14,6 +14,13 @@ type State = {
   phone: string
   locations: Address[]
   addrIndex: number
+  claims: Claims
+}
+
+const defaultClaims: Claims = {
+  admin: false,
+  manager: false,
+  managerOf: []
 }
 
 const state: State = {
@@ -23,7 +30,8 @@ const state: State = {
   email: "",
   phone: "",
   locations: [],
-  addrIndex: -1
+  addrIndex: -1,
+  claims: defaultClaims
 }
 
 type Model = State & {
@@ -37,6 +45,7 @@ type Model = State & {
   setPhone: Action<Model, string>
   setLocations: Action<Model, Address[]>
   setAddrIndex: Action<Model, number>
+  setClaims: Action<Model, Claims>
 
   clearState: Action<Model>
 
@@ -62,6 +71,7 @@ const model: Model = {
   setPhone: action((state, value) => { state.phone = value }),
   setLocations: action((state, value) => { state.locations = value }),
   setAddrIndex: action((state, value) => { state.addrIndex = value }),
+  setClaims: action((state, value) => { state.claims = value }),
 
   clearState: action((state) => {
     state.id = ""
@@ -70,11 +80,24 @@ const model: Model = {
     state.email = ""
     state.phone = ""
     state.locations = []
+    state.addrIndex = -1
+    state.claims = defaultClaims
   }),
 
   onUser: thunk((actions) => {
     const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+      console.log("onUser...")
       if (user) {
+        console.log("onUser ON")
+        // load claims
+        user.getIdTokenResult()
+          .then((idTokenResult) => {
+            actions.setClaims(toReadableClaims(idTokenResult.claims))
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+        // load profile
         firebase.firestore().doc(`users/${user.uid}`).get()
           .then(doc => {
             if (doc.exists) {
@@ -114,6 +137,18 @@ const model: Model = {
       addrIndex: state.addrIndex
     }
   }),
+}
+
+function toReadableClaims(idTokenResultClaims: { [key: string]: any }) {
+  let claims = { ...defaultClaims }
+
+  if ("a" in idTokenResultClaims) claims.admin = idTokenResultClaims.a
+  if ("m" in idTokenResultClaims) {
+    claims.manager = idTokenResultClaims.m.length > 0
+    claims.managerOf = idTokenResultClaims.m
+  }
+
+  return claims
 }
 
 export type { State, Model }

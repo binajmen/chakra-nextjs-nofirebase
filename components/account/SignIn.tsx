@@ -167,14 +167,14 @@ export default function SignIn({ prefix }: SignInProps) {
             } else {
               console.log("profile incomplete, redirect to ref page")
               router.push({
-                pathname: "/account/complete",
+                pathname: "/",
                 query: { next: next ?? "/" }
               })
             }
           } else {
             console.log("no profile yet")
             router.push({
-              pathname: "/account/complete",
+              pathname: "/",
               query: { next: next ?? "/" }
             })
           }
@@ -300,7 +300,6 @@ export default function SignIn({ prefix }: SignInProps) {
               >
                 Inscrivez-vous !
           </NextButton>
-              <Text fontSize="md" textAlign="center">Cela ne vous prendra pas plus de 30 secondes et vous permettra d'économiser un temps précieux lors de vos prochaines commandes !</Text>
             </Stack>
           </React.Fragment>
         }

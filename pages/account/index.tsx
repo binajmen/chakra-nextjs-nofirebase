@@ -13,10 +13,7 @@ import AccountAuthed from '@/components/account/Account'
 function UserIndex() {
   console.log("UserIndex render")
   return (
-    <Layout
-      subHeader="hide"
-      metadata={{ title: "Votre compte" }}
-    >
+    <Layout>
       <AccountAuthed />
     </Layout>
   )

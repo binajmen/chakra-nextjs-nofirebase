@@ -27,6 +27,7 @@ yarn-error.log*
 
 # local env files
 .env.local
+.env.development
 .env.test.local
 
 # vercel
@@ -38,3 +39,10 @@ firebase.json
 .firebaserc
 .emuldata
 *.log
+firestore.indexes.json
+firesotre.rules
+
+# docker
+deploy.sh
+dockerize.sh
+Dockerfile

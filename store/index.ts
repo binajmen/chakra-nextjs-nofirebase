@@ -1,44 +1,24 @@
 import { useMemo } from "react"
 import { createStore, persist, Store } from "easy-peasy"
 
-import * as ui from "./ui"
-import * as geolocation from "./geolocation"
 import * as user from "./user"
-import * as order from "./order"
-import * as basket from "./basket"
 
 let store: Store | undefined = undefined
 
 export type State = {
-  ui: ui.State
-  geolocation: geolocation.State
   user: user.State
-  order: order.State
-  basket: basket.State
 }
 
 const initialState: State = {
-  ui: ui.state,
-  geolocation: geolocation.state,
   user: user.state,
-  order: order.state,
-  basket: basket.state,
 }
 
 export type StoreModel = {
-  ui: ui.Model
-  geolocation: geolocation.Model
   user: user.Model
-  order: order.Model
-  basket: basket.Model
 }
 
 const model: StoreModel = {
-  ui: ui.model,
-  geolocation: geolocation.model,
   user: user.model,
-  order: order.model,
-  basket: basket.model,
 }
 
 function initStore(preloadedState = initialState) {
@@ -47,10 +27,7 @@ function initStore(preloadedState = initialState) {
       model,
       {
         allow: [
-          "ui",
           "user",
-          "order",
-          "basket"
         ]
       }
     ),

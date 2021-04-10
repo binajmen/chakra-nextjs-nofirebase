@@ -12,7 +12,6 @@ function SignUp() {
 
   return (
     <Layout
-      subHeader="hide"
       title={t("signing-up")}
     >
       <SignIn prefix="signup" />

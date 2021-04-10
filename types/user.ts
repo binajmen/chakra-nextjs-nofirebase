@@ -12,3 +12,9 @@ export type UserProfile = UserInfo & {
   newsletter: boolean
   favorites: string[]
 }
+
+export type Claims = {
+  admin: boolean
+  manager: boolean
+  managerOf: string[]
+}

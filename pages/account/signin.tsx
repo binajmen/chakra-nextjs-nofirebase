@@ -11,7 +11,6 @@ function SignInPage() {
 
   return (
     <Layout
-      subHeader="hide"
       title={t("signing-in")}
     >
       <SignIn prefix="signin" />

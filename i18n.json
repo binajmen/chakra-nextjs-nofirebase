@@ -8,13 +8,6 @@
   "pages": {
     "*": [
       "common"
-    ],
-    "rgx:^/manage": [
-      "admin",
-      "checkout"
-    ],
-    "rgx:^/checkout": [
-      "checkout"
     ]
   }
 }
