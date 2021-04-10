@@ -1,6 +1,5 @@
 import * as React from "react"
 import useTranslation from "next-translate/useTranslation"
-import { useAuthUser } from "next-firebase-auth"
 import { useRouter } from "next/router"
 
 import {
@@ -24,13 +23,10 @@ import {
 
 import { FaBars, FaSignInAlt, FaSignOutAlt, FaUserCircle, FaStoreAlt, FaHeart, FaHandsHelping, FaReceipt } from "react-icons/fa"
 
-import useRouteChanged from "@/hooks/useRouteChanged"
-import useAuthClaims from "@/hooks/useAuthClaims"
-import useWindowSize from "@/hooks/useWindowSize"
 import NextButton from "@/components/atoms/NextButton"
 
 import Languages from "./Languages"
-import { useStoreState } from "@/store/hooks"
+import { useStoreState, useStoreActions } from "@/store/hooks"
 import { nanoid } from "nanoid"
 
 export default function Menu() {
@@ -191,15 +187,15 @@ function MenuItems() {
 
 function SignOutButton() {
   const { t } = useTranslation("common")
-  const user = useAuthUser()
   const isLogged = useStoreState(state => state.user.isLogged)
+  const clearState = useStoreActions(actions => actions.user.clearState)
 
   return (
     <Button
       leftIcon={<FaSignOutAlt />}
       colorScheme="red"
       variant="ghost"
-      onClick={user.signOut}
+      onClick={() => clearState()}
       hidden={!isLogged}
     >
       {t("sign-out")}

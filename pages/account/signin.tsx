@@ -1,12 +1,11 @@
 import * as React from "react"
 import useTranslation from "next-translate/useTranslation"
-import { withAuthUser } from "next-firebase-auth"
 import type { InferGetServerSidePropsType, GetServerSideProps, GetServerSidePropsContext } from "next"
 
 import Layout from "@/components/layout/Layout"
 import SignIn from "@/components/account/SignIn"
 
-function SignInPage() {
+export default function SignInPage() {
   const { t } = useTranslation("common")
 
   return (
@@ -17,8 +16,6 @@ function SignInPage() {
     </Layout>
   )
 }
-
-export default withAuthUser()(SignInPage)
 
 export const getServerSideProps: GetServerSideProps = async (ctx: GetServerSidePropsContext) => {
   return { props: {} }

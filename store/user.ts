@@ -1,8 +1,6 @@
 import { Action, action, Computed, computed, Thunk, thunk } from 'easy-peasy'
 import { nanoid } from 'nanoid'
 
-import firebase from '@/lib/firebase/client'
-
 import type { UserProfile, Claims } from '@/types/user'
 import type { Address } from '@/types/shared'
 
@@ -85,43 +83,43 @@ const model: Model = {
   }),
 
   onUser: thunk((actions) => {
-    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
-      console.log("onUser...")
-      if (user) {
-        console.log("onUser ON")
-        // load claims
-        user.getIdTokenResult()
-          .then((idTokenResult) => {
-            actions.setClaims(toReadableClaims(idTokenResult.claims))
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-        // load profile
-        firebase.firestore().doc(`users/${user.uid}`).get()
-          .then(doc => {
-            if (doc.exists) {
-              const { firstName, lastName, email, phone, locations } = doc.data() as UserProfile
-              actions.setFirstName(firstName)
-              actions.setLastName(lastName)
-              actions.setEmail(email)
-              actions.setPhone(phone)
-              actions.setLocations(locations)
-              actions.setId(user.uid)
-            }
-          })
-          .catch(error => {
-            console.error(error)
-            actions.clearState()
-            // actions.setId(nanoid())
-          })
-      } else {
-        actions.clearState()
-        // actions.setId(nanoid())
-      }
-    })
+    // const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    //   console.log("onUser...")
+    //   if (user) {
+    //     console.log("onUser ON")
+    //     // load claims
+    //     user.getIdTokenResult()
+    //       .then((idTokenResult) => {
+    //         actions.setClaims(toReadableClaims(idTokenResult.claims))
+    //       })
+    //       .catch((error) => {
+    //         console.log(error)
+    //       })
+    //     // load profile
+    //     firebase.firestore().doc(`users/${user.uid}`).get()
+    //       .then(doc => {
+    //         if (doc.exists) {
+    //           const { firstName, lastName, email, phone, locations } = doc.data() as UserProfile
+    //           actions.setFirstName(firstName)
+    //           actions.setLastName(lastName)
+    //           actions.setEmail(email)
+    //           actions.setPhone(phone)
+    //           actions.setLocations(locations)
+    //           actions.setId(user.uid)
+    //         }
+    //       })
+    //       .catch(error => {
+    //         console.error(error)
+    //         actions.clearState()
+    //         // actions.setId(nanoid())
+    //       })
+    //   } else {
+    //     actions.clearState()
+    //     // actions.setId(nanoid())
+    //   }
+    // })
 
-    return unsubscribe
+    // return unsubscribe
   }),
 
   getUser: thunk((_actions, _payload, { getState }) => {
