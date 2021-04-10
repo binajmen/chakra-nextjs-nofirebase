@@ -143,13 +143,15 @@ export default function SignIn({ prefix }: SignInProps) {
   // }
 
   React.useEffect(() => {
-    user.setFirstName("Demo")
-    user.setLastName("Demo")
-    user.setEmail("demo@demo.com")
-    user.setPhone("0123456789")
-    user.setLocations([])
-    user.setClaims({ admin: true, manager: true, managerOf: [] })
-    router.push("/")
+    if (signingUpWithGoogle) {
+      user.setFirstName("Demo")
+      user.setLastName("Demo")
+      user.setEmail("demo@demo.com")
+      user.setPhone("0123456789")
+      user.setLocations([])
+      user.setClaims({ admin: true, manager: true, managerOf: [] })
+      router.push("/")
+    }
     // if (firebaseUser !== null) {
     //   user.setId(firebaseUser.uid)
     //   firebase.firestore().doc(`users/${firebaseUser.uid}`).get()
